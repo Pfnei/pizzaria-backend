@@ -5,10 +5,10 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
 
 public class UserUpdateDTO {
-    @Size(min = 5, message = "Username must be at least 5 characters")
+
     private String username;
 
-    @Email
+
     private String email;
     private String phoneNumber;
     private String address;
@@ -18,8 +18,6 @@ public class UserUpdateDTO {
     private String salutationDetail;
     private String country;
 
-    // Optional: password, only if provided
-    @Size(min = 12)
     private String password;
 
     public String getUsername() {

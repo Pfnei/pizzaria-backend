@@ -23,12 +23,10 @@ public class UserResponseDTO {
     private boolean admin;
     private Instant createdAt;
 
-    @Schema(hidden = true)
     private String createdById;
 
     private Instant lastUpdatedAt;
 
-    @Schema(hidden = true)
     private String lastUpdatedById;
 
     private List<String> orderIds;
