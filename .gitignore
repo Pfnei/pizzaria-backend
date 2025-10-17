@@ -1,0 +1,76 @@
+# ==============================
+# Java / Spring Boot .gitignore
+# ==============================
+
+# Build-Output
+/target/
+!/target/.gitkeep
+
+# IDEs & Tools
+### IntelliJ IDEA ###
+.idea/
+*.iml
+out/
+.idea_modules/
+
+### Eclipse ###
+.project
+.classpath
+.settings/
+bin/
+
+### VS Code ###
+.vscode/
+.history/
+*.code-workspace
+
+# Logs
+logs/
+*.log
+
+# OS-spezifisch
+### macOS ###
+.DS_Store
+.AppleDouble
+.LSOverride
+
+### Windows ###
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Java & Maven
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+*.zip
+*.tar.gz
+*.rar
+
+# Maven-specific
+.mvn/wrapper/maven-wrapper.jar
+.mvn/timing.properties
+
+# Gradle-specific (falls du Gradle nutzt)
+.gradle/
+build/
+
+# Lombok
+*.lombok.config.backup
+
+# Environment / Secrets
+.env
+*.env
+application-*.yml
+application-*.properties
+!application-example.yml
+!application-example.properties
+
+# Test reports / coverage
+surefire-reports/
+failsafe-reports/
+jacoco.exec
+coverage/
+coverage-report/
