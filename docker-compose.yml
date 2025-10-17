@@ -1,0 +1,21 @@
+services:
+  db:
+    image: postgres:latest
+    container_name: pizzeria-postgres
+    restart: always
+    ports:
+      # WICHTIG: Port 5433 (Host) leitet auf 5432 (Container) weiter
+      - "5433:5432"
+    environment:
+      # Verwenden Sie den PostgreSQL Standard-Admin-Benutzer 'postgres'
+      - POSTGRES_USER=postgres
+      # Legen Sie ein eindeutiges, einfaches Passwort fest
+      - POSTGRES_PASSWORD=pizzapass
+      # Legen Sie den Datenbanknamen fest
+      - POSTGRES_DB=pizzeria
+    # Optional: Volume zur Persistierung der Daten
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

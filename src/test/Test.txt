@@ -1,0 +1,28 @@
+
+USER
+{
+
+  "username": "test27",
+  "email": "cp3@gmail.com",
+  "password": "Test@202340203"
+}
+
+  {
+     "userId": "108a1e7a-17a1-41ba-8cac-9eb9564a4024",
+     "profilPicture": null,
+     "username": "test27",
+     "firstname": null,
+     "surname": null,
+     "email": "cp3@gmail.com",
+     "phoneNumber": null,
+     "address": null,
+     "zipcode": null,
+     "city": null,
+     "country": null,
+     "createdAt": "2025-05-29T15:25:57.215492Z",
+     "createdBy": null,
+     "lastUpdatedBy": null,
+     "active": true,
+     "admin": false
+   }
+
