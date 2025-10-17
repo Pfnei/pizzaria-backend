@@ -8,8 +8,6 @@ import jakarta.validation.constraints.Size;
 
 public class UserCreateDTO {
 
-    @NotBlank
-    @Size(min = 5,message = "Username must be at least 5 characters long")
     private String username;
 
     @NotBlank
