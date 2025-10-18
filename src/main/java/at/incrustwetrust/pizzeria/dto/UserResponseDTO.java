@@ -1,5 +1,7 @@
 package at.incrustwetrust.pizzeria.dto;
 
+import at.incrustwetrust.pizzeria.entity.Order;
+
 import java.time.Instant;
 import java.util.List;
 
@@ -27,7 +29,7 @@ public class UserResponseDTO {
 
     private String lastUpdatedById;
 
-    private List<String> orderIds;
+    private List<Order> orders;
 
     public String getUserId() {
         return userId;
@@ -173,11 +175,11 @@ public class UserResponseDTO {
         this.lastUpdatedById = lastUpdatedById;
     }
 
-    public List<String> getOrderIds() {
-        return orderIds;
+    public List<Order> getOrders() {
+        return orders;
     }
 
-    public void setOrderIds(List<String> orderIds) {
-        this.orderIds = orderIds;
+    public void setOrders(List<Order> orderIds) {
+        this.orders = orders;
     }
 }

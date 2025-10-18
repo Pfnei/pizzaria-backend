@@ -1,7 +1,10 @@
 package at.incrustwetrust.pizzeria.auth;
 
 import at.incrustwetrust.pizzeria.entity.User;
+import at.incrustwetrust.pizzeria.exception.ObjectNotFoundException;
 import at.incrustwetrust.pizzeria.repository.UserRepository;
+import at.incrustwetrust.pizzeria.dto.UserResponseLightDTO;
+import at.incrustwetrust.pizzeria.mapper.UserMapper;
 import at.incrustwetrust.pizzeria.security.JwtService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -39,7 +42,16 @@ public class AuthController {
         );
 
         String token = jwtService.generateToken((UserDetails) authentication.getPrincipal());
-        return ResponseEntity.ok(new AuthResponse(token));
+
+        var principal = (UserDetails) authentication.getPrincipal();
+
+        User userEntity = userRepository
+                .findUserByUsername(principal.getUsername())
+                .orElseThrow(() -> new ObjectNotFoundException("User not found: " + principal.getUsername()));
+
+        UserResponseLightDTO userResponseLightDto = UserMapper.toResponseLightDto(userEntity);
+
+        return ResponseEntity.ok(new AuthResponse(token, userResponseLightDto));
     }
 
     // ------------------------------------------------------------

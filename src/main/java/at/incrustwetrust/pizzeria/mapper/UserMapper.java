@@ -1,6 +1,8 @@
 package at.incrustwetrust.pizzeria.mapper;
 
 import at.incrustwetrust.pizzeria.dto.UserCreateDTO;
+import at.incrustwetrust.pizzeria.dto.UserResponseDTO;
+import at.incrustwetrust.pizzeria.dto.UserResponseLightDTO;
 import at.incrustwetrust.pizzeria.dto.UserUpdateDTO;
 import at.incrustwetrust.pizzeria.entity.CountryCode;
 import at.incrustwetrust.pizzeria.entity.Salutation;
@@ -85,4 +87,47 @@ public class UserMapper {
             user.setPassword(dto.getPassword()); // Hashing im Service!
         }
     }
+
+    public static UserResponseDTO toResponseDto(User user) {
+        if (user == null) return null;
+
+        UserResponseDTO dto = new UserResponseDTO();
+        dto.setUserId(user.getUserId());
+        dto.setUsername(user.getUsername());
+        dto.setSalutation(user.getSalutation());
+        dto.setSalutationDetail(user.getSalutationDetail());
+        dto.setFirstName(user.getFirstname());
+        dto.setLastName(user.getLastname());
+        dto.setEmail(user.getEmail());
+        dto.setPhoneNumber(user.getPhoneNumber());
+        dto.setAddress(user.getAddress());
+        dto.setZipcode(user.getZipcode());
+        dto.setCity(user.getCity());
+        dto.setCountry(user.getCountry());                     // bereits String (CountryCode.toString)
+        dto.setIsActive(user.isActive());
+        dto.setIsAdmin(user.isAdmin());
+        dto.setCreatedAt(user.getCreatedAt());
+
+        dto.setCreatedById(user.getCreatedBy() != null ? user.getCreatedBy().getUserId() : null);
+        dto.setLastUpdatedAt(user.getLastUpdatedAt());
+        dto.setLastUpdatedById(user.getLastUpdatedBy() != null ? user.getLastUpdatedBy().getUserId() : null);
+        dto.setOrders(user.getOrders() != null ? user.getOrders() : null);
+
+        return dto;
+    }
+
+    public static UserResponseLightDTO toResponseLightDto(User user) {
+        if (user == null) return null;
+
+        UserResponseLightDTO dto = new UserResponseLightDTO();
+        dto.setUserId(user.getUserId());
+        dto.setUsername(user.getUsername());
+        dto.setFirstName(user.getFirstname());
+        dto.setLastName(user.getLastname());
+        dto.setEmail(user.getEmail());
+        dto.setActive(user.isActive());
+        dto.setAdmin(user.isAdmin());
+        return dto;
+    }
+
 }
