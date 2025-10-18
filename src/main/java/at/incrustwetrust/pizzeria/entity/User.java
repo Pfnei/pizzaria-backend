@@ -46,7 +46,7 @@ public class User {
     private String firstname;
     @Size(min = 2 , message = "mindestens 2 Zeichen erforderlich")
     @Size(max = 100, message = "Maximale Länge = 100 Zeichen")
-    private String surname;
+    private String lastname;
     @Email
     @NotBlank
     @Size(min = 5 , message = "mindestens 5 Zeichen erforderlich")
@@ -84,14 +84,14 @@ public class User {
     public User() {
     }
 
-    public User(File profilPicture, String username, String password, Salutation salutation, String salutationDetail, String firstname, String surname, String email, String phoneNumber, String address, String zipcode, String city, CountryCode countryCode, boolean isActive, boolean isAdmin, User createdBy, List<Order> orders) {
+    public User(File profilPicture, String username, String password, Salutation salutation, String salutationDetail, String firstname, String lastname, String email, String phoneNumber, String address, String zipcode, String city, CountryCode countryCode, boolean isActive, boolean isAdmin, User createdBy, List<Order> orders) {
         this.profilPicture = profilPicture;
         this.username = username;
         this.password = password;
         this.salutation = salutation.toString();
         this.salutationDetail = salutationDetail;
         this.firstname = firstname;
-        this.surname = surname;
+        this.lastname = lastname;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.address = address;
@@ -160,12 +160,12 @@ public class User {
         this.firstname = firstname;
     }
 
-    public String getSurname() {
-        return surname;
+    public String getLastname() {
+        return lastname;
     }
 
-    public void setSurname(String surname) {
-        this.surname = surname;
+    public void setLastname(String lastname) {
+        this.lastname = lastname;
     }
 
     public String getEmail() {
@@ -220,7 +220,7 @@ public class User {
         return isActive;
     }
 
-    public void setActive(boolean active) {
+    public void setIsActive(boolean active) {
         isActive = active;
     }
 
@@ -228,7 +228,7 @@ public class User {
         return isAdmin;
     }
 
-    public void setAdmin(boolean admin) {
+    public void setIsAdmin(boolean admin) {
         isAdmin = admin;
     }
 

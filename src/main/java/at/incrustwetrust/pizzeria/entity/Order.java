@@ -34,7 +34,7 @@ public class Order {
     @Column (nullable = false)
     @Size(min = 2 , message = "mindestens 2 Zeichen erforderlich")
     @Size(max = 100, message = "Maximale Länge = 100 Zeichen")
-    private String surname;
+    private String lastname;
     @NotBlank
     @Column (nullable = false)
     @Size(min = 7 , message = "mindestens 7 Zeichen erforderlich")
@@ -68,10 +68,10 @@ public class Order {
 
     public Order (){};
 
-    public Order(double total, String firstname, String surname, String phoneNumber, String address, String zipcode, String city, String deliveryNote, User createdBy, List<OrderItem> items) {
+    public Order(double total, String firstname, String lastname, String phoneNumber, String address, String zipcode, String city, String deliveryNote, User createdBy, List<OrderItem> items) {
         this.total = total;
         this.firstname = firstname;
-        this.surname = surname;
+        this.lastname = lastname;
         this.phoneNumber = phoneNumber;
         this.address = address;
         this.zipcode = zipcode;
@@ -113,12 +113,12 @@ public class Order {
         this.firstname = firstname;
     }
 
-    public String getSurname() {
-        return surname;
+    public String getLastname() {
+        return lastname;
     }
 
-    public void setSurname(String surname) {
-        this.surname = surname;
+    public void setLastname(String lastname) {
+        this.lastname = lastname;
     }
 
     public String getPhoneNumber() {

@@ -30,7 +30,7 @@ public class UserMapper {
 
         user.setSalutationDetail(dto.getSalutationDetail());
         user.setFirstname(dto.getFirstName());
-        user.setSurname(dto.getLastName());
+        user.setLastname(dto.getLastName());
         user.setEmail(dto.getEmail());
         user.setPhoneNumber(dto.getPhoneNumber());
         user.setAddress(dto.getAddress());
@@ -49,8 +49,8 @@ public class UserMapper {
         }
 
         user.setCreatedBy(createdBy);
-        user.setActive(true);
-        user.setAdmin(false);
+        user.setIsActive(true);
+        user.setIsAdmin(false);
         return user;
     }
 
