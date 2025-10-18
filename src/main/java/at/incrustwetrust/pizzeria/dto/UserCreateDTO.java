@@ -8,34 +8,22 @@ import jakarta.validation.constraints.Size;
 
 public class UserCreateDTO {
 
-    @NotBlank
-    @Size(min = 5,message = "Username must be at least 5 characters long")
     private String username;
 
-    @NotBlank
-    @Size(min = 12, message = "Password must be at least 12 characters long")
-    @Pattern(regexp = ".*\\d.*", message = "Password must contain at least one digit")
-    @Pattern(regexp = ".*[A-Z].*", message = "Password must contain at least one uppercase letter")
-    @Pattern(regexp = ".*[a-z].*", message = "Password must contain at least one lowercase letter")
-    @Pattern(regexp = ".*[@$!%*?&].*", message = "Password must contain at least one special character")
     private String password;
 
     private String salutation;
 
-    @Size(max = 30, message = "Salutation can be at most 30 characters long")
     private String salutationDetail;
 
     private String firstName;
     private String lastName;
 
-    @Email
-    @NotBlank
     private String email;
 
     private String phoneNumber;
     private String address;
 
-    @Size(min = 2, max = 10)
     private String zipcode;
 
     private String city;

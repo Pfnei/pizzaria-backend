@@ -2,7 +2,7 @@ CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 INSERT INTO users (
     user_id, username, password, salutation, salutation_detail,
-    firstname, surname, email, phone_number, zipcode, city, country,
+    firstname, lastname, email, phone_number, zipcode, city, country,
     address, created_at, last_updated_at,
     is_active, is_admin
 ) VALUES
@@ -154,7 +154,7 @@ FROM
 
 
 INSERT INTO orders
-(order_id, address, city, zipcode, firstname, surname, phone_number,
+(order_id, address, city, zipcode, firstname, lastname, phone_number,
  total, delivery_note, delivered_at, created_at, created_by)
 VALUES
     (gen_random_uuid(), 'Hauptstraße 12', 'Linz', '4020', 'Hannah', 'Bukovec', '+43 676 1234567', 1, 'Bitte bei Nachbarn klingeln', '2025-06-20', '2025-06-19', (SELECT user_id FROM users ORDER BY random() LIMIT 1)),

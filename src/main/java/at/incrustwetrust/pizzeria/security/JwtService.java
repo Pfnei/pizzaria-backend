@@ -24,16 +24,18 @@ public class JwtService {
     @Value("${security.jwt.expires-in-seconds}")
     private long expires;
 
+
     public String generateToken(UserDetails user) {
         Instant now = Instant.now();
+
+        boolean isAdmin = (user instanceof SecurityUser SecUser) && SecUser.isAdmin();
+
         return JWT.create()
                 .withIssuer(issuer)
                 .withSubject(user.getUsername())
                 .withIssuedAt(Date.from(now))
                 .withExpiresAt(Date.from(now.plusSeconds(expires)))
-                .withClaim("roles", user.getAuthorities().stream()
-                        .map(GrantedAuthority::getAuthority)
-                        .toList())
+                .withClaim("isAdmin", isAdmin)
                 .sign(Algorithm.HMAC256(secret));
     }
 

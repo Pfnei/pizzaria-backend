@@ -12,7 +12,7 @@ USER
      "profilPicture": null,
      "username": "test27",
      "firstname": null,
-     "surname": null,
+     "lastname": null,
      "email": "cp3@gmail.com",
      "phoneNumber": null,
      "address": null,

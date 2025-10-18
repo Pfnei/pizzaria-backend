@@ -25,5 +25,7 @@ public class SecurityUser implements UserDetails {
     @Override public boolean isCredentialsNonExpired() { return true; }
     @Override public boolean isEnabled() { return user.isActive(); }
 
+
     public String getEmail() { return user.getEmail(); }
+    public boolean isAdmin() { return user.isAdmin(); }
 }

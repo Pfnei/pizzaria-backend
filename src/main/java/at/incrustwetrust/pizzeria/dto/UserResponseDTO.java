@@ -1,7 +1,5 @@
 package at.incrustwetrust.pizzeria.dto;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-
 import java.time.Instant;
 import java.util.List;
 
@@ -19,16 +17,14 @@ public class UserResponseDTO {
     private String zipcode;
     private String city;
     private String country;
-    private boolean active;
-    private boolean admin;
+    private boolean isActive;
+    private boolean isAdmin;
     private Instant createdAt;
 
-    @Schema(hidden = true)
     private String createdById;
 
     private Instant lastUpdatedAt;
 
-    @Schema(hidden = true)
     private String lastUpdatedById;
 
     private List<String> orderIds;
@@ -130,19 +126,19 @@ public class UserResponseDTO {
     }
 
     public boolean isActive() {
-        return active;
+        return isActive;
     }
 
-    public void setActive(boolean active) {
-        this.active = active;
+    public void setIsActive(boolean active) {
+        this.isActive = active;
     }
 
     public boolean isAdmin() {
-        return admin;
+        return isAdmin;
     }
 
-    public void setAdmin(boolean admin) {
-        this.admin = admin;
+    public void setIsAdmin(boolean admin) {
+        this.isAdmin = admin;
     }
 
     public Instant getCreatedAt() {
