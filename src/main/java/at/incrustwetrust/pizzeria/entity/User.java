@@ -68,6 +68,24 @@ public class User {
     private boolean isAdmin = false;
     @CreationTimestamp
     private Instant createdAt;
+
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Instant getLastUpdatedAt() {
+        return lastUpdatedAt;
+    }
+
+    public void setLastUpdatedAt(Instant lastUpdatedAt) {
+        this.lastUpdatedAt = lastUpdatedAt;
+    }
+
     @ManyToOne
     @Schema(hidden = true)
     @JsonIgnore

@@ -1,3 +1,5 @@
 package at.incrustwetrust.pizzeria.auth;
 
-public record AuthResponse(String accessToken) {}
+import at.incrustwetrust.pizzeria.dto.UserResponseLightDTO;
+
+public record AuthResponse(String accessToken, UserResponseLightDTO user) {}
