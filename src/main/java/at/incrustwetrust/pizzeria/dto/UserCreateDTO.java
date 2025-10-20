@@ -9,23 +9,15 @@ import jakarta.validation.constraints.Size;
 public class UserCreateDTO {
 
     private String username;
-
     private String password;
-
     private String salutation;
-
     private String salutationDetail;
-
-    private String firstName;
-    private String lastName;
-
+    private String firstname;
+    private String lastname;
     private String email;
-
     private String phoneNumber;
     private String address;
-
     private String zipcode;
-
     private String city;
     private String country;
 
@@ -61,22 +53,21 @@ public class UserCreateDTO {
         this.salutationDetail = salutationDetail;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getFirstname() {
+        return firstname;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
+    public void setFirstname(String firstname) {
+        this.firstname = firstname;
     }
 
-    public String getLastName() {
-        return lastName;
+    public String getLastname() {
+        return lastname;
     }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setLastname(String lastname) {
+        this.lastname = lastname;
     }
-
     public String getEmail() {
         return email;
     }

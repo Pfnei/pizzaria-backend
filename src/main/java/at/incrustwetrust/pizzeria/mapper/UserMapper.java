@@ -31,8 +31,8 @@ public class UserMapper {
 
 
         user.setSalutationDetail(dto.getSalutationDetail());
-        user.setFirstname(dto.getFirstName());
-        user.setLastname(dto.getLastName());
+        user.setFirstname(dto.getFirstname());
+        user.setLastname(dto.getLastname());
         user.setEmail(dto.getEmail());
         user.setPhoneNumber(dto.getPhoneNumber());
         user.setAddress(dto.getAddress());
@@ -96,8 +96,8 @@ public class UserMapper {
         dto.setUsername(user.getUsername());
         dto.setSalutation(user.getSalutation());
         dto.setSalutationDetail(user.getSalutationDetail());
-        dto.setFirstName(user.getFirstname());
-        dto.setLastName(user.getLastname());
+        dto.setFirstname(user.getFirstname());
+        dto.setLastname(user.getLastname());
         dto.setEmail(user.getEmail());
         dto.setPhoneNumber(user.getPhoneNumber());
         dto.setAddress(user.getAddress());
@@ -122,8 +122,8 @@ public class UserMapper {
         UserResponseLightDTO dto = new UserResponseLightDTO();
         dto.setUserId(user.getUserId());
         dto.setUsername(user.getUsername());
-        dto.setFirstName(user.getFirstname());
-        dto.setLastName(user.getLastname());
+        dto.setFirstname(user.getFirstname());
+        dto.setLastname(user.getLastname());
         dto.setEmail(user.getEmail());
         dto.setActive(user.isActive());
         dto.setAdmin(user.isAdmin());
