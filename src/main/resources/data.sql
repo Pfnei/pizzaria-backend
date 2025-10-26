@@ -237,3 +237,4 @@ FROM (
          GROUP BY order_id
      ) AS totals
 WHERE orders.order_id = totals.order_id;
+
