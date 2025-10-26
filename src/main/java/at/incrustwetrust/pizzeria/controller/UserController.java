@@ -40,9 +40,9 @@ public class UserController {
 
     @PutMapping("/{id}")
     @ResponseStatus (HttpStatus.OK)
-    public User update (@RequestBody @Valid UserUpdateDTO user, @PathVariable String id)
-    {
-        return this.userService.update(user, id);
+        public User update (@RequestBody @Valid UserUpdateDTO user, @PathVariable String id)
+        {
+            return this.userService.update(user, id);
     }
 
     @DeleteMapping ("/{id}")

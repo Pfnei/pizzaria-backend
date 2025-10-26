@@ -15,7 +15,7 @@ services:
       - POSTGRES_DB=pizzeria
     # Optional: Volume zur Persistierung der Daten
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql
 
 volumes:
   postgres_data:
