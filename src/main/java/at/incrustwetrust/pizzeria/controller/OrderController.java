@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @RestController
@@ -20,8 +21,13 @@ public class OrderController {
 
 
     @GetMapping
-    public List<Order> readAll() {
-        return this.orderService.readAll();
+    public List<Order> readAll(@RequestParam(required = false) String createdBy) {
+        if (createdBy == null) {
+            return orderService.readAll(Optional.empty());
+        }
+        else {
+           return orderService.readAll(Optional.of(createdBy));
+        }
     }
 
     @GetMapping ("/{id}")

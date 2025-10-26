@@ -7,6 +7,7 @@ import at.incrustwetrust.pizzeria.repository.OrderRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class OrderService {
@@ -17,7 +18,10 @@ public class OrderService {
         this.orderRepository = orderRepository;
     }
 
-    public List<Order> readAll(){
+    public List<Order> readAll(Optional<String> createdBy) {
+        if (createdBy.isPresent()) {
+            return orderRepository.findAllByCreatedByUserId(createdBy.get());
+        }
         return orderRepository.findAll();
     }
 
