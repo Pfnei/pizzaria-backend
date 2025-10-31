@@ -1,7 +1,7 @@
 package at.incrustwetrust.pizzeria.service;
 
-import at.incrustwetrust.pizzeria.dto.UserCreateDTO;
-import at.incrustwetrust.pizzeria.dto.UserUpdateDTO;
+import at.incrustwetrust.pizzeria.dto.user.UserCreateDTO;
+import at.incrustwetrust.pizzeria.dto.user.UserUpdateDTO;
 import at.incrustwetrust.pizzeria.entity.User;
 import at.incrustwetrust.pizzeria.exception.ObjectAlreadyExistsException;
 import at.incrustwetrust.pizzeria.exception.ObjectNotFoundException;

@@ -1,7 +1,4 @@
-package at.incrustwetrust.pizzeria.dto;
-
-import java.time.Instant;
-import java.util.List;
+package at.incrustwetrust.pizzeria.dto.user;
 
 public class UserResponseLightDTO {
 

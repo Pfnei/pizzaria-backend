@@ -1,8 +1,6 @@
-package at.incrustwetrust.pizzeria.dto;
+package at.incrustwetrust.pizzeria.dto.user;
 
 import at.incrustwetrust.pizzeria.entity.CountryCode;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Size;
 
 public class UserUpdateDTO {
 

@@ -3,7 +3,7 @@ package at.incrustwetrust.pizzeria.auth;
 import at.incrustwetrust.pizzeria.entity.User;
 import at.incrustwetrust.pizzeria.exception.ObjectNotFoundException;
 import at.incrustwetrust.pizzeria.repository.UserRepository;
-import at.incrustwetrust.pizzeria.dto.UserResponseLightDTO;
+import at.incrustwetrust.pizzeria.dto.user.UserResponseLightDTO;
 import at.incrustwetrust.pizzeria.mapper.UserMapper;
 import at.incrustwetrust.pizzeria.security.JwtService;
 import jakarta.validation.Valid;

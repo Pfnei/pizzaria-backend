@@ -1,4 +1,4 @@
-package at.incrustwetrust.pizzeria.dto;
+package at.incrustwetrust.pizzeria.dto.user;
 
 import at.incrustwetrust.pizzeria.entity.Order;
 
