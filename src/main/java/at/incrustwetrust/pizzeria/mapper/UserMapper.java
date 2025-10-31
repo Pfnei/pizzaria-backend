@@ -1,9 +1,9 @@
 package at.incrustwetrust.pizzeria.mapper;
 
-import at.incrustwetrust.pizzeria.dto.UserCreateDTO;
-import at.incrustwetrust.pizzeria.dto.UserResponseDTO;
-import at.incrustwetrust.pizzeria.dto.UserResponseLightDTO;
-import at.incrustwetrust.pizzeria.dto.UserUpdateDTO;
+import at.incrustwetrust.pizzeria.dto.user.UserCreateDTO;
+import at.incrustwetrust.pizzeria.dto.user.UserResponseDTO;
+import at.incrustwetrust.pizzeria.dto.user.UserResponseLightDTO;
+import at.incrustwetrust.pizzeria.dto.user.UserUpdateDTO;
 import at.incrustwetrust.pizzeria.entity.CountryCode;
 import at.incrustwetrust.pizzeria.entity.Salutation;
 import at.incrustwetrust.pizzeria.entity.User;
