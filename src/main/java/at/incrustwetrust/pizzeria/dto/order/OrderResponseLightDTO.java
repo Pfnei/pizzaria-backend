@@ -1,4 +1,5 @@
 package at.incrustwetrust.pizzeria.dto.order;
+import at.incrustwetrust.pizzeria.dto.user.UserResponseLightDTO;
 import at.incrustwetrust.pizzeria.entity.OrderItem;
 import at.incrustwetrust.pizzeria.entity.User;
 
@@ -23,7 +24,7 @@ public class OrderResponseLightDTO {
 
     private String createdById;
 
-    private User createdBy;
+    private UserResponseLightDTO createdBy;
 
     public String getOrderId() {
         return orderId;
@@ -121,11 +122,11 @@ public class OrderResponseLightDTO {
         this.createdById = createdById;
     }
 
-    public User getCreatedBy() {
+    public UserResponseLightDTO getCreatedBy() {
         return createdBy;
     }
 
-    public void setCreatedBy(User createdBy) {
+    public void setCreatedBy(UserResponseLightDTO createdBy) {
         this.createdBy = createdBy;
     }
 

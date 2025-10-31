@@ -2,6 +2,7 @@ package at.incrustwetrust.pizzeria.mapper;
 
 import at.incrustwetrust.pizzeria.dto.order.OrderResponseDTO;
 import at.incrustwetrust.pizzeria.dto.order.OrderResponseLightDTO;
+import at.incrustwetrust.pizzeria.dto.user.UserResponseLightDTO;
 import at.incrustwetrust.pizzeria.entity.Order;
 
 public class OrderMapper {
@@ -25,7 +26,7 @@ public class OrderMapper {
         dto.setDeliveryNote(order.getDeliveryNote());
 
         dto.setCreatedById(order.getCreatedBy() != null ? order.getCreatedBy().getUserId() : null);
-        dto.setCreatedBy(order.getCreatedBy() != null ? order.getCreatedBy() : null);
+        dto.setCreatedBy(order.getCreatedBy() != null ? UserMapper.toResponseLightDto(order.getCreatedBy()) : null);
         dto.setItems(order.getItems() != null ? order.getItems() : null);
 
         return dto;
@@ -49,7 +50,7 @@ public class OrderMapper {
         dto.setDeliveryNote(order.getDeliveryNote());
 
         dto.setCreatedById(order.getCreatedBy() != null ? order.getCreatedBy().getUserId() : null);
-        dto.setCreatedBy(order.getCreatedBy() != null ? order.getCreatedBy() : null);
+        dto.setCreatedBy((order.getCreatedBy() != null) ? UserMapper.toResponseLightDto(order.getCreatedBy()) : null);
 
         return dto;
     }
