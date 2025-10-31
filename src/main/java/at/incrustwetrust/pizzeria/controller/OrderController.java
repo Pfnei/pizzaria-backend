@@ -1,14 +1,18 @@
 package at.incrustwetrust.pizzeria.controller;
 
 
+import at.incrustwetrust.pizzeria.dto.order.OrderResponseDTO;
 import at.incrustwetrust.pizzeria.entity.Order;
 import at.incrustwetrust.pizzeria.service.OrderService;
+import at.incrustwetrust.pizzeria.mapper.OrderMapper;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+
+import static java.util.stream.Collectors.toList;
 
 
 @RestController
@@ -21,17 +25,25 @@ public class OrderController {
 
 
     @GetMapping
-    public List<Order> readAll(@RequestParam(required = false) String createdBy) {
+    public List<OrderResponseDTO> readAll(@RequestParam(required = false) String createdBy) {
+        List<Order> orders;
         if (createdBy == null) {
-            return orderService.readAll(Optional.empty());
+            orders =  orderService.readAll(Optional.empty());
         }
         else {
-           return orderService.readAll(Optional.of(createdBy));
+           orders =  orderService.readAll(Optional.of(createdBy));
         }
+        List<OrderResponseDTO> ordersResponse;
+        ordersResponse = orders.stream()
+                .map(OrderMapper::toResponseDto)
+                .toList();
+        return ordersResponse;
     }
 
     @GetMapping ("/{id}")
-    public Order read(@PathVariable String id) {return this.orderService.read(id);}
+    public OrderResponseDTO read(@PathVariable String id) {
+        return OrderMapper.toResponseDto(this.orderService.read(id));
+    }
 
     @PostMapping
     @ResponseStatus (HttpStatus.CREATED)
