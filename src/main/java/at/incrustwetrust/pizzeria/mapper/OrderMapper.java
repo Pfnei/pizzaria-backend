@@ -1,6 +1,7 @@
 package at.incrustwetrust.pizzeria.mapper;
 
 import at.incrustwetrust.pizzeria.dto.order.OrderResponseDTO;
+import at.incrustwetrust.pizzeria.dto.order.OrderResponseLightDTO;
 import at.incrustwetrust.pizzeria.entity.Order;
 
 public class OrderMapper {
@@ -26,6 +27,29 @@ public class OrderMapper {
         dto.setCreatedById(order.getCreatedBy() != null ? order.getCreatedBy().getUserId() : null);
         dto.setCreatedBy(order.getCreatedBy() != null ? order.getCreatedBy() : null);
         dto.setItems(order.getItems() != null ? order.getItems() : null);
+
+        return dto;
+    }
+
+    public static OrderResponseLightDTO toResponseLightDto(Order order) {
+        if (order == null) return null;
+
+        OrderResponseLightDTO dto = new OrderResponseLightDTO();
+        dto.setOrderId(order.getOrderId());
+        dto.setCreatedAt(order.getCreatedAt());
+        dto.setDeliveredAt(order.getDeliveredAt());
+        dto.setTotal(order.getTotal());
+
+        dto.setFirstname(order.getFirstname());
+        dto.setLastname(order.getLastname());
+        dto.setPhoneNumber(order.getPhoneNumber());
+        dto.setAddress(order.getAddress());
+        dto.setZipcode(order.getZipcode());
+        dto.setCity(order.getCity());
+        dto.setDeliveryNote(order.getDeliveryNote());
+
+        dto.setCreatedById(order.getCreatedBy() != null ? order.getCreatedBy().getUserId() : null);
+        dto.setCreatedBy(order.getCreatedBy() != null ? order.getCreatedBy() : null);
 
         return dto;
     }

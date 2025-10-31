@@ -2,6 +2,7 @@ package at.incrustwetrust.pizzeria.controller;
 
 
 import at.incrustwetrust.pizzeria.dto.order.OrderResponseDTO;
+import at.incrustwetrust.pizzeria.dto.order.OrderResponseLightDTO;
 import at.incrustwetrust.pizzeria.entity.Order;
 import at.incrustwetrust.pizzeria.service.OrderService;
 import at.incrustwetrust.pizzeria.mapper.OrderMapper;
@@ -25,7 +26,7 @@ public class OrderController {
 
 
     @GetMapping
-    public List<OrderResponseDTO> readAll(@RequestParam(required = false) String createdBy) {
+    public List<OrderResponseLightDTO> readAll(@RequestParam(required = false) String createdBy) {
         List<Order> orders;
         if (createdBy == null) {
             orders =  orderService.readAll(Optional.empty());
@@ -33,16 +34,17 @@ public class OrderController {
         else {
            orders =  orderService.readAll(Optional.of(createdBy));
         }
-        List<OrderResponseDTO> ordersResponse;
-        ordersResponse = orders.stream()
-                .map(OrderMapper::toResponseDto)
+        List<OrderResponseLightDTO> ordersResponseLight;
+        ordersResponseLight = orders.stream()
+                .map(OrderMapper::toResponseLightDto)
                 .toList();
-        return ordersResponse;
+        return ordersResponseLight;
     }
 
     @GetMapping ("/{id}")
     public OrderResponseDTO read(@PathVariable String id) {
-        return OrderMapper.toResponseDto(this.orderService.read(id));
+        Order order = this.orderService.read(id);
+        return OrderMapper.toResponseDto(order);
     }
 
     @PostMapping
