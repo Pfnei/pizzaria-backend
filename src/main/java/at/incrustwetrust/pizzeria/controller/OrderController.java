@@ -1,58 +1,63 @@
 package at.incrustwetrust.pizzeria.controller;
 
-
+import at.incrustwetrust.pizzeria.dto.order.OrderCreateDTO;
 import at.incrustwetrust.pizzeria.dto.order.OrderResponseDTO;
 import at.incrustwetrust.pizzeria.dto.order.OrderResponseLightDTO;
-import at.incrustwetrust.pizzeria.entity.Order;
+import at.incrustwetrust.pizzeria.dto.order.OrderUpdateDTO;
 import at.incrustwetrust.pizzeria.service.OrderService;
-import at.incrustwetrust.pizzeria.mapper.OrderMapper;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
 
-import static java.util.stream.Collectors.toList;
-
-
 @RestController
 @RequestMapping("/orders")
+@RequiredArgsConstructor
 public class OrderController {
 
     private final OrderService orderService;
 
-    public OrderController(OrderService orderService){ this.orderService = orderService;}
-
-
+    // =====================================================
+    // READ ALL (optional filter by createdBy)
+    // =====================================================
     @GetMapping
-    public List<OrderResponseLightDTO> readAll(@RequestParam(required = false) String createdBy) {
-        List<Order> orders;
-        if (createdBy == null) {
-            orders =  orderService.readAll(Optional.empty());
-        }
-        else {
-           orders =  orderService.readAll(Optional.of(createdBy));
-        }
-        List<OrderResponseLightDTO> ordersResponseLight;
-        ordersResponseLight = orders.stream()
-                .map(OrderMapper::toResponseLightDto)
-                .toList();
-        return ordersResponseLight;
+    public ResponseEntity<List<OrderResponseLightDTO>> readAll(
+            @RequestParam(required = false) String createdBy) {
+
+        List<OrderResponseLightDTO> orders = orderService.readAll(Optional.ofNullable(createdBy));
+        return ResponseEntity.ok(orders);
     }
 
-    @GetMapping ("/{id}")
-    public OrderResponseDTO read(@PathVariable String id) {
-        Order order = this.orderService.read(id);
-        return OrderMapper.toResponseDto(order);
+    // =====================================================
+    // READ ONE (FULL DTO)
+    // =====================================================
+    @GetMapping("/{id}")
+    public ResponseEntity<OrderResponseDTO> read(@PathVariable String id) {
+        return ResponseEntity.ok(orderService.read(id));
     }
 
+    // =====================================================
+    // CREATE (über DTO)
+    // =====================================================
     @PostMapping
-    @ResponseStatus (HttpStatus.CREATED)
-    public Order create (@RequestBody @Valid Order order) {return this.orderService.create(order);}
+    public ResponseEntity<OrderResponseDTO> create(@Valid @RequestBody OrderCreateDTO dto) {
+        OrderResponseDTO created = orderService.create(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+    }
 
-    // no Order update possible
-    // no Order deletion possible
+    // =====================================================
+    // UPDATE (PATCH)
+    // =====================================================
+    @PatchMapping("/{id}")
+    public ResponseEntity<OrderResponseDTO> update(
+            @PathVariable String id,
+            @Valid @RequestBody OrderUpdateDTO dto) {
 
-
+        OrderResponseDTO updated = orderService.update(dto, id);
+        return ResponseEntity.ok(updated);
+    }
 }

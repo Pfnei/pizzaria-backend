@@ -1,57 +1,68 @@
 package at.incrustwetrust.pizzeria.mapper;
 
+import at.incrustwetrust.pizzeria.dto.order.OrderCreateDTO;
+import at.incrustwetrust.pizzeria.dto.order.OrderUpdateDTO;
 import at.incrustwetrust.pizzeria.dto.order.OrderResponseDTO;
 import at.incrustwetrust.pizzeria.dto.order.OrderResponseLightDTO;
-import at.incrustwetrust.pizzeria.dto.user.UserResponseLightDTO;
 import at.incrustwetrust.pizzeria.entity.Order;
+import org.mapstruct.*;
 
-public class OrderMapper {
+import java.util.List;
 
+@Mapper(componentModel = "spring", uses = { UserMapper.class })
+public interface OrderMapper {
 
-    public static OrderResponseDTO toResponseDto(Order order) {
-        if (order == null) return null;
+    // =====================================================
+    // DTO → ENTITY (CREATE)
+    // =====================================================
+    @Mappings({
+            @Mapping(target = "orderId", ignore = true),
+            @Mapping(target = "createdAt", ignore = true),
+            @Mapping(target = "deliveredAt", ignore = true),
+            @Mapping(target = "createdBy", ignore = true),
+            @Mapping(target = "items", ignore = true),
+            @Mapping(target = "lastUpdatedBy", ignore = true)
+    })
+    Order toEntity(OrderCreateDTO dto);
 
-        OrderResponseDTO dto = new OrderResponseDTO();
-        dto.setOrderId(order.getOrderId());
-        dto.setCreatedAt(order.getCreatedAt());
-        dto.setDeliveredAt(order.getDeliveredAt());
-        dto.setTotal(order.getTotal());
+    // =====================================================
+    // PATCH/UPDATE (optional für Admins)
+    // =====================================================
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mappings({
+            @Mapping(target = "orderId", ignore = true),
+            @Mapping(target = "createdAt", ignore = true),
+            @Mapping(target = "createdBy", ignore = true),
+            @Mapping(target = "items", ignore = true),
+            @Mapping(target = "lastUpdatedBy", ignore = true)
+    })
+    void updateEntity(OrderUpdateDTO dto, @MappingTarget Order order);
 
-        dto.setFirstname(order.getFirstname());
-        dto.setLastname(order.getLastname());
-        dto.setPhoneNumber(order.getPhoneNumber());
-        dto.setAddress(order.getAddress());
-        dto.setZipcode(order.getZipcode());
-        dto.setCity(order.getCity());
-        dto.setDeliveryNote(order.getDeliveryNote());
+    // =====================================================
+    // ENTITY → FULL DTO
+    // =====================================================
+    @Mappings({
+            @Mapping(target = "createdById",
+                    expression = "java(o.getCreatedBy() != null ? o.getCreatedBy().getUserId() : null)"),
+            @Mapping(target = "createdBy",
+                    expression = "java(o.getCreatedBy() != null ? userMapper.toResponseLightDto(o.getCreatedBy()) : null)")
+    })
+    OrderResponseDTO toResponseDto(Order o, @Context UserMapper userMapper);
 
-        dto.setCreatedById(order.getCreatedBy() != null ? order.getCreatedBy().getUserId() : null);
-        dto.setCreatedBy(order.getCreatedBy() != null ? UserMapper.toResponseLightDto(order.getCreatedBy()) : null);
-        dto.setItems(order.getItems() != null ? order.getItems() : null);
+    // =====================================================
+    // ENTITY → LIGHT DTO
+    // =====================================================
+    @Mappings({
+            @Mapping(target = "createdById",
+                    expression = "java(o.getCreatedBy() != null ? o.getCreatedBy().getUserId() : null)"),
+            @Mapping(target = "createdBy",
+                    expression = "java(o.getCreatedBy() != null ? userMapper.toResponseLightDto(o.getCreatedBy()) : null)")
+    })
+    OrderResponseLightDTO toResponseLightDto(Order o, @Context UserMapper userMapper);
 
-        return dto;
-    }
-
-    public static OrderResponseLightDTO toResponseLightDto(Order order) {
-        if (order == null) return null;
-
-        OrderResponseLightDTO dto = new OrderResponseLightDTO();
-        dto.setOrderId(order.getOrderId());
-        dto.setCreatedAt(order.getCreatedAt());
-        dto.setDeliveredAt(order.getDeliveredAt());
-        dto.setTotal(order.getTotal());
-
-        dto.setFirstname(order.getFirstname());
-        dto.setLastname(order.getLastname());
-        dto.setPhoneNumber(order.getPhoneNumber());
-        dto.setAddress(order.getAddress());
-        dto.setZipcode(order.getZipcode());
-        dto.setCity(order.getCity());
-        dto.setDeliveryNote(order.getDeliveryNote());
-
-        dto.setCreatedById(order.getCreatedBy() != null ? order.getCreatedBy().getUserId() : null);
-        dto.setCreatedBy((order.getCreatedBy() != null) ? UserMapper.toResponseLightDto(order.getCreatedBy()) : null);
-
-        return dto;
-    }
+    // =====================================================
+    // LIST MAPPINGS
+    // =====================================================
+    List<OrderResponseDTO> toResponseDtoList(List<Order> orders, @Context UserMapper userMapper);
+    List<OrderResponseLightDTO> toResponseLightDtoList(List<Order> orders, @Context UserMapper userMapper);
 }

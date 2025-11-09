@@ -1,7 +1,6 @@
 package at.incrustwetrust.pizzeria.dto.product;
 
 import lombok.*;
-import java.util.List;
 
 @Getter
 @Setter
@@ -9,15 +8,13 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @ToString
-public class ProductResponseLightDTO {
-    private String productId;
+public class ProductCreateDTO {
     private String productName;
+    private String productDescription;
     private Double price;
-
     private boolean vegetarian;
     private boolean active;
-
     private String mainCategory;
     private String subCategory;
-    private List<String> allergens;
+    private java.util.List<String> allergens;
 }

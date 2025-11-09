@@ -2,11 +2,13 @@ package at.incrustwetrust.pizzeria.repository;
 
 import at.incrustwetrust.pizzeria.entity.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-public interface OrderRepository extends JpaRepository<Order,String> {
+@Repository
+public interface OrderRepository extends JpaRepository<Order, String> {
 
-    List<Order> findAllByCreatedByUserId(String userId);
-
+    // Alle Bestellungen eines bestimmten Users finden (via createdBy.userId)
+    List<Order> findAllByCreatedBy_UserId(String userId);
 }
