@@ -28,8 +28,8 @@ public class UserResponseDTO {
     private String country;
 
     // vereinheitlicht zu einfachem Namen für MapStruct
-    private boolean active;
-    private boolean admin;
+    private Boolean isActive;
+    private Boolean isAdmin;
 
     private Instant createdAt;
     private String createdById;

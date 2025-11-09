@@ -1,14 +1,11 @@
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
--- *****************
--- 1. USERS TABLE
--- *****************
 
 INSERT INTO users (
     user_id, username, password, salutation, salutation_detail,
     firstname, lastname, email, phone_number, zipcode, city, country,
     address, created_at, last_updated_at,
-    active, admin
+    is_active, is_admin
 ) VALUES
 -- Reduzierte Testdaten (5 User)
 (gen_random_uuid(), 'clarkzod', '$2a$10$plRXfUw0I.tZH1mZ2HLV7Or4wJt9ZVKSfamZ/jP0f0Kr0vL3u.r.6', 'Frau', NULL, 'Hannah', 'Bukovec', 'Hannah.Bukovec@muster.at', '+43 676 1234567', '4020', 'Linz', 'Austria', 'Hauptstraße 1', now(), now(), true, false),
@@ -17,16 +14,13 @@ INSERT INTO users (
 (gen_random_uuid(), 'loganx', '$2a$10$plRXfUw0I.tZH1mZ2HLV7Or4wJt9ZVKSfamZ/jP0f0Kr0vL3u.r.6', 'Divers', 'was weiß ich', 'Monday', 'Maier', 'Tobias.Maier@muster.at', '+43 699 4567890', '2700', 'Wiener Neustadt', 'Austria', 'Neunkirchner Straße 20', now(), now(), true, false),
 (gen_random_uuid(), 'peterb', '$2a$10$plRXfUw0I.tZH1mZ2HLV7Or4wJt9ZVKSfamZ/jP0f0Kr0vL3u.r.6', 'Frau', NULL, 'Katharina', 'Baumhackl', 'Katharina.Baumhackl@muster.at', '+43 676 9012345', '3100', 'St. Pölten', 'Austria', 'Kremser Gasse 7', now(), now(), true, true);
 
--- Setzt die Erstellungs- und Änderungs-User-IDs auf sich selbst (die neuen Spalten heißen 'admin' und nicht 'is_admin' im INSERT, aber 'is_admin' im UPDATE unten)
--- Korrigiere: Im UPDATE muss das Feld 'admin' heißen, wie im INSERT definiert.
+
 UPDATE users
 SET
     created_by_user_id = user_id,
     last_updated_by_user_id = user_id;
 
--- *****************
--- 2. ALLERGENS TABLE
--- *****************
+
 
 INSERT INTO allergens (abbreviation, description, created_at, last_updated_at)
 VALUES
@@ -45,7 +39,7 @@ VALUES
     ('P', 'Lupinen', now(), now()),
     ('R', 'Weichtiere', now(), now());
 
--- Zuweisung des Erstellungs-/Änderungs-Users für Allergene (ein zufälliger Admin)
+
 UPDATE allergens
 SET
     created_by_user_id = sub.user_id,
@@ -53,7 +47,7 @@ SET
     FROM (
          SELECT user_id
          FROM users
-         WHERE admin = true -- Korrigiert zu 'admin'
+         WHERE is_admin = true
          ORDER BY random()
          LIMIT 1
      ) AS sub;
@@ -108,7 +102,7 @@ SET
     FROM (
          SELECT user_id
          FROM users
-         WHERE admin = true -- Korrigiert zu 'admin'
+         WHERE is_admin = true -- Korrigiert zu 'isAdmin'
          ORDER BY random()
          LIMIT 1
      ) AS sub;
