@@ -20,6 +20,7 @@ public class ProductController {
 
     private final ProductService productService;
 
+
     // =====================================================
     // READ ALL (Light DTO)
     // =====================================================

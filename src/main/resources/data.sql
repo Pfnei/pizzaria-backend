@@ -4,7 +4,7 @@ INSERT INTO users (
     user_id, username, password, salutation, salutation_detail,
     firstname, lastname, email, phone_number, zipcode, city, country,
     address, created_at, last_updated_at,
-    is_active, is_admin
+    active, admin
 ) VALUES
       (gen_random_uuid(), 'clarkzod', '$2a$10$plRXfUw0I.tZH1mZ2HLV7Or4wJt9ZVKSfamZ/jP0f0Kr0vL3u.r.6', 'Frau', NULL, 'Hannah', 'Bukovec', 'Hannah.Bukovec@muster.at', '+43 676 1234567', '4020', 'Linz', 'Austria', 'Hauptstraße 1', now(), now(), true, false),
       (gen_random_uuid(), 'brucefox', '$2a$10$plRXfUw0I.tZH1mZ2HLV7Or4wJt9ZVKSfamZ/jP0f0Kr0vL3u.r.6', 'Herr', NULL, 'Paul', 'Pfischer', 'Paul.Pfischer@muster.at', '+43 664 2345678', '8010', 'Graz', 'Austria', 'Eggenberger Allee 15', now(), now(), false, true),
@@ -58,8 +58,8 @@ FROM (
 
 INSERT INTO products (
     product_id, product_name, product_description, main_category,
-    sub_category, price, is_vegetarian, created_at, last_updated_at,
-    is_active, created_by_user_id, last_updated_by_user_id
+    sub_category, price, vegetarian, created_at, last_updated_at,
+    active, created_by_user_id, last_updated_by_user_id
 ) VALUES
 -- STARTERS
 (gen_random_uuid(), 'Bruschetta Classica', 'Geröstetes Brot mit Tomaten, Knoblauch & Basilikum', 'STARTER', NULL, 5.90, true, '2024-03-01', '2025-01-12', true, NULL, NULL),

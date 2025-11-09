@@ -66,8 +66,8 @@ public class AuthController {
         user.setUsername(request.username());
         user.setEmail(request.email());
         user.setPassword(passwordEncoder.encode(request.password()));
-        user.setIsActive(true);
-        user.setIsAdmin(false);
+        user.setActive(true);
+        user.setAdmin(false);
 
         userRepository.save(user);
         return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully");

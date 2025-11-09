@@ -2,62 +2,56 @@ package at.incrustwetrust.pizzeria.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
 import java.util.List;
 
-
 @Entity
-@Table (name = "allergens")
+@Table(name = "allergens")
+@Getter
+@Setter
+@NoArgsConstructor
 public class Allergen {
 
-   @Id
-   private char abbreviation;
-   @NotBlank
-   @Column (nullable = false)
-   private String description;
-   @CreationTimestamp
-   private Instant createdAt;
-   @ManyToOne
-   private User createdBy;
-   @UpdateTimestamp
-   private Instant lastUpdatedAt;
-   @ManyToOne
-   private User lastUpdatedBy;
+    // =====================================================
+    // ID (praktischer Primärschlüssel)
+    // =====================================================
+    @Id
+    @Column(length = 5) // z. B. "A", "B", "GLU", "LAC"
+    private String abbreviation;
 
-   @ManyToMany (mappedBy = "allergens")
-   private List<Product> products;
+    @NotBlank
+    @Size(max = 255)
+    @Column(nullable = false)
+    private String description;
 
-   public Allergen(){};
-   
-   public Allergen(AllergenType allergenType, User createdBy) {
-      this.abbreviation = allergenType.name().toString().charAt(0);
-      this.description = allergenType.getDescription();
-      this.createdBy = createdBy;
-   }
+    @CreationTimestamp
+    private Instant createdAt;
 
-   public char getAbbreviation() {
-      return abbreviation;
-   }
+    @ManyToOne
+    private User createdBy;
 
-    public void setAbbreviation(char abbreviation) {
-        this.abbreviation = abbreviation;
-    }
+    @UpdateTimestamp
+    private Instant lastUpdatedAt;
 
-   public String getDescription() {
-      return description;
-   }
+    @ManyToOne
+    private User lastUpdatedBy;
 
-    public void setDescription(String description) {
+    @ManyToMany(mappedBy = "allergens")
+    private List<Product> products;
+
+    // =====================================================
+    // Convenience-Konstruktor
+    // =====================================================
+    public Allergen(String abbreviation, String description, User createdBy) {
+        this.abbreviation = abbreviation.toUpperCase();
         this.description = description;
+        this.createdBy = createdBy;
     }
-   
 }
-
-
-

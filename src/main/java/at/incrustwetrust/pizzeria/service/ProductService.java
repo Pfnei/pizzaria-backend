@@ -3,7 +3,6 @@ package at.incrustwetrust.pizzeria.service;
 import at.incrustwetrust.pizzeria.dto.product.*;
 import at.incrustwetrust.pizzeria.entity.Product;
 import at.incrustwetrust.pizzeria.mapper.ProductMapper;
-import at.incrustwetrust.pizzeria.mapper.UserMapper;
 import at.incrustwetrust.pizzeria.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,7 +18,6 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
-    private final UserMapper userMapper;
 
     // =====================================================
     // CREATE
@@ -30,7 +28,7 @@ public class ProductService {
         Product product = productMapper.toEntity(dto);
         Product saved = productRepository.save(product);
 
-        return productMapper.toResponseDto(saved, userMapper);
+        return productMapper.toResponseDto(saved);
     }
 
     // =====================================================
@@ -41,7 +39,7 @@ public class ProductService {
                 .orElseThrow(() ->
                         new ResponseStatusException(NOT_FOUND, "Kein Produkt mit der ID " + id + " vorhanden"));
 
-        return productMapper.toResponseDto(product, userMapper);
+        return productMapper.toResponseDto(product);
     }
 
     public List<ProductResponseLightDTO> readAll() {
@@ -62,7 +60,7 @@ public class ProductService {
         productMapper.updateEntity(dto, existing);
 
         Product saved = productRepository.save(existing);
-        return productMapper.toResponseDto(saved, userMapper);
+        return productMapper.toResponseDto(saved);
     }
 
     // =====================================================
@@ -74,7 +72,7 @@ public class ProductService {
                         new ResponseStatusException(NOT_FOUND, "Kein Produkt mit der ID " + id + " vorhanden"));
 
         productRepository.delete(existing);
-        return productMapper.toResponseDto(existing, userMapper);
+        return productMapper.toResponseDto(existing);
     }
 
     // =====================================================

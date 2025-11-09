@@ -26,7 +26,7 @@ public class Product {
     private double price;
     @Transient
     private File productPicture;
-    private boolean isVegetarian;
+    private boolean vegetarian;
     @ManyToMany
     @JoinTable(
             name = "products_allergens",
@@ -35,7 +35,7 @@ public class Product {
     private List<Allergen> allergens;
     private String mainCategory;
     private String subCategory;
-    private boolean isActive;
+    private boolean active;
     @CreationTimestamp
     private Instant createdAt;
     @ManyToOne
@@ -61,11 +61,11 @@ public class Product {
         this.productDescription = productDescription;
         this.price = price;
         this.productPicture = productPicture;
-        this.isVegetarian = isVegetarian;
+        this.vegetarian = isVegetarian;
         this.allergens = allergens;
         this.mainCategory = mainCategory.toString();
         this.subCategory = subCategory.toString();
-        this.isActive = isActive;
+        this.active = isActive;
         this.createdBy = createdBy;
         this.orders = orders;
     }
@@ -111,11 +111,11 @@ public class Product {
     }
 
     public boolean isVegetarian() {
-        return isVegetarian;
+        return vegetarian;
     }
 
     public void setVegetarian(boolean vegetarian) {
-        isVegetarian = vegetarian;
+        vegetarian = vegetarian;
     }
 
     public List<Allergen> getAllergens() {
@@ -144,11 +144,11 @@ public class Product {
     }
 
     public boolean isActive() {
-        return isActive;
+        return active;
     }
 
     public void setActive(boolean active) {
-        isActive = active;
+        active = active;
     }
 
     public Instant getCreatedAt() {
