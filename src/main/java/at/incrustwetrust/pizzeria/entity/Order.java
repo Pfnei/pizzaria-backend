@@ -1,7 +1,5 @@
 package at.incrustwetrust.pizzeria.entity;
 
-
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
@@ -168,10 +166,11 @@ public class Order {
     public User getCreatedBy() {
         return createdBy;
     }
-    /*
+
+    // Setter für createdBy wird benötigt, wenn im Mapper gesetzt wird
     public void setCreatedBy(User createdBy) {
         this.createdBy = createdBy;
-    }*/
+    }
 
     public List<OrderItem> getItems() {
         return items;

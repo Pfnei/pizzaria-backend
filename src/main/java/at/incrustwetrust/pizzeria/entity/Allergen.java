@@ -45,16 +45,17 @@ public class Allergen {
       return abbreviation;
    }
 
-   public void setAbbreviation( AllergenType allergenType) {
-      this.abbreviation = allergenType.name().toString().charAt(0);
-      this.description = allergenType.getDescription();
-
-   }
+    public void setAbbreviation(char abbreviation) {
+        this.abbreviation = abbreviation;
+    }
 
    public String getDescription() {
       return description;
    }
 
+    public void setDescription(String description) {
+        this.description = description;
+    }
    
 }
 

@@ -11,6 +11,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import static org.springframework.http.HttpStatus.*;
 
@@ -96,5 +97,10 @@ public class UserService {
         userRepository.findUserByUsernameAndUserIdNot(dto.getUsername(), userId).ifPresent(u -> {
             throw new ResponseStatusException(CONFLICT, "Another user with this username already exists.");
         });
+    }
+
+    public Optional<User> findEntityById(String userId) {
+        // Nutzt das UserRepository, um die User-Entity zu finden
+        return userRepository.findById(userId);
     }
 }

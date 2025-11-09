@@ -3,37 +3,20 @@ package at.incrustwetrust.pizzeria.dto.order;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-@ToString
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder @ToString
 public class OrderCreateDTO {
 
-    @NotBlank(message = "Vorname darf nicht leer sein")
-    private String firstname;
-
-    @NotBlank(message = "Nachname darf nicht leer sein")
-    private String lastname;
-
-    @NotBlank(message = "Telefonnummer darf nicht leer sein")
-    private String phoneNumber;
-
-    @NotBlank(message = "Adresse darf nicht leer sein")
-    private String address;
-
-    @NotBlank(message = "Postleitzahl darf nicht leer sein")
-    private String zipcode;
-
-    @NotBlank(message = "Stadt darf nicht leer sein")
-    private String city;
+    @NotBlank private String firstname;
+    @NotBlank private String lastname;
+    @NotBlank private String phoneNumber;
+    @NotBlank private String address;
+    @NotBlank private String zipcode;
+    @NotBlank private String city;
 
     private String deliveryNote;
 
-    @PositiveOrZero(message = "Gesamtbetrag darf nicht negativ sein")
-    private double total;
+    @PositiveOrZero private double total;
 
-    // Optional: wenn Bestellung einem Benutzer zugeordnet wird
+    // optional: Zuordnung zu User
     private String createdById;
 }

@@ -64,8 +64,8 @@ public class User {
     private String zipcode;
     private String city;
     private String country;
-    private boolean isActive = true;
-    private boolean isAdmin = false;
+    private boolean active = true;
+    private boolean admin = false;
     @CreationTimestamp
     private Instant createdAt;
 
@@ -102,7 +102,7 @@ public class User {
     public User() {
     }
 
-    public User(File profilPicture, String username, String password, Salutation salutation, String salutationDetail, String firstname, String lastname, String email, String phoneNumber, String address, String zipcode, String city, CountryCode countryCode, boolean isActive, boolean isAdmin, User createdBy, List<Order> orders) {
+    public User(File profilPicture, String username, String password, Salutation salutation, String salutationDetail, String firstname, String lastname, String email, String phoneNumber, String address, String zipcode, String city, CountryCode countryCode, boolean active, boolean admin, User createdBy, List<Order> orders) {
         this.profilPicture = profilPicture;
         this.username = username;
         this.password = password;
@@ -116,8 +116,8 @@ public class User {
         this.zipcode = zipcode;
         this.city = city;
         this.country = countryCode.toString();
-        this.isActive = isActive;
-        this.isAdmin = isAdmin;
+        this.active = active;
+        this.admin = admin;
         this.createdBy = createdBy;
         this.orders = orders;
     }
@@ -235,19 +235,19 @@ public class User {
     }
 
     public boolean isActive() {
-        return isActive;
+        return active;
     }
 
-    public void setIsActive(boolean active) {
-        isActive = active;
+    public void setActive(boolean active) {
+        active = active;
     }
 
     public boolean isAdmin() {
-        return isAdmin;
+        return admin;
     }
 
-    public void setIsAdmin(boolean admin) {
-        isAdmin = admin;
+    public void setAdmin(boolean admin) {
+        admin = admin;
     }
 
     public User getCreatedBy() {

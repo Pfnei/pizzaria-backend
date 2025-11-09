@@ -11,6 +11,10 @@ import lombok.*;
 public class UserUpdateDTO {
 
     private String username;
+    private String firstname;
+    private String lastname;
+    private boolean admin;
+    private boolean active;
     private String email;
     private String phoneNumber;
     private String address;

@@ -2,71 +2,61 @@ package at.incrustwetrust.pizzeria.service;
 
 import at.incrustwetrust.pizzeria.dto.order.*;
 import at.incrustwetrust.pizzeria.entity.Order;
+import at.incrustwetrust.pizzeria.entity.User;
 import at.incrustwetrust.pizzeria.mapper.OrderMapper;
-import at.incrustwetrust.pizzeria.mapper.UserMapper;
 import at.incrustwetrust.pizzeria.repository.OrderRepository;
+import at.incrustwetrust.pizzeria.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
 
+import static org.springframework.http.HttpStatus.*;
+
 @Service
 @RequiredArgsConstructor
 public class OrderService {
 
     private final OrderRepository orderRepository;
+    private final UserRepository userRepository;
     private final OrderMapper orderMapper;
-    private final UserMapper userMapper;
 
-    // =====================================================
-    // READ ALL (optional filter by createdBy)
-    // =====================================================
+    // READ ALL (optional filter)
     public List<OrderResponseLightDTO> readAll(Optional<String> createdBy) {
         List<Order> orders = createdBy
                 .map(orderRepository::findAllByCreatedBy_UserId)
                 .orElseGet(orderRepository::findAll);
-        return orderMapper.toResponseLightDtoList(orders, userMapper);
+        return orderMapper.toResponseLightDtoList(orders);
     }
 
-    // =====================================================
     // READ ONE
-    // =====================================================
     public OrderResponseDTO read(String id) {
         Order order = orderRepository.findById(id)
-                .orElseThrow(() ->
-                        new ResponseStatusException(HttpStatus.NOT_FOUND,
-                                "Keine Bestellung mit der ID " + id + " vorhanden"));
-        return orderMapper.toResponseDto(order, userMapper);
+                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Keine Bestellung mit der ID " + id + " vorhanden"));
+        return orderMapper.toResponseDto(order);
     }
 
-    // =====================================================
     // CREATE
-    // =====================================================
     public OrderResponseDTO create(OrderCreateDTO dto) {
-        if (dto == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ungültige Bestelldaten");
+        // optional: Validierung (z. B. total >= 0) ist schon per Bean Validation im DTO
+        User createdBy = null;
+        if (dto.getCreatedById() != null && !dto.getCreatedById().isBlank()) {
+            createdBy = userRepository.findById(dto.getCreatedById())
+                    .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "User (createdById) nicht gefunden"));
         }
-
-        Order order = orderMapper.toEntity(dto);
-        Order saved = orderRepository.save(order);
-        return orderMapper.toResponseDto(saved, userMapper);
+        Order entity = orderMapper.toEntity(dto, createdBy);
+        Order saved = orderRepository.save(entity);
+        return orderMapper.toResponseDto(saved);
     }
 
-    // =====================================================
-    // UPDATE (PATCH)
-    // =====================================================
-    public OrderResponseDTO update(OrderUpdateDTO dto, String id) {
-        Order existingOrder = orderRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Keine Bestellung mit der ID " + id + " vorhanden"));
-
-        // MapStruct patched nur Felder, die im DTO nicht null sind
-        orderMapper.updateEntity(dto, existingOrder);
-
-        Order saved = orderRepository.save(existingOrder);
-        return orderMapper.toResponseDto(saved, userMapper);
+    // UPDATE (optional; falls du Update erlauben willst)
+    public OrderResponseDTO update(String id, OrderUpdateDTO dto) {
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Keine Bestellung mit der ID " + id + " vorhanden"));
+        orderMapper.updateEntity(dto, order);
+        Order saved = orderRepository.save(order);
+        return orderMapper.toResponseDto(saved);
     }
 }
