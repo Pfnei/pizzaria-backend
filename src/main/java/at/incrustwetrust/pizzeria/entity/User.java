@@ -58,7 +58,7 @@ public class User {
     @Column (nullable = false, unique = true)
     private String email;
 
-    // ... (Weitere Adressfelder)
+
     private String phoneNumber;
     private String address;
     @Size(min = 2, max = 10)
@@ -67,7 +67,7 @@ public class User {
     private String city;
     private String country;
 
-    // 🟢 Boolesche Felder (bereits korrekt benannt)
+
     private boolean isActive = true;
     private boolean isAdmin = false;
 
