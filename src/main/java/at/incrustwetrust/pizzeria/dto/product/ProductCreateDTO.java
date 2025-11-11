@@ -1,5 +1,7 @@
 package at.incrustwetrust.pizzeria.dto.product;
 
+import java.util.List;
+
 import lombok.*;
 
 @Getter
@@ -16,5 +18,5 @@ public class ProductCreateDTO {
     private boolean active;
     private String mainCategory;
     private String subCategory;
-    private java.util.List<String> allergens;
+    private List<String> allergens;
 }
