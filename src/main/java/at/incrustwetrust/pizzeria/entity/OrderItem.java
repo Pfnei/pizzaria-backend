@@ -6,7 +6,14 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+import lombok.*;
+
 @Entity
+@Table (name = "order_items")
+@Getter
+@Setter
+@NoArgsConstructor
+
 public class OrderItem {
 
     @Id
@@ -32,61 +39,6 @@ public class OrderItem {
     @Column (nullable = false)
     private double price;
 
-    public OrderItem () {};
 
-    public OrderItem(Order order, Product product, String productName, int quantity, double price) {
-        this.order = order;
-        this.product = product;
-        this.productName = productName;
-        this.quantity = quantity;
-        this.price = price;
-    }
 
-    public String getOrderItemId() {
-        return orderItemId;
-    }
-
-    public void setOrderItemId(String orderItemId) {
-        this.orderItemId = orderItemId;
-    }
-
-    public Order getOrder() {
-        return order;
-    }
-
-    public void setOrder(Order order) {
-        this.order = order;
-    }
-
-    public Product getProduct() {
-        return product;
-    }
-
-    public void setProduct(Product product) {
-        this.product = product;
-    }
-
-    public String getProductName() {
-        return productName;
-    }
-
-    public void setProductName(String productName) {
-        this.productName = productName;
-    }
-
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
-
-    public double getPrice() {
-        return price;
-    }
-
-    public void setPrice(double price) {
-        this.price = price;
-    }
 }

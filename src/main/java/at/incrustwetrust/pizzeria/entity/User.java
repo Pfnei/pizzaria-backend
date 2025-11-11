@@ -90,7 +90,7 @@ public class User {
     @OneToMany(mappedBy = "createdBy")
     private List<Order> orders;
 
-    // ⛔ Alle manuellen Getter, Setter und der leere Konstruktor wurden entfernt.
+
 
 
 }
