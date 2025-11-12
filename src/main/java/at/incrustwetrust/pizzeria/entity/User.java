@@ -14,9 +14,9 @@ import java.util.List;
 
 @Entity
 @Table(name = "users")
-@Getter // 🟢 Fügt alle Getter (getUserId(), isActive(), isAdmin() etc.) hinzu
-@Setter // 🟢 Fügt alle Setter (setUserId(), setIsActive() etc.) hinzu
-@NoArgsConstructor // 🟢 Ersetzt den leeren Konstruktor
+@Getter //  Fügt alle Getter (getUserId(), isActive(), isAdmin() etc.) hinzu
+@Setter //  Fügt alle Setter (setUserId(), setIsActive() etc.) hinzu
+@NoArgsConstructor //  Ersetzt den leeren Konstruktor
 // Optional: @AllArgsConstructor (Wenn Sie einen Konstruktor mit allen Feldern wünschen)
 public class User {
 
