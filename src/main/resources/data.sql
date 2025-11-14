@@ -5,7 +5,7 @@ INSERT INTO users (
     user_id, username, password, salutation, salutation_detail,
     firstname, lastname, email, phone_number, zipcode, city, country,
     address, created_at, last_updated_at,
-    is_active, is_admin
+    active,admin
 ) VALUES
 -- Reduzierte Testdaten (5 User)
 (gen_random_uuid(), 'clarkzod', '$2a$10$plRXfUw0I.tZH1mZ2HLV7Or4wJt9ZVKSfamZ/jP0f0Kr0vL3u.r.6', 'Frau', NULL, 'Hannah', 'Bukovec', 'Hannah.Bukovec@muster.at', '+43 676 1234567', '4020', 'Linz', 'Austria', 'Hauptstraße 1', now(), now(), true, false),
@@ -47,7 +47,7 @@ SET
     FROM (
          SELECT user_id
          FROM users
-         WHERE is_admin = true
+         WHERE admin = true
          ORDER BY random()
          LIMIT 1
      ) AS sub;
@@ -102,7 +102,7 @@ SET
     FROM (
          SELECT user_id
          FROM users
-         WHERE is_admin = true -- Korrigiert zu 'isAdmin'
+         WHERE admin = true -- Korrigiert zu 'isAdmin'
          ORDER BY random()
          LIMIT 1
      ) AS sub;

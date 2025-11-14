@@ -6,5 +6,5 @@ import java.util.List;
 import java.util.Optional;
 
 public interface OrderRepository extends JpaRepository<Order, String> {
-    Optional<Order> findAllByCreatedBy_UserId(String userId);
+    List<Order> findAllByCreatedBy_UserId(String userId);
 }

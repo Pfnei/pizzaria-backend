@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.*;
 import org.hibernate.annotations.*;
-import lombok.*; // 🟢 WICHTIG: Lombok Import
+import lombok.*;
 
 import java.io.File;
 import java.time.Instant;
@@ -68,8 +68,11 @@ public class User {
     private String country;
 
 
-    private boolean isActive = true;
-    private boolean isAdmin = false;
+    @Column(nullable = false)
+    private boolean active = true;
+
+    @Column(nullable = false)
+    private boolean admin = false;
 
     @CreationTimestamp
     private Instant createdAt;

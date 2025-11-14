@@ -14,6 +14,6 @@ public class UserResponseLightDTO {
     private String firstname;
     private String lastname;
     private String email;
-    private boolean isActive;
-    private boolean isAdmin;
+    private boolean active;
+    private boolean admin;
 }

@@ -17,6 +17,7 @@ public interface UserMapper {
             @Mapping(target = "lastUpdatedBy", ignore = true),
             @Mapping(target = "orders", ignore = true),
 
+
             @Mapping(target = "salutation", source = "salutation", qualifiedByName = "toSalutation"),
             @Mapping(target = "country", source = "country", qualifiedByName = "toCountry"),
 
@@ -24,8 +25,8 @@ public interface UserMapper {
 
             // DTO verwendet 'active/isAdmin' (primitive), Entity verwendet 'active/isAdmin' (primitive)
             // Automatisches Mapping funktioniert jetzt besser.
-            @Mapping(target = "active", expression = "java(true)"),
-            @Mapping(target = "admin",  expression = "java(false)"),
+            @Mapping(target = "active",ignore = true),  // expression = "java(true)"
+            @Mapping(target = "admin",ignore = true),  // expression = "java(true)"
     })
     User toEntity(UserCreateDTO dto, @Context User createdBy);
 
@@ -57,6 +58,9 @@ public interface UserMapper {
                     expression = "java(u.getCreatedBy()!=null ? u.getCreatedBy().getUserId() : null)"),
             @Mapping(target = "lastUpdatedById",
                     expression = "java(u.getLastUpdatedBy()!=null ? u.getLastUpdatedBy().getUserId() : null)"),
+
+                    @Mapping(target = "active", source = "active"),
+                    @Mapping(target = "admin", source = "admin"),
 
             @Mapping(target = "orders", ignore = true)
     })

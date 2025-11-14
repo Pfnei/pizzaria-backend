@@ -21,5 +21,7 @@ public class UserCreateDTO {
     private String address;
     private String zipcode;
     private String city;
-    private String country;           // z. B. "AT", "DE"
+    private String country;
+    private Boolean active;
+    private Boolean admin;// z. B. "AT", "DE"
 }
