@@ -1,5 +1,6 @@
 package at.incrustwetrust.pizzeria.auth;
 
+import at.incrustwetrust.pizzeria.dto.user.UserCreateDTO;
 import at.incrustwetrust.pizzeria.dto.user.UserResponseLightDTO;
 import at.incrustwetrust.pizzeria.entity.User;
 import at.incrustwetrust.pizzeria.mapper.UserMapper;
@@ -54,21 +55,10 @@ public class AuthController {
     // REGISTRATION
     // ------------------------------------------------------------
     @PostMapping("/register")
-    public ResponseEntity<String> register(@Valid @RequestBody RegisterRequest request) {
-        userRepository.findUserByUsername(request.username()).ifPresent(u -> {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Username already exists");
-        });
-        userRepository.findUserByEmail(request.email()).ifPresent(u -> {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already exists");
-        });
+    public ResponseEntity<String> register(@Valid @RequestBody UserCreateDTO request) {
 
-        User user = new User();
-        user.setUsername(request.username());
-        user.setEmail(request.email());
-        user.setPassword(passwordEncoder.encode(request.password()));
-        user.setActive(true);
-        user.setAdmin(false);
-
+        User user = mapper.toEntity(request, null);
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
         userRepository.save(user);
         return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully");
     }

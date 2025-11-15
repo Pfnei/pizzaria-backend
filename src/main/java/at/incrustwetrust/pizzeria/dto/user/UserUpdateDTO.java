@@ -13,8 +13,8 @@ public class UserUpdateDTO {
     private String username;
     private String firstname;
     private String lastname;
-    private boolean admin;
-    private boolean active;
+    private Boolean admin;
+    private Boolean active;
     private String email;
     private String phoneNumber;
     private String address;
