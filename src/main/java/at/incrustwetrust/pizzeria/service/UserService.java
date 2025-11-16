@@ -1,81 +1,106 @@
 package at.incrustwetrust.pizzeria.service;
 
-import at.incrustwetrust.pizzeria.dto.user.UserCreateDTO;
-import at.incrustwetrust.pizzeria.dto.user.UserUpdateDTO;
+import at.incrustwetrust.pizzeria.dto.user.*;
 import at.incrustwetrust.pizzeria.entity.User;
-import at.incrustwetrust.pizzeria.exception.ObjectAlreadyExistsException;
-import at.incrustwetrust.pizzeria.exception.ObjectNotFoundException;
 import at.incrustwetrust.pizzeria.mapper.UserMapper;
 import at.incrustwetrust.pizzeria.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+
+import static org.springframework.http.HttpStatus.*;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UserMapper mapper;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-    }
-
-    public User create(UserCreateDTO dto, User createdBy) {
+    // ======================================================
+    // CREATE
+    // ======================================================
+    public UserResponseDTO create(UserCreateDTO dto, User createdBy) {
         throwIfUsernameOrEmailExists(dto);
-        User user = UserMapper.toEntity(dto, createdBy);
+
+        User user = mapper.toEntity(dto, createdBy);
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
-        return userRepository.save(user);
+
+        User saved = userRepository.save(user);
+        return mapper.toResponseDto(saved);
     }
 
-    public User read(String id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException("No user found with ID: " + id));
-    }
-
-    public List<User> readAll() {
-        return userRepository.findAll();
-    }
-
-    public User delete(String id) {
+    // ======================================================
+    // READ
+    // ======================================================
+    public UserResponseDTO read(String id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException("No user found with ID: " + id));
-        userRepository.delete(user);
-        return user;
+                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "No user found with ID: " + id));
+        return mapper.toResponseDto(user);
     }
 
-    public User update(UserUpdateDTO dto, String id) {
+    public List<UserResponseLightDTO> readAll() {
+        return mapper.toResponseLightDtoList(userRepository.findAll());
+    }
+
+    // ======================================================
+    // UPDATE
+    // ======================================================
+    public UserResponseDTO update(UserUpdateDTO dto, String id) {
         User existingUser = userRepository.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException("No user found with ID: " + id));
+                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "No user found with ID: " + id));
 
         throwIfUsernameOrEmailExists(dto, id);
 
-        UserMapper.updateEntity(dto, existingUser);
+        mapper.updateEntity(dto, existingUser);
 
         if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
             existingUser.setPassword(passwordEncoder.encode(dto.getPassword()));
         }
 
-        return userRepository.save(existingUser);
+        User saved = userRepository.save(existingUser);
+        return mapper.toResponseDto(saved);
     }
 
+    // ======================================================
+    // DELETE
+    // ======================================================
+    public UserResponseDTO delete(String id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "No user found with ID: " + id));
+        userRepository.delete(user);
+        return mapper.toResponseDto(user);
+    }
+
+    // ======================================================
+    // DUPLICATE CHECKS
+    // ======================================================
     private void throwIfUsernameOrEmailExists(UserCreateDTO dto) {
-        userRepository.findUserByEmail(dto.getEmail()).ifPresent(user -> {
-            throw new ObjectAlreadyExistsException("A user with this email already exists.");
+        userRepository.findUserByEmail(dto.getEmail()).ifPresent(u -> {
+            throw new ResponseStatusException(CONFLICT, "A user with this email already exists.");
         });
-        userRepository.findUserByUsername(dto.getUsername()).ifPresent(user -> {
-            throw new ObjectAlreadyExistsException("A user with this username already exists.");
+        userRepository.findUserByUsername(dto.getUsername()).ifPresent(u -> {
+            throw new ResponseStatusException(CONFLICT, "A user with this username already exists.");
         });
     }
 
     private void throwIfUsernameOrEmailExists(UserUpdateDTO dto, String userId) {
-        userRepository.findByEmailAndUserIdNot(dto.getEmail(), userId).ifPresent(user -> {
-            throw new ObjectAlreadyExistsException("Another user with this email already exists.");
+        userRepository.findByEmailAndUserIdNot(dto.getEmail(), userId).ifPresent(u -> {
+            throw new ResponseStatusException(CONFLICT, "Another user with this email already exists.");
         });
-        userRepository.findUserByUsernameAndUserIdNot(dto.getUsername(), userId).ifPresent(user -> {
-            throw new ObjectAlreadyExistsException("Another user with this username already exists.");
+        userRepository.findUserByUsernameAndUserIdNot(dto.getUsername(), userId).ifPresent(u -> {
+            throw new ResponseStatusException(CONFLICT, "Another user with this username already exists.");
         });
+    }
+
+    public Optional<User> findEntityById(String userId) {
+        // Nutzt das UserRepository, um die User-Entity zu finden
+        return userRepository.findById(userId);
     }
 }

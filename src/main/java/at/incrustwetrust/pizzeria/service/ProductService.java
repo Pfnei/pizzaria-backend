@@ -1,68 +1,92 @@
 package at.incrustwetrust.pizzeria.service;
 
+import at.incrustwetrust.pizzeria.dto.product.*;
 import at.incrustwetrust.pizzeria.entity.Product;
-import at.incrustwetrust.pizzeria.exception.ObjectAlreadyExistsException;
-import at.incrustwetrust.pizzeria.exception.ObjectNotFoundException;
+import at.incrustwetrust.pizzeria.mapper.ProductMapper;
 import at.incrustwetrust.pizzeria.repository.ProductRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Optional;
+
+import static org.springframework.http.HttpStatus.*;
 
 @Service
+@RequiredArgsConstructor
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final ProductMapper productMapper;
 
-    public ProductService(ProductRepository productRepository) {
-        this.productRepository = productRepository;
+    // =====================================================
+    // CREATE
+    // =====================================================
+    public ProductResponseDTO create(ProductCreateDTO dto) {
+        ifProductNameAlreadyExistsThrow(dto.getProductName());
+
+        Product product = productMapper.toEntity(dto);
+        Product saved = productRepository.save(product);
+
+        return productMapper.toResponseDto(saved);
     }
 
-    public Product create(Product product) {
-        ifProductNameAlreadyExistThrow (product);
-        // Productname does not exist -> new Product
-        return productRepository.save(product);
+    // =====================================================
+    // READ
+    // =====================================================
+    public ProductResponseDTO read(String id) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResponseStatusException(NOT_FOUND, "Kein Produkt mit der ID " + id + " vorhanden"));
+
+        return productMapper.toResponseDto(product);
     }
 
-
-    public Product read(String id) {
-        return productRepository.findById(id).orElseThrow( () -> new ObjectNotFoundException("Kein Produkt mit der ID " + id + " vorhanden"));
+    public List<ProductResponseLightDTO> readAll() {
+        List<Product> products = productRepository.findAll();
+        return productMapper.toResponseLightDtoList(products);
     }
 
-    public List<Product> readAll() {
-        return productRepository.findAll();
-    }
-    public Product delete (String id) {
-        Product productCheck = productRepository.findById(id).orElseThrow( () -> new ObjectNotFoundException("Kein Produkt mit der ID " + id + " vorhanden"));
-        productRepository.delete(productCheck);
-        return productCheck;
-    }
+    // =====================================================
+    // UPDATE
+    // =====================================================
+    public ProductResponseDTO update(ProductUpdateDTO dto, String id) {
+        Product existing = productRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResponseStatusException(NOT_FOUND, "Produkt-ID nicht in der Datenbank"));
 
-    public Product update(Product product, String id) {
-        Product productToBeUpdated= productRepository.findById(id).orElseThrow( () -> new ObjectNotFoundException("ProduktId nicht in der Datenbank"));
-        ifProductNameAlreadyExistThrow (product, id );
-        return productRepository.save(product);
+        ifProductNameAlreadyExistsThrow(dto.getProductName(), id);
 
-    }
+        productMapper.updateEntity(dto, existing);
 
-
-    private void ifProductNameAlreadyExistThrow (Product product) {
-        Optional<Product> productCheck = productRepository.findProductByProductName(product.getProductName());
-        if (productCheck.isPresent()) {
-            throw new ObjectAlreadyExistsException("Es ist bereits ein Produkt mit diesem Namen vorhanden");
-        }
+        Product saved = productRepository.save(existing);
+        return productMapper.toResponseDto(saved);
     }
 
+    // =====================================================
+    // DELETE
+    // =====================================================
+    public ProductResponseDTO delete(String id) {
+        Product existing = productRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResponseStatusException(NOT_FOUND, "Kein Produkt mit der ID " + id + " vorhanden"));
 
-    private void ifProductNameAlreadyExistThrow (Product product, String productToBeUpdatedId) {
-        Optional<Product> productCheck = productRepository.findProductByProductNameAndProductIdNot(product.getProductName(), productToBeUpdatedId);
-        if (productCheck.isPresent()) {
-            throw new ObjectAlreadyExistsException("Es ist bereits ein Produkt mit diesem Namen vorhanden");
-        }
+        productRepository.delete(existing);
+        return productMapper.toResponseDto(existing);
     }
 
+    // =====================================================
+    // DUPLICATE CHECKS
+    // =====================================================
+    private void ifProductNameAlreadyExistsThrow(String productName) {
+        productRepository.findProductByProductName(productName).ifPresent(p -> {
+            throw new ResponseStatusException(CONFLICT, "Es ist bereits ein Produkt mit diesem Namen vorhanden");
+        });
+    }
 
-
-
+    private void ifProductNameAlreadyExistsThrow(String productName, String excludedId) {
+        productRepository.findProductByProductNameAndProductIdNot(productName, excludedId).ifPresent(p -> {
+            throw new ResponseStatusException(CONFLICT, "Es ist bereits ein Produkt mit diesem Namen vorhanden");
+        });
+    }
 }

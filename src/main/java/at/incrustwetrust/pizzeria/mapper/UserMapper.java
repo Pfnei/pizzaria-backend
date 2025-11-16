@@ -1,133 +1,100 @@
 package at.incrustwetrust.pizzeria.mapper;
 
-import at.incrustwetrust.pizzeria.dto.user.UserCreateDTO;
-import at.incrustwetrust.pizzeria.dto.user.UserResponseDTO;
-import at.incrustwetrust.pizzeria.dto.user.UserResponseLightDTO;
-import at.incrustwetrust.pizzeria.dto.user.UserUpdateDTO;
-import at.incrustwetrust.pizzeria.entity.CountryCode;
-import at.incrustwetrust.pizzeria.entity.Salutation;
-import at.incrustwetrust.pizzeria.entity.User;
-import org.springframework.stereotype.Component;
+import at.incrustwetrust.pizzeria.dto.user.*;
+import at.incrustwetrust.pizzeria.entity.*;
+import org.mapstruct.*;
+import java.util.List;
 
-@Component
-public class UserMapper {
+@Mapper(componentModel = "spring")
+public interface UserMapper {
 
-
-    public static User toEntity(UserCreateDTO dto, User createdBy){
-        User user = new User();
-
-        user.setUsername(dto.getUsername());
-        user.setPassword(dto.getPassword()); // encode this later!!
-        if (dto.getSalutation() != null && !dto.getSalutation().isBlank()) {
-            try {
-                Salutation salutationEnum = Salutation.valueOf(dto.getSalutation().toUpperCase().trim());
-                user.setSalutation(salutationEnum);
-            } catch (IllegalArgumentException e) {
-                throw new IllegalArgumentException("Invalid salutation: " + dto.getSalutation());
-            }
-        } else {
-            user.setSalutation(null); // or Salutation.MR as default
-        }
+    // ======= CREATE =======
+    @Mappings({
+            @Mapping(target = "userId", ignore = true),
+            @Mapping(target = "profilPicture", ignore = true),
+            @Mapping(target = "createdAt", ignore = true),
+            @Mapping(target = "lastUpdatedAt", ignore = true),
+            @Mapping(target = "lastUpdatedBy", ignore = true),
+            @Mapping(target = "orders", ignore = true),
 
 
-        user.setSalutationDetail(dto.getSalutationDetail());
-        user.setFirstname(dto.getFirstname());
-        user.setLastname(dto.getLastname());
-        user.setEmail(dto.getEmail());
-        user.setPhoneNumber(dto.getPhoneNumber());
-        user.setAddress(dto.getAddress());
-        user.setZipcode(dto.getZipcode());
-        user.setCity(dto.getCity());
+            @Mapping(target = "salutation", source = "salutation", qualifiedByName = "toSalutation"),
+            @Mapping(target = "country", source = "country", qualifiedByName = "toCountry"),
 
-        if (dto.getCountry() != null && !dto.getCountry().isBlank()) {
-            try {
-                CountryCode countryEnum = CountryCode.valueOf(dto.getCountry().toUpperCase().trim());
-                user.setCountry(countryEnum); // setter takes enum
-            } catch (IllegalArgumentException e) {
-                throw new IllegalArgumentException("Invalid country code: " + dto.getCountry());
-            }
-        } else {
-            user.setCountry(null); // or CountryCode.AT as default
-        }
+            @Mapping(target = "createdBy", ignore = true),
 
-        user.setCreatedBy(createdBy);
-        user.setIsActive(true);
-        user.setIsAdmin(false);
-        return user;
+            // DTO verwendet 'active/isAdmin' (primitive), Entity verwendet 'active/isAdmin' (primitive)
+            // Automatisches Mapping funktioniert jetzt besser.
+            @Mapping(target = "active",ignore = true),  // expression = "java(true)"
+            @Mapping(target = "admin",ignore = true),  // expression = "java(true)"
+    })
+    User toEntity(UserCreateDTO dto, @Context User createdBy);
+
+    // ======= UPDATE / PATCH (BEREINIGT) =======
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mappings({
+            @Mapping(target = "userId", ignore = true),
+            @Mapping(target = "profilPicture", ignore = true),
+            @Mapping(target = "createdAt", ignore = true),
+            @Mapping(target = "lastUpdatedAt", ignore = true),
+            @Mapping(target = "createdBy", ignore = true),
+            @Mapping(target = "lastUpdatedBy", ignore = true),
+            @Mapping(target = "orders", ignore = true),
+
+            // Strings -> Enums
+            @Mapping(target = "salutation", source = "salutation", qualifiedByName = "toSalutation"),
+            @Mapping(target = "country", source = "country", qualifiedByName = "toCountry"),
+
+            // ⛔ HIER WERDEN DIE ZWEI MAPPINGS FÜR isActive/isAdmin ENTFERNT
+            // MapStruct handhabt das Mapping von Boolean (DTO) zu boolean (Entity) automatisch.
+            // Die Felder werden ignoriert, wenn sie im DTO null sind (dank NullValuePropertyMappingStrategy.IGNORE).
+    })
+    void updateEntity(UserUpdateDTO dto, @MappingTarget User user);
+
+    // ======= READ: ENTITY → DTO (VEREINFACHT) =======
+    @Mappings({
+            // Automatisches Mapping funktioniert, keine expliziten Booleans nötig, wenn Namen übereinstimmen.
+            @Mapping(target = "createdById",
+                    expression = "java(u.getCreatedBy()!=null ? u.getCreatedBy().getUserId() : null)"),
+            @Mapping(target = "lastUpdatedById",
+                    expression = "java(u.getLastUpdatedBy()!=null ? u.getLastUpdatedBy().getUserId() : null)"),
+
+                    @Mapping(target = "active", source = "active"),
+                    @Mapping(target = "admin", source = "admin"),
+
+            @Mapping(target = "orders", ignore = true)
+    })
+    UserResponseDTO toResponseDto(User u);
+
+    // ======= READ: ENTITY → LIGHT DTO (VEREINFACHT) =======
+    // Hier ist kein Mapping mehr nötig, da die Entity-Getter isActive/isAdmin auf DTO active/isAdmin mappen.
+    UserResponseLightDTO toResponseLightDto(User u);
+
+    List<UserResponseDTO> toResponseDtoList(List<User> users);
+    List<UserResponseLightDTO> toResponseLightDtoList(List<User> users);
+
+    // ======= Konverter =======
+    @Named("toSalutation")
+    default Salutation toSalutation(String src) {
+        if (src == null || src.isBlank()) return null;
+        try { return Salutation.valueOf(src.trim().toUpperCase()); }
+        catch (Exception e) { throw new IllegalArgumentException("Invalid salutation: " + src); }
     }
 
-    public static void updateEntity(UserUpdateDTO dto, User user) {
-        if (dto.getUsername() != null) user.setUsername(dto.getUsername());
-        if (dto.getEmail() != null) user.setEmail(dto.getEmail());
-        if (dto.getPhoneNumber() != null) user.setPhoneNumber(dto.getPhoneNumber());
-        if (dto.getAddress() != null) user.setAddress(dto.getAddress());
-        if (dto.getCity() != null) user.setCity(dto.getCity());
-        if (dto.getZipcode() != null) user.setZipcode(dto.getZipcode());
-        if (dto.getSalutationDetail() != null) user.setSalutationDetail(dto.getSalutationDetail());
-
-        if (dto.getSalutation() != null && !dto.getSalutation().isBlank()) {
-            try {
-                Salutation salutationEnum = Salutation.valueOf(dto.getSalutation().toUpperCase().trim());
-                user.setSalutation(salutationEnum);
-            } catch (IllegalArgumentException e) {
-                throw new IllegalArgumentException("Invalid salutation: " + dto.getSalutation());
-            }
-        }
-
-        if (dto.getCountry() != null && !dto.getCountry().isBlank()) {
-            try {
-                CountryCode countryEnum = CountryCode.valueOf(dto.getCountry().toUpperCase().trim());
-                user.setCountry(countryEnum);
-            } catch (IllegalArgumentException e) {
-                throw new IllegalArgumentException("Invalid country code: " + dto.getCountry());
-            }
-        }
-
-        if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
-            user.setPassword(dto.getPassword()); // Hashing im Service!
-        }
+    @Named("toCountry")
+    default CountryCode toCountry(String src) {
+        if (src == null || src.isBlank()) return null;
+        try { return CountryCode.valueOf(src.trim().toUpperCase()); }
+        catch (Exception e) { throw new IllegalArgumentException("Invalid country code: " + src); }
     }
 
-    public static UserResponseDTO toResponseDto(User user) {
-        if (user == null) return null;
-
-        UserResponseDTO dto = new UserResponseDTO();
-        dto.setUserId(user.getUserId());
-        dto.setUsername(user.getUsername());
-        dto.setSalutation(user.getSalutation());
-        dto.setSalutationDetail(user.getSalutationDetail());
-        dto.setFirstname(user.getFirstname());
-        dto.setLastname(user.getLastname());
-        dto.setEmail(user.getEmail());
-        dto.setPhoneNumber(user.getPhoneNumber());
-        dto.setAddress(user.getAddress());
-        dto.setZipcode(user.getZipcode());
-        dto.setCity(user.getCity());
-        dto.setCountry(user.getCountry());                     // bereits String (CountryCode.toString)
-        dto.setIsActive(user.isActive());
-        dto.setIsAdmin(user.isAdmin());
-        dto.setCreatedAt(user.getCreatedAt());
-
-        dto.setCreatedById(user.getCreatedBy() != null ? user.getCreatedBy().getUserId() : null);
-        dto.setLastUpdatedAt(user.getLastUpdatedAt());
-        dto.setLastUpdatedById(user.getLastUpdatedBy() != null ? user.getLastUpdatedBy().getUserId() : null);
-        dto.setOrders(user.getOrders() != null ? user.getOrders() : null);
-
-        return dto;
+    @AfterMapping
+    default void afterMapping(@MappingTarget User u, @Context User createdBy) {
+        if (createdBy != null) u.setCreatedBy(createdBy);
+        if (u.getUsername()!=null)  u.setUsername(u.getUsername().trim());
+        if (u.getEmail()!=null)     u.setEmail(u.getEmail().trim());
+        if (u.getFirstname()!=null) u.setFirstname(u.getFirstname().trim());
+        if (u.getLastname()!=null)  u.setLastname(u.getLastname().trim());
+        if (u.getCity()!=null)      u.setCity(u.getCity().trim());
     }
-
-    public static UserResponseLightDTO toResponseLightDto(User user) {
-        if (user == null) return null;
-
-        UserResponseLightDTO dto = new UserResponseLightDTO();
-        dto.setUserId(user.getUserId());
-        dto.setUsername(user.getUsername());
-        dto.setFirstname(user.getFirstname());
-        dto.setLastname(user.getLastname());
-        dto.setEmail(user.getEmail());
-        dto.setActive(user.isActive());
-        dto.setAdmin(user.isAdmin());
-        return dto;
-    }
-
 }

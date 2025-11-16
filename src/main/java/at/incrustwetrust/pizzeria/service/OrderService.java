@@ -1,42 +1,62 @@
 package at.incrustwetrust.pizzeria.service;
 
+import at.incrustwetrust.pizzeria.dto.order.*;
 import at.incrustwetrust.pizzeria.entity.Order;
-import at.incrustwetrust.pizzeria.exception.ObjectAlreadyExistsException;
-import at.incrustwetrust.pizzeria.exception.ObjectNotFoundException;
+import at.incrustwetrust.pizzeria.entity.User;
+import at.incrustwetrust.pizzeria.mapper.OrderMapper;
 import at.incrustwetrust.pizzeria.repository.OrderRepository;
+import at.incrustwetrust.pizzeria.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
 
+import static org.springframework.http.HttpStatus.*;
+
 @Service
+@RequiredArgsConstructor
 public class OrderService {
 
     private final OrderRepository orderRepository;
+    private final UserRepository userRepository;
+    private final OrderMapper orderMapper;
 
-    public OrderService(OrderRepository orderRepository) {
-        this.orderRepository = orderRepository;
+    // READ ALL (optional filter)
+    public List<OrderResponseLightDTO> readAll(Optional<String> createdBy) {
+        List<Order> orders = createdBy
+                .map(orderRepository::findAllByCreatedBy_UserId)
+                .orElseGet(orderRepository::findAll);
+        return orderMapper.toResponseLightDtoList(orders);
     }
 
-    public List<Order> readAll(Optional<String> createdBy) {
-        if (createdBy.isPresent()) {
-            return orderRepository.findAllByCreatedByUserId(createdBy.get());
+    // READ ONE
+    public OrderResponseDTO read(String id) {
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Keine Bestellung mit der ID " + id + " vorhanden"));
+        return orderMapper.toResponseDto(order);
+    }
+
+    // CREATE
+    public OrderResponseDTO create(OrderCreateDTO dto) {
+        // optional: Validierung (z. B. total >= 0) ist schon per Bean Validation im DTO
+        User createdBy = null;
+        if (dto.getCreatedById() != null && !dto.getCreatedById().isBlank()) {
+            createdBy = userRepository.findById(dto.getCreatedById())
+                    .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "User (createdById) nicht gefunden"));
         }
-        return orderRepository.findAll();
+        Order entity = orderMapper.toEntity(dto, createdBy);
+        Order saved = orderRepository.save(entity);
+        return orderMapper.toResponseDto(saved);
     }
 
-    public Order read(String id){
-        return orderRepository.findById(id).orElseThrow( () -> new ObjectNotFoundException("Kein Bestellung mit der ID " + id + " vorhanden"));
+    // UPDATE (optional; falls du Update erlauben willst)
+    public OrderResponseDTO update(String id, OrderUpdateDTO dto) {
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Keine Bestellung mit der ID " + id + " vorhanden"));
+        orderMapper.updateEntity(dto, order);
+        Order saved = orderRepository.save(order);
+        return orderMapper.toResponseDto(saved);
     }
-
-    // How do I make sure that not the same order is places several times by pressing a button
-    public Order create (Order order) {
-        if (null != order.getOrderId() ) {
-            throw new ObjectAlreadyExistsException(" Es gibt bereits eine Bestellung mit diese ID (" + order.getOrderId() + ") - Bestellungen können nicht geändert oder gelöscht werden");
-        }
-        return orderRepository.save(order);
-    }
-
-
-
 }

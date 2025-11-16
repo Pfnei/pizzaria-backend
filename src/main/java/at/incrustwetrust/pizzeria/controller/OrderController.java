@@ -1,58 +1,44 @@
 package at.incrustwetrust.pizzeria.controller;
 
-
-import at.incrustwetrust.pizzeria.dto.order.OrderResponseDTO;
-import at.incrustwetrust.pizzeria.dto.order.OrderResponseLightDTO;
-import at.incrustwetrust.pizzeria.entity.Order;
+import at.incrustwetrust.pizzeria.dto.order.*;
 import at.incrustwetrust.pizzeria.service.OrderService;
-import at.incrustwetrust.pizzeria.mapper.OrderMapper;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
 
-import static java.util.stream.Collectors.toList;
-
-
 @RestController
 @RequestMapping("/orders")
+@RequiredArgsConstructor
 public class OrderController {
 
     private final OrderService orderService;
 
-    public OrderController(OrderService orderService){ this.orderService = orderService;}
-
-
     @GetMapping
-    public List<OrderResponseLightDTO> readAll(@RequestParam(required = false) String createdBy) {
-        List<Order> orders;
-        if (createdBy == null) {
-            orders =  orderService.readAll(Optional.empty());
-        }
-        else {
-           orders =  orderService.readAll(Optional.of(createdBy));
-        }
-        List<OrderResponseLightDTO> ordersResponseLight;
-        ordersResponseLight = orders.stream()
-                .map(OrderMapper::toResponseLightDto)
-                .toList();
-        return ordersResponseLight;
+    public ResponseEntity<List<OrderResponseLightDTO>> readAll(
+            @RequestParam(required = false) String createdBy) {
+        return ResponseEntity.ok(orderService.readAll(Optional.ofNullable(createdBy)));
     }
 
-    @GetMapping ("/{id}")
-    public OrderResponseDTO read(@PathVariable String id) {
-        Order order = this.orderService.read(id);
-        return OrderMapper.toResponseDto(order);
+    @GetMapping("/{id}")
+    public ResponseEntity<OrderResponseDTO> read(@PathVariable String id) {
+        return ResponseEntity.ok(orderService.read(id));
     }
 
     @PostMapping
-    @ResponseStatus (HttpStatus.CREATED)
-    public Order create (@RequestBody @Valid Order order) {return this.orderService.create(order);}
+    public ResponseEntity<OrderResponseDTO> create(@RequestBody @Valid OrderCreateDTO dto) {
+        OrderResponseDTO created = orderService.create(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+    }
 
-    // no Order update possible
-    // no Order deletion possible
-
-
+    // Optional, falls Updates erlaubt sind:
+    @PatchMapping("/{id}")
+    public ResponseEntity<OrderResponseDTO> update(
+            @PathVariable String id,
+            @RequestBody @Valid OrderUpdateDTO dto) {
+        return ResponseEntity.ok(orderService.update(id, dto));
+    }
 }

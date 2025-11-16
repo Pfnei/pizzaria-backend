@@ -1,57 +1,61 @@
 package at.incrustwetrust.pizzeria.mapper;
 
-import at.incrustwetrust.pizzeria.dto.order.OrderResponseDTO;
-import at.incrustwetrust.pizzeria.dto.order.OrderResponseLightDTO;
-import at.incrustwetrust.pizzeria.dto.user.UserResponseLightDTO;
+import at.incrustwetrust.pizzeria.dto.order.*;
 import at.incrustwetrust.pizzeria.entity.Order;
+import at.incrustwetrust.pizzeria.entity.User;
+import org.mapstruct.*;
 
-public class OrderMapper {
+import java.util.List;
 
+@Mapper(componentModel = "spring", uses = { UserMapper.class })
+public interface OrderMapper {
 
-    public static OrderResponseDTO toResponseDto(Order order) {
-        if (order == null) return null;
+    // ======= CREATE DTO -> ENTITY =======
+    @Mappings({
+            @Mapping(target = "orderId", ignore = true),
+            @Mapping(target = "createdAt", ignore = true),
+            @Mapping(target = "deliveredAt", ignore = true),
+            @Mapping(target = "items", ignore = true),
+            @Mapping(target = "createdBy", ignore = true) // wird im AfterMapping gesetzt
+    })
+    Order toEntity(OrderCreateDTO dto, @Context User createdBy);
 
-        OrderResponseDTO dto = new OrderResponseDTO();
-        dto.setOrderId(order.getOrderId());
-        dto.setCreatedAt(order.getCreatedAt());
-        dto.setDeliveredAt(order.getDeliveredAt());
-        dto.setTotal(order.getTotal());
+    // ======= UPDATE DTO -> ENTITY (PATCH) =======
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mappings({
+            @Mapping(target = "orderId", ignore = true),
+            @Mapping(target = "createdAt", ignore = true),
+            @Mapping(target = "createdBy", ignore = true),
+            @Mapping(target = "items", ignore = true)
+            // deliveredAt, total, address, ... werden, falls gesetzt, übernommen
+            // status existiert nicht in der Entity -> wird automatisch ignoriert (Quell-Property ohne Ziel)
+    })
+    void updateEntity(OrderUpdateDTO dto, @MappingTarget Order order);
 
-        dto.setFirstname(order.getFirstname());
-        dto.setLastname(order.getLastname());
-        dto.setPhoneNumber(order.getPhoneNumber());
-        dto.setAddress(order.getAddress());
-        dto.setZipcode(order.getZipcode());
-        dto.setCity(order.getCity());
-        dto.setDeliveryNote(order.getDeliveryNote());
+    // ======= ENTITY -> RESPONSE (DETAIL) =======
+    @Mappings({
+            @Mapping(target = "createdById",
+                    expression = "java(o.getCreatedBy()!=null ? o.getCreatedBy().getUserId() : null)"),
+            @Mapping(target = "createdBy", source = "createdBy") // nutzt UserMapper.toResponseLightDto
+    })
+    OrderResponseDTO toResponseDto(Order o);
 
-        dto.setCreatedById(order.getCreatedBy() != null ? order.getCreatedBy().getUserId() : null);
-        dto.setCreatedBy(order.getCreatedBy() != null ? UserMapper.toResponseLightDto(order.getCreatedBy()) : null);
-        dto.setItems(order.getItems() != null ? order.getItems() : null);
+    // ======= ENTITY -> RESPONSE (LIGHT) =======
+    @Mappings({
+            @Mapping(target = "createdById",
+                    expression = "java(o.getCreatedBy()!=null ? o.getCreatedBy().getUserId() : null)"),
+            @Mapping(target = "createdBy", source = "createdBy")
+    })
+    OrderResponseLightDTO toResponseLightDto(Order o);
 
-        return dto;
-    }
+    List<OrderResponseDTO> toResponseDtoList(List<Order> orders);
+    List<OrderResponseLightDTO> toResponseLightDtoList(List<Order> orders);
 
-    public static OrderResponseLightDTO toResponseLightDto(Order order) {
-        if (order == null) return null;
-
-        OrderResponseLightDTO dto = new OrderResponseLightDTO();
-        dto.setOrderId(order.getOrderId());
-        dto.setCreatedAt(order.getCreatedAt());
-        dto.setDeliveredAt(order.getDeliveredAt());
-        dto.setTotal(order.getTotal());
-
-        dto.setFirstname(order.getFirstname());
-        dto.setLastname(order.getLastname());
-        dto.setPhoneNumber(order.getPhoneNumber());
-        dto.setAddress(order.getAddress());
-        dto.setZipcode(order.getZipcode());
-        dto.setCity(order.getCity());
-        dto.setDeliveryNote(order.getDeliveryNote());
-
-        dto.setCreatedById(order.getCreatedBy() != null ? order.getCreatedBy().getUserId() : null);
-        dto.setCreatedBy((order.getCreatedBy() != null) ? UserMapper.toResponseLightDto(order.getCreatedBy()) : null);
-
-        return dto;
+    // ======= AfterMapping: createdBy aus @Context setzen =======
+    @AfterMapping
+    default void setCreatedBy(@MappingTarget Order order, @Context User createdBy) {
+        if (createdBy != null) {
+            order.setCreatedBy(createdBy);
+        }
     }
 }

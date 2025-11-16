@@ -1,56 +1,85 @@
 package at.incrustwetrust.pizzeria.mapper;
 
-import at.incrustwetrust.pizzeria.dto.product.ProductResponseDTO;
-import at.incrustwetrust.pizzeria.dto.product.ProductResponseLightDTO;
+import at.incrustwetrust.pizzeria.dto.product.*;
+import at.incrustwetrust.pizzeria.entity.Allergen;
 import at.incrustwetrust.pizzeria.entity.Product;
+import org.mapstruct.*;
 
-public class ProductMapper {
+import java.util.List;
+import java.util.stream.Collectors;
 
-    public static ProductResponseDTO toResponseDto(Product product) {
-        if (product == null) return null;
+@Mapper(componentModel = "spring", uses = { UserMapper.class })
+public interface ProductMapper {
 
-        ProductResponseDTO dto = new ProductResponseDTO();
-        dto.setProductId(product.getProductId());
-        dto.setProductName(product.getProductName());
-        dto.setProductDescription(product.getProductDescription());
-        dto.setPrice(product.getPrice());
+    // ============== DTO -> ENTITY (CREATE) ==============
+    @Mappings({
+            @Mapping(target = "productId", ignore = true),
+            @Mapping(target = "createdAt", ignore = true),
+            @Mapping(target = "lastUpdatedAt", ignore = true),
+            @Mapping(target = "createdBy", ignore = true),
+            @Mapping(target = "lastUpdatedBy", ignore = true),
 
-        dto.setIsVegetarian(product.isVegetarian());
-        dto.setIsActive(product.isActive());
+            // Diese beiden Ziele existieren in der Entity, sind aber hier (erstmal) nicht befüllt:
+            @Mapping(target = "productPicture", ignore = true),
+            @Mapping(target = "orders", ignore = true),
 
-        dto.setMainCategory(product.getMainCategory());
-        dto.setSubCategory(product.getSubCategory());
+            // Allergene brauchen Lookup -> erstmal ignorieren
+            @Mapping(target = "allergens", ignore = true)
+    })
+    Product toEntity(ProductCreateDTO dto);
 
-        dto.setAllergens(product.getAllergens() != null ? product.getAllergens() : null);
+    // ============== DTO -> ENTITY (UPDATE / PATCH) ==============
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mappings({
+            @Mapping(target = "productId", ignore = true),
+            @Mapping(target = "createdAt", ignore = true),
+            @Mapping(target = "lastUpdatedAt", ignore = true),
+            @Mapping(target = "createdBy", ignore = true),
+            @Mapping(target = "lastUpdatedBy", ignore = true),
+            @Mapping(target = "productPicture", ignore = true),
+            @Mapping(target = "orders", ignore = true),
 
-        dto.setCreatedAt(product.getCreatedAt());
-        dto.setCreatedById(product.getCreatedBy() != null ? product.getCreatedBy().getUserId() : null);
-        dto.setCreatedBy(product.getCreatedBy() != null ? UserMapper.toResponseLightDto(product.getCreatedBy()) : null);
+            // Gleiches Thema: kein automatisches Mapping ohne Lookup
+            @Mapping(target = "allergens", ignore = true)
+    })
+    void updateEntity(ProductUpdateDTO dto, @MappingTarget Product entity);
 
-        dto.setLastUpdatedAt(product.getLastUpdatedAt());
-        dto.setLastUpdatedById(product.getLastUpdatedBy() != null ? product.getLastUpdatedBy().getUserId() : null);
-        dto.setLastUpdatedBy(product.getLastUpdatedBy() != null ? UserMapper.toResponseLightDto(product.getLastUpdatedBy()) : null);
+    // ============== ENTITY -> DETAIL DTO ==============
+    @Mappings({
+            // boolean Felder mit anderem Namen im DTO
+            @Mapping(target = "vegetarian", source = "vegetarian"),
+            @Mapping(target = "active", source = "active"),
 
-        return dto;
-    }
+            // verschachtelte User-Felder (nutzt UserMapper automatisch)
+            @Mapping(target = "createdById", source = "createdBy.userId"),
+            @Mapping(target = "createdBy",   source = "createdBy"),
+            @Mapping(target = "lastUpdatedById", source = "lastUpdatedBy.userId"),
+            @Mapping(target = "lastUpdatedBy",   source = "lastUpdatedBy"),
 
-    public static ProductResponseLightDTO toResponseLightDto(Product product) {
-        if (product == null) return null;
+            // Allergene als Liste von Abkürzungen (String)
+            @Mapping(target = "allergens", source = "allergens", qualifiedByName = "allergensToStrings")
+    })
+    ProductResponseDTO toResponseDto(Product p);
 
-        ProductResponseLightDTO dto = new ProductResponseLightDTO();
-        dto.setProductId(product.getProductId());
-        dto.setProductName(product.getProductName());
-        dto.setPrice(product.getPrice());
+    // ============== ENTITY -> LIGHT DTO ==============
+    @Mappings({
+            // ACHTUNG: In ProductResponseLightDTO heißen die Felder 'vegetarian' und 'active'
+            @Mapping(target = "vegetarian", source = "vegetarian"),
+            @Mapping(target = "active",     source = "active"),
+            @Mapping(target = "allergens",  source = "allergens", qualifiedByName = "allergensToStrings")
+    })
+    ProductResponseLightDTO toResponseLightDto(Product p);
 
-        dto.setIsVegetarian(product.isVegetarian());
-        dto.setIsActive(product.isActive());
+    // ============== LISTEN ==============
+    List<ProductResponseDTO> toResponseDtoList(List<Product> products);
+    List<ProductResponseLightDTO> toResponseLightDtoList(List<Product> products);
 
-        dto.setMainCategory(product.getMainCategory());
-        dto.setSubCategory(product.getSubCategory());
-
-        dto.setAllergens(product.getAllergens() != null ? product.getAllergens() : null);
-
-
-        return dto;
+    // ============== HELFER: Allergene -> Strings ==============
+    @Named("allergensToStrings")
+    default List<String> allergensToStrings(List<Allergen> allergens) {
+        if (allergens == null) return null;
+        return allergens.stream()
+                .map(Allergen::getAbbreviation) // <- Abkürzung (String) aus deiner Entity
+                .collect(Collectors.toList());
     }
 }

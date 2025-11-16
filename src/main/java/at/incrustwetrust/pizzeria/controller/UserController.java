@@ -2,54 +2,69 @@ package at.incrustwetrust.pizzeria.controller;
 
 import at.incrustwetrust.pizzeria.dto.user.UserCreateDTO;
 import at.incrustwetrust.pizzeria.dto.user.UserUpdateDTO;
-import at.incrustwetrust.pizzeria.entity.User;
+import at.incrustwetrust.pizzeria.dto.user.UserResponseDTO;
+import at.incrustwetrust.pizzeria.dto.user.UserResponseLightDTO;
 import at.incrustwetrust.pizzeria.service.UserService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-
 @RestController
-@RequestMapping ("/users")
+@RequestMapping("/users")
+@RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
 
-    public UserController(UserService userService){ this.userService = userService;}
-
+    // =====================================================
+    // READ ALL (LIGHT DTO)
+    // =====================================================
     @GetMapping
-    public List<User> readAll ()
-    {
-        return this.userService.readAll();
+    public ResponseEntity<List<UserResponseLightDTO>> readAll() {
+        List<UserResponseLightDTO> users = userService.readAll();
+        return ResponseEntity.ok(users);
     }
 
+    // =====================================================
+    // READ ONE (FULL DTO)
+    // =====================================================
     @GetMapping("/{id}")
-    public User read (@PathVariable String id)
-    {
-        return this.userService.read(id);
+    public ResponseEntity<UserResponseDTO> read(@PathVariable String id) {
+        UserResponseDTO user = userService.read(id);
+        return ResponseEntity.ok(user);
     }
 
+    // =====================================================
+    // CREATE
+    // =====================================================
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public User create (@RequestBody  UserCreateDTO dto)
-    {
-        return this.userService.create(dto,null);
+    public ResponseEntity<UserResponseDTO> create(@Valid @RequestBody UserCreateDTO dto) {
+        UserResponseDTO created = userService.create(dto, null);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
-    @PutMapping("/{id}")
-    @ResponseStatus (HttpStatus.OK)
-        public User update (@RequestBody @Valid UserUpdateDTO user, @PathVariable String id)
-        {
-            return this.userService.update(user, id);
+    // =====================================================
+    // UPDATE (PATCH)
+    // =====================================================
+    @PatchMapping("/{id}")
+    public ResponseEntity<UserResponseDTO> update(
+            @PathVariable String id,
+            @Valid @RequestBody UserUpdateDTO dto) {
+
+        UserResponseDTO updated = userService.update(dto, id);
+        return ResponseEntity.ok(updated);
     }
 
-    @DeleteMapping ("/{id}")
-    @ResponseStatus (HttpStatus.OK)
-    public User delete (@PathVariable String id)
-    {
-        return this.userService.delete(id);
+    // =====================================================
+    // DELETE
+    // =====================================================
+    @DeleteMapping("/{id}")
+    public ResponseEntity<UserResponseDTO> delete(@PathVariable String id) {
+        UserResponseDTO deleted = userService.delete(id);
+        return ResponseEntity.ok(deleted);
     }
-
 }
