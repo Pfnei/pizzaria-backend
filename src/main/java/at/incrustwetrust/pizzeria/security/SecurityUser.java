@@ -20,12 +20,20 @@ public class SecurityUser implements UserDetails {
 
     @Override public String getPassword() { return user.getPassword(); }
     @Override public String getUsername() { return user.getEmail(); }
+
+
     @Override public boolean isAccountNonExpired() { return user.isActive(); }
     @Override public boolean isAccountNonLocked() { return user.isActive(); }
     @Override public boolean isCredentialsNonExpired() { return true; }
     @Override public boolean isEnabled() { return user.isActive(); }
 
 
-    public String getEmail() { return user.getEmail(); }
-    public boolean isAdmin() { return user.isAdmin(); }
+    public String getEmail()
+    { return user.getEmail(); }
+    public boolean isAdmin()
+    { return user.isAdmin(); }
+
+    public String getUserId()
+    { return user.getUserId(); }
+
 }
