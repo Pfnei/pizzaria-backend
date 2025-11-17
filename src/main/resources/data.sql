@@ -8,11 +8,11 @@ INSERT INTO users (
     active,admin
 ) VALUES
 -- Reduzierte Testdaten (5 User)
-(gen_random_uuid(), 'clarkzod', '$2a$10$plRXfUw0I.tZH1mZ2HLV7Or4wJt9ZVKSfamZ/jP0f0Kr0vL3u.r.6', 'Frau', NULL, 'Hannah', 'Bukovec', 'Hannah.Bukovec@muster.at', '+43 676 1234567', '4020', 'Linz', 'Austria', 'Hauptstraße 1', now(), now(), true, false),
-(gen_random_uuid(), 'brucefox', '$2a$10$plRXfUw0I.tZH1mZ2HLV7Or4wJt9ZVKSfamZ/jP0f0Kr0vL3u.r.6', 'Herr', NULL, 'Paul', 'Pfischer', 'Paul.Pfischer@muster.at', '+43 664 2345678', '8010', 'Graz', 'Austria', 'Eggenberger Allee 15', now(), now(), false, true ),
-(gen_random_uuid(), 'diana91', '$2a$10$plRXfUw0I.tZH1mZ2HLV7Or4wJt9ZVKSfamZ/jP0f0Kr0vL3u.r.6', 'Frau', NULL, 'Sophie', 'Schmid', 'Sophie.Schmid@muster.at', '+43 650 3456789', '5020', 'Salzburg', 'Austria', 'Getreidegasse 8', now(), now(), true, false),
-(gen_random_uuid(), 'loganx', '$2a$10$plRXfUw0I.tZH1mZ2HLV7Or4wJt9ZVKSfamZ/jP0f0Kr0vL3u.r.6', 'Divers', 'was weiß ich', 'Monday', 'Maier', 'Tobias.Maier@muster.at', '+43 699 4567890', '2700', 'Wiener Neustadt', 'Austria', 'Neunkirchner Straße 20', now(), now(), true, false),
-(gen_random_uuid(), 'peterb', '$2a$10$plRXfUw0I.tZH1mZ2HLV7Or4wJt9ZVKSfamZ/jP0f0Kr0vL3u.r.6', 'Frau', NULL, 'Katharina', 'Baumhackl', 'Katharina.Baumhackl@muster.at', '+43 676 9012345', '3100', 'St. Pölten', 'Austria', 'Kremser Gasse 7', now(), now(), true, true);
+(gen_random_uuid(), 'clarkzod', '$2a$10$plRXfUw0I.tZH1mZ2HLV7Or4wJt9ZVKSfamZ/jP0f0Kr0vL3u.r.6', 'MS', NULL, 'Hannah', 'Bukovec', 'Hannah.Bukovec@muster.at', '+43 676 1234567', '4020', 'Linz', 'Austria', 'Hauptstraße 1', now(), now(), true, false),
+(gen_random_uuid(), 'brucefox', '$2a$10$plRXfUw0I.tZH1mZ2HLV7Or4wJt9ZVKSfamZ/jP0f0Kr0vL3u.r.6', 'MR', NULL, 'Paul', 'Pfischer', 'Paul.Pfischer@muster.at', '+43 664 2345678', '8010', 'Graz', 'Austria', 'Eggenberger Allee 15', now(), now(), false, true ),
+(gen_random_uuid(), 'diana91', '$2a$10$plRXfUw0I.tZH1mZ2HLV7Or4wJt9ZVKSfamZ/jP0f0Kr0vL3u.r.6', 'MS', NULL, 'Sophie', 'Schmid', 'Sophie.Schmid@muster.at', '+43 650 3456789', '5020', 'Salzburg', 'Austria', 'Getreidegasse 8', now(), now(), true, false),
+(gen_random_uuid(), 'loganx', '$2a$10$plRXfUw0I.tZH1mZ2HLV7Or4wJt9ZVKSfamZ/jP0f0Kr0vL3u.r.6', 'MX', 'was weiß ich', 'Monday', 'Maier', 'Tobias.Maier@muster.at', '+43 699 4567890', '2700', 'Wiener Neustadt', 'Austria', 'Neunkirchner Straße 20', now(), now(), true, false),
+(gen_random_uuid(), 'peterb', '$2a$10$plRXfUw0I.tZH1mZ2HLV7Or4wJt9ZVKSfamZ/jP0f0Kr0vL3u.r.6', 'MS', NULL, 'Katharina', 'Baumhackl', 'Katharina.Baumhackl@muster.at', '+43 676 9012345', '3100', 'St. Pölten', 'Austria', 'Kremser Gasse 7', now(), now(), true, true);
 
 
 UPDATE users
