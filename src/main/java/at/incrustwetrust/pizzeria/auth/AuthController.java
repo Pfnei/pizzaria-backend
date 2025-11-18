@@ -55,11 +55,13 @@ public class AuthController {
     // REGISTRATION
     // ------------------------------------------------------------
     @PostMapping("/register")
-    public ResponseEntity<String> register(@Valid @RequestBody UserCreateDTO request) {
+    public ResponseEntity<UserResponseLightDTO> register(@Valid @RequestBody UserCreateDTO request) {
 
         User user = mapper.toEntity(request, null);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         userRepository.save(user);
-        return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully");
+
+        UserResponseLightDTO userDto = mapper.toResponseLightDto(user);
+        return ResponseEntity.status(HttpStatus.CREATED).body(userDto);
     }
 }
