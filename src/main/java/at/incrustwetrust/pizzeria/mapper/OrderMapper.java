@@ -5,6 +5,9 @@ import at.incrustwetrust.pizzeria.dto.order.OrderResponseLightDTO;
 import at.incrustwetrust.pizzeria.dto.user.UserResponseLightDTO;
 import at.incrustwetrust.pizzeria.entity.Order;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class OrderMapper {
 
 

@@ -4,6 +4,9 @@ import at.incrustwetrust.pizzeria.dto.product.ProductResponseDTO;
 import at.incrustwetrust.pizzeria.dto.product.ProductResponseLightDTO;
 import at.incrustwetrust.pizzeria.entity.Product;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class ProductMapper {
 
     public static ProductResponseDTO toResponseDto(Product product) {
