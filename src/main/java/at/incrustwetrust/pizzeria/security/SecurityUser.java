@@ -30,7 +30,7 @@ public class SecurityUser implements UserDetails {
 
     /**
      * Security-"Username" = Login-Identität
-     * Bei dir: EMAIL
+     * Bei uns email
      */
     @Override
     public String getUsername() {

@@ -31,7 +31,7 @@ public class JwtService {
         Instant now = Instant.now();
 
         String email    = secUser.getEmail();            // Login-Identität
-        String userId   = secUser.getUserId();           // deine DB-ID
+        String userId   = secUser.getUserId();           // DB-ID
         boolean isAdmin = secUser.isAdmin();
         String username = secUser.getDisplayUsername();  // UI-Name
 
@@ -41,8 +41,8 @@ public class JwtService {
                 .withIssuedAt(Date.from(now))
                 .withExpiresAt(Date.from(now.plusSeconds(expires)))
                 .withClaim("userId", userId)
-                .withClaim("admin", isAdmin)
-                .withClaim("username", username) // Anzeige-Name
+                .withClaim("admin", isAdmin)        // <--- Konsistent
+                .withClaim("username", username)
                 .sign(Algorithm.HMAC256(secret));
     }
 
@@ -57,7 +57,9 @@ public class JwtService {
     }
 
     public boolean extractIsAdmin(String token) {
-        return verify(token).getClaim("isAdmin").asBoolean();
+        DecodedJWT jwt = verify(token);
+        Boolean isAdmin = jwt.getClaim("admin").asBoolean();
+        return isAdmin != null && isAdmin;
     }
 
     public String extractDisplayUsername(String token) {
