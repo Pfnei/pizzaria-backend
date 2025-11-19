@@ -5,7 +5,6 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -24,23 +23,45 @@ public class JwtService {
     @Value("${security.jwt.expires-in-seconds}")
     private long expires;
 
+    public String generateToken(UserDetails userDetails) {
+        if (!(userDetails instanceof SecurityUser secUser)) {
+            throw new IllegalArgumentException("UserDetails is not SecurityUser – cannot issue token");
+        }
 
-    public String generateToken(UserDetails user) {
         Instant now = Instant.now();
 
-        boolean isAdmin = (user instanceof SecurityUser SecUser) && SecUser.isAdmin();
+        String email    = secUser.getEmail();            // Login-Identität
+        String userId   = secUser.getUserId();           // deine DB-ID
+        boolean isAdmin = secUser.isAdmin();
+        String username = secUser.getDisplayUsername();  // UI-Name
 
         return JWT.create()
                 .withIssuer(issuer)
-                .withSubject(user.getUsername())
+                .withSubject(email) // sub = Email
                 .withIssuedAt(Date.from(now))
                 .withExpiresAt(Date.from(now.plusSeconds(expires)))
+                .withClaim("userId", userId)
                 .withClaim("isAdmin", isAdmin)
+                .withClaim("username", username) // Anzeige-Name
                 .sign(Algorithm.HMAC256(secret));
     }
 
+    // Subject (bei dir = Email)
     public String extractUsername(String token) {
         return verify(token).getSubject();
+    }
+
+    // Individuelle Claims
+    public String extractUserId(String token) {
+        return verify(token).getClaim("userId").asString();
+    }
+
+    public boolean extractIsAdmin(String token) {
+        return verify(token).getClaim("isAdmin").asBoolean();
+    }
+
+    public String extractDisplayUsername(String token) {
+        return verify(token).getClaim("username").asString();
     }
 
     public DecodedJWT verify(String token) throws JWTVerificationException {
