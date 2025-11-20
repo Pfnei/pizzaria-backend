@@ -19,9 +19,9 @@ import java.util.List;
 @NoArgsConstructor
 public class Allergen {
 
-    // =====================================================
+
     // ID (praktischer Primärschlüssel)
-    // =====================================================
+
     @Id
     @Column(length = 5) // z. B. "A", "B", "GLU", "LAC"
     private String abbreviation;
@@ -46,9 +46,9 @@ public class Allergen {
     @ManyToMany(mappedBy = "allergens")
     private List<Product> products;
 
-    // =====================================================
+
     // Convenience-Konstruktor
-    // =====================================================
+
     public Allergen(String abbreviation, String description, User createdBy) {
         this.abbreviation = abbreviation.toUpperCase();
         this.description = description;

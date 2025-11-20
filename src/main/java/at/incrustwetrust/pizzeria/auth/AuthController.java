@@ -29,9 +29,9 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
     private final UserMapper mapper;
 
-    // ------------------------------------------------------------
+
     // LOGIN
-    // ------------------------------------------------------------
+
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
         Authentication authentication = authManager.authenticate(
@@ -51,9 +51,9 @@ public class AuthController {
         return ResponseEntity.ok(new AuthResponse(token, userDto));
     }
 
-    // ------------------------------------------------------------
+
     // REGISTRATION
-    // ------------------------------------------------------------
+
     @PostMapping("/register")
     public ResponseEntity<UserResponseLightDTO> register(@Valid @RequestBody UserCreateDTO request) {
 

@@ -23,9 +23,8 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserMapper mapper;
 
-    // ======================================================
     // CREATE
-    // ======================================================
+
     public UserResponseDTO create(UserCreateDTO dto, User createdBy) {
         throwIfUsernameOrEmailExists(dto);
 
@@ -36,9 +35,9 @@ public class UserService {
         return mapper.toResponseDto(saved);
     }
 
-    // ======================================================
+
     // READ
-    // ======================================================
+
     public UserResponseDTO read(String id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "No user found with ID: " + id));
@@ -49,9 +48,9 @@ public class UserService {
         return mapper.toResponseLightDtoList(userRepository.findAll());
     }
 
-    // ======================================================
+
     // UPDATE
-    // ======================================================
+
     public UserResponseDTO update(UserUpdateDTO dto, String id) {
         User existingUser = userRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "No user found with ID: " + id));
@@ -68,9 +67,9 @@ public class UserService {
         return mapper.toResponseDto(saved);
     }
 
-    // ======================================================
+
     // DELETE
-    // ======================================================
+
     public UserResponseDTO delete(String id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "No user found with ID: " + id));
@@ -78,9 +77,9 @@ public class UserService {
         return mapper.toResponseDto(user);
     }
 
-    // ======================================================
+
     // DUPLICATE CHECKS
-    // ======================================================
+
     private void throwIfUsernameOrEmailExists(UserCreateDTO dto) {
         userRepository.findUserByEmail(dto.getEmail()).ifPresent(u -> {
             throw new ResponseStatusException(CONFLICT, "A user with this email already exists.");
