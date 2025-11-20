@@ -24,9 +24,9 @@ public class UserController {
 
     private final UserService userService;
 
-    // =====================================================
+
     // READ ALL (LIGHT DTO)
-    // =====================================================
+
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<List<UserResponseLightDTO>> readAll() {
@@ -41,9 +41,9 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-    // =====================================================
+
     // READ ONE (FULL DTO)
-    // =====================================================
+
 
     @GetMapping("/{id}")
     public ResponseEntity<UserResponseDTO> read(@PathVariable String id) {
@@ -53,9 +53,9 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-    // =====================================================
+
     // CREATE
-    // =====================================================
+
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<UserResponseDTO> create(@Valid @RequestBody UserCreateDTO dto) {
@@ -63,9 +63,9 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
-    // =====================================================
+
     // UPDATE (PATCH)
-    // =====================================================
+
     @PatchMapping("/{id}")
     public ResponseEntity<UserResponseDTO> update(
             @PathVariable String id,
@@ -76,9 +76,9 @@ public class UserController {
         return ResponseEntity.ok(updated);
     }
 
-    // =====================================================
+
     // DELETE
-    // =====================================================
+
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<UserResponseDTO> delete(@PathVariable String id) {
