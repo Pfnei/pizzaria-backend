@@ -18,7 +18,10 @@
 
     <properties>
         <java.version>21</java.version>
+        <!-- Encoding für Source & Reports explizit auf UTF-8 -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
         <mapstruct.version>1.5.5.Final</mapstruct.version>
         <lombok.version>1.18.34</lombok.version>
     </properties>
@@ -94,11 +97,13 @@
 
     <build>
         <plugins>
+            <!-- Spring Boot Plugin -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
 
+            <!-- Compiler Plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -123,10 +128,19 @@
                             <version>0.2.0</version>
                         </path>
                     </annotationProcessorPaths>
-                    <!-- optional, da du eh @Mapper(componentModel="spring") nutzt -->
                     <compilerArgs>
                         <arg>-Amapstruct.defaultComponentModel=spring</arg>
                     </compilerArgs>
+                </configuration>
+            </plugin>
+
+            <!-- Resources Plugin explizit auf UTF-8 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.3.1</version>
+                <configuration>
+                    <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
         </plugins>

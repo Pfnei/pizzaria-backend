@@ -19,9 +19,9 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
 
-    // =====================================================
+
     // CREATE
-    // =====================================================
+
     public ProductResponseDTO create(ProductCreateDTO dto) {
         ifProductNameAlreadyExistsThrow(dto.getProductName());
 
@@ -31,9 +31,8 @@ public class ProductService {
         return productMapper.toResponseDto(saved);
     }
 
-    // =====================================================
     // READ
-    // =====================================================
+
     public ProductResponseDTO read(String id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() ->
@@ -47,9 +46,9 @@ public class ProductService {
         return productMapper.toResponseLightDtoList(products);
     }
 
-    // =====================================================
+
     // UPDATE
-    // =====================================================
+
     public ProductResponseDTO update(ProductUpdateDTO dto, String id) {
         Product existing = productRepository.findById(id)
                 .orElseThrow(() ->
@@ -63,9 +62,8 @@ public class ProductService {
         return productMapper.toResponseDto(saved);
     }
 
-    // =====================================================
     // DELETE
-    // =====================================================
+
     public ProductResponseDTO delete(String id) {
         Product existing = productRepository.findById(id)
                 .orElseThrow(() ->
@@ -75,9 +73,9 @@ public class ProductService {
         return productMapper.toResponseDto(existing);
     }
 
-    // =====================================================
+
     // DUPLICATE CHECKS
-    // =====================================================
+
     private void ifProductNameAlreadyExistsThrow(String productName) {
         productRepository.findProductByProductName(productName).ifPresent(p -> {
             throw new ResponseStatusException(CONFLICT, "Es ist bereits ein Produkt mit diesem Namen vorhanden");

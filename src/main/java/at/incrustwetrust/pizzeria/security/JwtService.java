@@ -57,9 +57,7 @@ public class JwtService {
     }
 
     public boolean extractIsAdmin(String token) {
-        DecodedJWT jwt = verify(token);
-        Boolean isAdmin = jwt.getClaim("admin").asBoolean();
-        return isAdmin != null && isAdmin;
+        return verify(token).getClaim("isAdmin").asBoolean();
     }
 
     public String extractDisplayUsername(String token) {
