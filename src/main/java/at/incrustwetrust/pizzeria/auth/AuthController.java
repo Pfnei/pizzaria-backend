@@ -59,6 +59,8 @@ public class AuthController {
 
         User user = mapper.toEntity(request, null);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setActive(true);
+        user.setAdmin(false);
         userRepository.save(user);
 
         UserResponseLightDTO userDto = mapper.toResponseLightDto(user);
