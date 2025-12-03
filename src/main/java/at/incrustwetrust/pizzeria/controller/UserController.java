@@ -13,19 +13,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+
 
 import java.util.List;
-
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
-
-
-    // READ ALL (LIGHT DTO)
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
@@ -42,19 +39,16 @@ public class UserController {
     }
 
 
-    // READ ONE (FULL DTO)
+    @PatchMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') or #id == #principal.userId")
+    public ResponseEntity<UserResponseDTO> update(
+            @PathVariable String id,
+            @Valid @RequestBody UserUpdateDTO dto,
+            @AuthenticationPrincipal SecurityUser principal) {
 
-
-    @GetMapping("/{id}")
-    public ResponseEntity<UserResponseDTO> read(@PathVariable String id) {
-        assertSelfOrAdmin(id);
-
-        UserResponseDTO user = userService.read(id);
-        return ResponseEntity.ok(user);
+        UserResponseDTO updated = userService.update(dto, id, principal);
+        return ResponseEntity.ok(updated);
     }
-
-
-    // CREATE
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
@@ -64,20 +58,6 @@ public class UserController {
     }
 
 
-    // UPDATE (PATCH)
-
-    @PatchMapping("/{id}")
-    public ResponseEntity<UserResponseDTO> update(
-            @PathVariable String id,
-            @Valid @RequestBody UserUpdateDTO dto) {
-
-        assertSelfOrAdmin(id);
-        UserResponseDTO updated = userService.update(dto, id);
-        return ResponseEntity.ok(updated);
-    }
-
-
-    // DELETE
 
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
@@ -86,26 +66,5 @@ public class UserController {
         return ResponseEntity.ok(deleted);
     }
 
-    private SecurityUser getPrincipal() {
-        var auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || !(auth.getPrincipal() instanceof SecurityUser principal)) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "No authenticated user");
-        }
-        return principal;
-    }
-
-
-    private void assertSelfOrAdmin(String userId) {
-        SecurityUser principal = getPrincipal();
-        boolean isAdmin = principal.isAdmin();
-        boolean itself = principal.getUserId().equals(userId);
-
-        if (!isAdmin && !itself) {
-            throw new ResponseStatusException(
-                    HttpStatus.FORBIDDEN,
-                    "You are not allowed to access this resource."
-            );
-        }
-    }
 
 }

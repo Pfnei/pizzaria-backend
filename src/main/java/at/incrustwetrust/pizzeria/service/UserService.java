@@ -4,6 +4,7 @@ import at.incrustwetrust.pizzeria.dto.user.*;
 import at.incrustwetrust.pizzeria.entity.User;
 import at.incrustwetrust.pizzeria.mapper.UserMapper;
 import at.incrustwetrust.pizzeria.repository.UserRepository;
+import at.incrustwetrust.pizzeria.security.SecurityUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -51,21 +52,48 @@ public class UserService {
 
     // UPDATE
 
-    public UserResponseDTO update(UserUpdateDTO dto, String id) {
+    public UserResponseDTO update(UserUpdateDTO dto, String id, SecurityUser principal) {
         User existingUser = userRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "No user found with ID: " + id));
+                .orElseThrow(() -> new ResponseStatusException(
+                        NOT_FOUND, "No user found with ID: " + id
+                ));
 
         throwIfUsernameOrEmailExists(dto, id);
 
+        boolean isAdmin = principal.isAdmin();
+        boolean isSelf  = principal.getUserId().equals(id);
+
+        // Zusätzliche Sicherung, falls PreAuthorize irgendwann geändert wird:
+        if (!isAdmin && !isSelf) {
+            throw new ResponseStatusException(FORBIDDEN, "You are not allowed to update this user.");
+        }
+
+        // aktuelle Werte sichern, bevor der Mapper drüberbügelt
+        boolean oldAdmin  = existingUser.isAdmin();
+        boolean oldActive = existingUser.isActive();
+
+        // hier werden alle Felder gemäß DTO → Entity gemappt
         mapper.updateEntity(dto, existingUser);
 
+        // Nur Admin darf admin/active wirklich ändern
+        if (!isAdmin) {
+            existingUser.setAdmin(oldAdmin);
+            existingUser.setActive(oldActive);
+        }
+
+        // Passwort-Änderung
         if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
+            // nur Admin ODER self dürfen das Passwort ändern
+            if (!isAdmin && !isSelf) {
+                throw new ResponseStatusException(FORBIDDEN, "You are not allowed to change the password.");
+            }
             existingUser.setPassword(passwordEncoder.encode(dto.getPassword()));
         }
 
         User saved = userRepository.save(existingUser);
         return mapper.toResponseDto(saved);
     }
+
 
 
     // DELETE
