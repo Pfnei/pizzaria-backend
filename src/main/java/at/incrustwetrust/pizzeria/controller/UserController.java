@@ -30,6 +30,11 @@ public class UserController {
         List<UserResponseLightDTO> users = userService.readAll();
         return ResponseEntity.ok(users);
     }
+    @GetMapping("/{id}")
+    public ResponseEntity<UserResponseDTO> read(@PathVariable String id) {
+        UserResponseDTO user = userService.read(id);
+        return ResponseEntity.ok(user);
+    }
 
     @GetMapping("/me")
     public ResponseEntity<UserResponseDTO> readMe() {
