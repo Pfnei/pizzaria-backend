@@ -45,8 +45,8 @@ public class UserService {
         return mapper.toResponseDto(user);
     }
 
-    public List<UserResponseLightDTO> readAll() {
-        return mapper.toResponseLightDtoList(userRepository.findAll());
+    public List<UserResponseDTO> readAll() {
+        return mapper.toResponseDtoList(userRepository.findAll());
     }
 
 

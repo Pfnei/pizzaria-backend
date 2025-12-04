@@ -25,8 +25,8 @@ public class UserController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
-    public ResponseEntity<List<UserResponseLightDTO>> readAll() {
-        List<UserResponseLightDTO> users = userService.readAll();
+    public ResponseEntity<List<UserResponseDTO>> readAll() {
+        List<UserResponseDTO> users = userService.readAll();
         return ResponseEntity.ok(users);
     }
 
@@ -37,9 +37,19 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
+    @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<UserResponseDTO> readById(@PathVariable String id) {
+        UserResponseDTO user = userService.read(id);
+        return ResponseEntity.ok(user);
+    }
+
+
+
+
 
     @PatchMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') or #id == #principal.userId")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserResponseDTO> update(
             @PathVariable String id,
             @Valid @RequestBody UserUpdateDTO dto,
