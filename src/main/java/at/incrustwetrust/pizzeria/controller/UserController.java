@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
@@ -30,15 +29,10 @@ public class UserController {
         List<UserResponseLightDTO> users = userService.readAll();
         return ResponseEntity.ok(users);
     }
-    @GetMapping("/{id}")
-    public ResponseEntity<UserResponseDTO> read(@PathVariable String id) {
-        UserResponseDTO user = userService.read(id);
-        return ResponseEntity.ok(user);
-    }
 
     @GetMapping("/me")
-    public ResponseEntity<UserResponseDTO> readMe() {
-        SecurityUser principal = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public ResponseEntity<UserResponseDTO> readMe(@AuthenticationPrincipal SecurityUser principal ) {
+
         UserResponseDTO user = userService.read(principal.getUserId());
         return ResponseEntity.ok(user);
     }
