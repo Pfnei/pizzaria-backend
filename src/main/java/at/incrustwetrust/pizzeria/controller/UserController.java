@@ -46,8 +46,6 @@ public class UserController {
 
 
 
-
-
     @PatchMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserResponseDTO> update(
