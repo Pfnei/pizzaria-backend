@@ -9,7 +9,7 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.io.File;
+
 import java.time.Instant;
 import java.util.List;
 
@@ -26,7 +26,7 @@ public class User {
 
     // Wird nicht in der DB gespeichert – nur temporär
     @Transient
-    private File profilPicture;
+    private String profilPicture;
 
     @Column(nullable = false, unique = true, length = 30)
     private String username;

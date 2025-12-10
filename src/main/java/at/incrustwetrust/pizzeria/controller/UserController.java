@@ -62,7 +62,7 @@ public class UserController {
     public ResponseEntity<UserResponseDTO> create(@Valid @RequestBody UserCreateDTO dto) {
         UserResponseDTO created = userService.create(dto, null);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
-    }
+    } // muss noch mit @AuthenticationPrincipal SecurityUser principal erweitert werden fürs etzen beim user wer created hat.
 
 
 
