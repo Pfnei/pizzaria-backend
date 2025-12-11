@@ -31,7 +31,7 @@ public class JwtService {
         Instant now = Instant.now();
 
         String email    = secUser.getEmail();            // Login-Identität
-        String userId   = secUser.getUserId();           // DB-ID
+        String userId   = secUser.getId();           // DB-ID
         boolean isAdmin = secUser.isAdmin();
         String username = secUser.getDisplayUsername();  // UI-Name
 
