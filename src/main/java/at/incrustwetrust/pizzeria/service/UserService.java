@@ -90,6 +90,11 @@ public class UserService {
             existingUser.setPassword(passwordEncoder.encode(dto.getPassword()));
         }
 
+        existingUser.setLastUpdatedBy(
+                userRepository.findById(principal.getId())
+                        .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Current user not found"))
+        );
+
         User saved = userRepository.save(existingUser);
         return mapper.toResponseDto(saved);
     }
