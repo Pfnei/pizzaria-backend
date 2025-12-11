@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 public class FileSecurity {
 
     public boolean canAccess(String filename, SecurityUser user) {
+        if (filename == null || user == null) return false;
         return filename.startsWith("profile_" + user.getId());
     }
 }

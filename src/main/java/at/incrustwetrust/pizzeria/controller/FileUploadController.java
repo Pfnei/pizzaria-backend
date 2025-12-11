@@ -43,7 +43,7 @@ public class FileUploadController {
 
     //  Download eines Bilds
 
-    @GetMapping("/{filename}")
+    @GetMapping("/profile/{filename}")
     @PreAuthorize("hasRole('ADMIN') or @fileSecurity.canAccess(#filename, principal)")
     public ResponseEntity<byte[]> downloadFile(@PathVariable String filename) {
 
@@ -51,7 +51,7 @@ public class FileUploadController {
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
-                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .contentType(MediaType.IMAGE_JPEG)
                 .body(data);
     }
 
