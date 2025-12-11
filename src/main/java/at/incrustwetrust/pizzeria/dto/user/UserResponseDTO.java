@@ -27,6 +27,8 @@ public class UserResponseDTO {
     private String city;
     private String country;
 
+    private String profilePicture;
+
     // vereinheitlicht zu einfachem Namen für MapStruct
     private boolean active;
     private boolean admin;

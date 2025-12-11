@@ -24,4 +24,5 @@ public class UserUpdateDTO {
     private String salutationDetail;
     private String country;           // z. B. "AT", "DE"
     private String password;
+
 }

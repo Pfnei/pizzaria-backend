@@ -1,5 +1,6 @@
 package at.incrustwetrust.pizzeria.controller;
 
+import at.incrustwetrust.pizzeria.repository.UserRepository;
 import at.incrustwetrust.pizzeria.security.SecurityUser;
 import at.incrustwetrust.pizzeria.service.FileStorageService;
 import lombok.RequiredArgsConstructor;
@@ -17,15 +18,24 @@ import org.springframework.web.multipart.MultipartFile;
 public class FileUploadController {
 
     private final FileStorageService fileService;
+    private final UserRepository userRepository;
 
     // Upload eines Profilbilds
 
-    @PostMapping("/profilepicture")
+    @PostMapping(value = "/profilepicture", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<String> uploadProfileImage(
             @RequestParam("file") MultipartFile file,
-            @AuthenticationPrincipal SecurityUser user
+            @AuthenticationPrincipal SecurityUser principal
     ) {
-        String saved = fileService.saveFile(file, user.getId());
+
+        var user = userRepository.findById(principal.getId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        String saved = fileService.saveFile(file, user.getUserId());
+        user.setProfilePicture(saved);
+        userRepository.save(user);
+
         return ResponseEntity.ok(saved);
     }
 

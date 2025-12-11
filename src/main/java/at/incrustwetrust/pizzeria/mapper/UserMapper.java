@@ -11,7 +11,7 @@ public interface UserMapper {
     // ======= CREATE =======
     @Mappings({
             @Mapping(target = "userId", ignore = true),
-            @Mapping(target = "profilPicture", ignore = true),
+            @Mapping(target = "profilePicture", ignore = true),
             @Mapping(target = "createdAt", ignore = true),
             @Mapping(target = "lastUpdatedAt", ignore = true),
             @Mapping(target = "lastUpdatedBy", ignore = true),
@@ -34,7 +34,7 @@ public interface UserMapper {
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mappings({
             @Mapping(target = "userId", ignore = true),
-            @Mapping(target = "profilPicture", ignore = true),
+            @Mapping(target = "profilePicture", ignore = true),
             @Mapping(target = "createdAt", ignore = true),
             @Mapping(target = "lastUpdatedAt", ignore = true),
             @Mapping(target = "createdBy", ignore = true),

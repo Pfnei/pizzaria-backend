@@ -24,9 +24,9 @@ public class User {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String userId;
 
-    // Wird nicht in der DB gespeichert – nur temporär
-    @Transient
-    private String profilPicture;
+    // dauerhaft gespeicherter Dateiname, z. B. "profile_<id>.jpg"
+    @Column(name = "profile_picture")
+    private String profilePicture;
 
     @Column(nullable = false, unique = true, length = 30)
     private String username;

@@ -17,5 +17,6 @@ public class UserResponseLightDTO {
     private boolean active;
     private boolean admin;
     private String zipcode;
+    private String profilePicture;
 
 }

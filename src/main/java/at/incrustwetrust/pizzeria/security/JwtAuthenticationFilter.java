@@ -38,6 +38,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             try {
                 String username = jwt.extractUsername(token);
+
                 if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                     UserDetails user = uds.loadUserByUsername(username);
 
@@ -47,7 +48,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                     SecurityContextHolder.getContext().setAuthentication(auth);
                 }
-            } catch (JWTVerificationException ignored) {}
+
+            } catch (JWTVerificationException e) {
+                // optional: loggen
+            }
         }
 
         chain.doFilter(req, res);
@@ -55,6 +59,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
-        return request.getServletPath().startsWith("/auth/");
+        return request.getRequestURI().startsWith("/auth/");
     }
 }
