@@ -25,19 +25,34 @@ public class FileStorageServiceImpl implements FileStorageService {
 
     @Override
     public String saveFile(MultipartFile file, String userId) {
+
         try {
-            String cleanName = StringUtils.cleanPath(file.getOriginalFilename());
-            String filename = userId + "_" + System.currentTimeMillis() + "_" + cleanName;
+            String mimeType = file.getContentType();
+            if (mimeType == null || !mimeType.startsWith("image/")) {
+                throw new IllegalArgumentException("Only image uploads allowed!");
+            }
+
+            // dateitypen prüfen und danach fallback setzen
+            String extension = StringUtils.getFilenameExtension(file.getOriginalFilename());
+            if (extension == null) {
+                extension = "png";
+            // fallback
+            }
+
+            // pro user_id nur ein einziger filename --> spric nur ein einziges bild pro user
+            String filename = "profile_" + userId + "." + extension;
 
             Path destination = root.resolve(filename);
+
+            // Datei einfach überschreiben
             Files.copy(file.getInputStream(), destination, StandardCopyOption.REPLACE_EXISTING);
 
-            log.info("File saved: {}", destination);
+            log.info("Profile picture saved for user {} at {}", userId, destination);
 
             return filename;
 
         } catch (IOException e) {
-            throw new RuntimeException("Could not store file!", e);
+            throw new RuntimeException("Could not store profile picture!", e);
         }
     }
 

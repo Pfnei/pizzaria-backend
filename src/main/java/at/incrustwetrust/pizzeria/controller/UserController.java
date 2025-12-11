@@ -3,7 +3,6 @@ package at.incrustwetrust.pizzeria.controller;
 import at.incrustwetrust.pizzeria.dto.user.UserCreateDTO;
 import at.incrustwetrust.pizzeria.dto.user.UserUpdateDTO;
 import at.incrustwetrust.pizzeria.dto.user.UserResponseDTO;
-import at.incrustwetrust.pizzeria.dto.user.UserResponseLightDTO;
 import at.incrustwetrust.pizzeria.security.SecurityUser;
 import at.incrustwetrust.pizzeria.service.UserService;
 import jakarta.validation.Valid;
@@ -33,7 +32,7 @@ public class UserController {
     @GetMapping("/me")
     public ResponseEntity<UserResponseDTO> readMe(@AuthenticationPrincipal SecurityUser principal ) {
 
-        UserResponseDTO user = userService.read(principal.getUserId());
+        UserResponseDTO user = userService.read(principal.getId());
         return ResponseEntity.ok(user);
     }
 

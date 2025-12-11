@@ -20,19 +20,21 @@ public class FileUploadController {
 
     // Upload eines Profilbilds
 
-    @PostMapping("/profile")
+    @PostMapping("/profilepicture")
     public ResponseEntity<String> uploadProfileImage(
             @RequestParam("file") MultipartFile file,
             @AuthenticationPrincipal SecurityUser user
     ) {
-        String saved = fileService.saveFile(file, user.getUserId());
+        String saved = fileService.saveFile(file, user.getId());
         return ResponseEntity.ok(saved);
     }
+
+
 
     //  Download eines Bilds
 
     @GetMapping("/{filename}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or @fileSecurity.canAccess(#filename, principal)")
     public ResponseEntity<byte[]> downloadFile(@PathVariable String filename) {
 
         byte[] data = fileService.loadFile(filename);
@@ -42,4 +44,6 @@ public class FileUploadController {
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(data);
     }
+
+
 }

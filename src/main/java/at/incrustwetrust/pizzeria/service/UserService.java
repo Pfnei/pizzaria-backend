@@ -61,7 +61,7 @@ public class UserService {
         throwIfUsernameOrEmailExists(dto, id);
 
         boolean isAdmin = principal.isAdmin();
-        boolean isSelf  = principal.getUserId().equals(id);
+        boolean isSelf  = principal.getId().equals(id);
 
         // Zusätzliche Sicherung, falls PreAuthorize irgendwann geändert wird:
         if (!isAdmin && !isSelf) {

@@ -78,7 +78,13 @@ public class SecurityUser implements UserDetails {
         return user.isAdmin();
     }
 
-    public String getUserId() {
+    public String getId() {
         return user.getUserId();
     }
+
+    public boolean hasRole(String role) {
+        return getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_" + role));
+    }
+
 }
