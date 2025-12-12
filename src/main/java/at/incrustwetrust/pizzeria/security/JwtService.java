@@ -41,7 +41,7 @@ public class JwtService {
                 .withIssuedAt(Date.from(now))
                 .withExpiresAt(Date.from(now.plusSeconds(expires)))
                 .withClaim("userId", userId)
-                .withClaim("admin", isAdmin)        // <--- Konsistent
+                .withClaim("admin", isAdmin)
                 .withClaim("username", username)
                 .sign(Algorithm.HMAC256(secret));
     }

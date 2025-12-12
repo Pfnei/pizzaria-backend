@@ -4,7 +4,6 @@ import at.incrustwetrust.pizzeria.repository.UserRepository;
 import at.incrustwetrust.pizzeria.security.SecurityUser;
 import at.incrustwetrust.pizzeria.service.FileStorageService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -49,10 +48,12 @@ public class FileUploadController {
 
         byte[] data = fileService.loadFile(filename);
 
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
-                .contentType(MediaType.IMAGE_JPEG)
-                .body(data);
+        return ResponseEntity.ok(data);
+
+
+      //  .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+             //   .contentType(MediaType.IMAGE_JPEG)
+            //    .body(data);
     }
 
 
