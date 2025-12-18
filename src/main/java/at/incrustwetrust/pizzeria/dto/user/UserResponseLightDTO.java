@@ -19,4 +19,7 @@ public class UserResponseLightDTO {
     private String zipcode;
     private String profilePicture;
 
+    public UserResponseLightDTO(long l, String mail) {
+
+    }
 }
