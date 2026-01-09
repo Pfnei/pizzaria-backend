@@ -45,9 +45,7 @@ public interface UserMapper {
             @Mapping(target = "salutation", source = "salutation", qualifiedByName = "toSalutation"),
             @Mapping(target = "country", source = "country", qualifiedByName = "toCountry"),
 
-            // ⛔ HIER WERDEN DIE ZWEI MAPPINGS FÜR isActive/isAdmin ENTFERNT
-            // MapStruct handhabt das Mapping von Boolean (DTO) zu boolean (Entity) automatisch.
-            // Die Felder werden ignoriert, wenn sie im DTO null sind (dank NullValuePropertyMappingStrategy.IGNORE).
+
     })
     void updateEntity(UserUpdateDTO dto, @MappingTarget User user);
 

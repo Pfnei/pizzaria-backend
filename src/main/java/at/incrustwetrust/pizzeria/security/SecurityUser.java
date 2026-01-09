@@ -61,16 +61,16 @@ public class SecurityUser implements UserDetails {
 
     // --- Convenience-Methoden für JWT & App-Logik ---
 
-    /**
-     * E-Mail, wie oben in getUsername(), aber explizit benannt.
-     */
+
+   //  * E-Mail, wie oben in getUsername(), aber explizit benannt.
+
     public String getEmail() {
         return user.getEmail();
     }
 
-    /**
-     * Das ist dein "Benutzername" aus der Entity (für UI/Anzeige).
-     */
+
+     //* Das ist dein "Benutzername" aus der Entity (für UI/Anzeige).
+
     public String getDisplayUsername() {
         return user.getUsername(); // Feld in deiner User-Entity
     }
