@@ -36,6 +36,7 @@ public class SecurityUser implements UserDetails {
     public String getUsername() {
         return user.getEmail();
     }
+    public User getUserEntity() { return this.user; }
 
     // --- Account-Status ---
     @Override

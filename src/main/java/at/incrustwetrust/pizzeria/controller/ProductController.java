@@ -21,8 +21,6 @@ public class ProductController {
 
     private final ProductService productService;
 
-
-
     @GetMapping
     public ResponseEntity<List<ProductResponseLightDTO>> readAll() {
         List<ProductResponseLightDTO> products = productService.readAll();
@@ -36,7 +34,7 @@ public class ProductController {
         return ResponseEntity.ok(product);
     }
 
-    @PreAuthorize( "hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<ProductResponseDTO> create(@RequestBody @Valid ProductCreateDTO dto) {
         ProductResponseDTO created = productService.create(dto);

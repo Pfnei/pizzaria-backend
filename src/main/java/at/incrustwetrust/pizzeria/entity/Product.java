@@ -16,6 +16,10 @@ import java.util.List;
 @Table (name = "products")
 public class Product {
 
+
+    @Column(columnDefinition = "SERIAL", insertable = false, updatable = false)
+    private Long sequenceId;
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String productId;
@@ -115,7 +119,7 @@ public class Product {
     }
 
     public void setVegetarian(boolean vegetarian) {
-        vegetarian = vegetarian;
+        this.vegetarian = vegetarian;
     }
 
     public List<Allergen> getAllergens() {
@@ -148,7 +152,7 @@ public class Product {
     }
 
     public void setActive(boolean active) {
-        active = active;
+        this.active = active;
     }
 
     public Instant getCreatedAt() {
