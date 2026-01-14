@@ -56,7 +56,7 @@ public class FileUploadController {
         if (user.getProfilePicture() == null) {
             return ResponseEntity.notFound().build();
         }
-        byte[] data = fileService.loadProfileImage(userId);
+        byte[] data = fileService.loadProfileImage(user.getProfilePicture());
 
         MediaType contentType = user.getProfilePicture().endsWith(".png") ?
                 MediaType.IMAGE_PNG : MediaType.IMAGE_JPEG;
