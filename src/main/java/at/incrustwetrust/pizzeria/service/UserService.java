@@ -2,6 +2,7 @@ package at.incrustwetrust.pizzeria.service;
 
 import at.incrustwetrust.pizzeria.dto.user.*;
 import at.incrustwetrust.pizzeria.entity.User;
+import at.incrustwetrust.pizzeria.exception.UnauthorizedActionException;
 import at.incrustwetrust.pizzeria.exception.UserAlreadyExistsException;
 import at.incrustwetrust.pizzeria.exception.UserNotFoundException;
 import at.incrustwetrust.pizzeria.mapper.UserMapper;
@@ -76,7 +77,7 @@ public class UserService {
 
         // Zusätzliche Sicherung, falls PreAuthorize irgendwann geändert wird:
         if (!isAdmin && !isSelf) {
-            throw new ResponseStatusException(FORBIDDEN, "You are not allowed to update this user.");
+            throw new UnauthorizedActionException("You are not allowed to update this user.");
         }
 
         // aktuelle Werte sichern, bevor der Mapper drüberbügelt
@@ -96,7 +97,7 @@ public class UserService {
         if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
             // nur Admin ODER self dürfen das Passwort ändern
             if (!isAdmin && !isSelf) {
-                throw new ResponseStatusException(FORBIDDEN, "You are not allowed to change the password.");
+                throw new UnauthorizedActionException("You are not allowed to change the password.");
             }
             existingUser.setPassword(passwordEncoder.encode(dto.getPassword()));
         }

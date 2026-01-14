@@ -43,6 +43,16 @@ public class GlobalExceptionHandler {
     }
 
 
+    @ExceptionHandler(UnauthorizedActionException.class)
+    public ResponseEntity<ErrorResponse> handleUnauthorizedAction(UnauthorizedActionException ex) {
+        // Welchen Statuscode und welche Nachricht bauen wir hier zusammen? 🤔
+        return buildResponse(
+                HttpStatus.FORBIDDEN,
+                ex.getMessage(),
+                "https://pizzeria.at/help/permissions"
+        );
+    }
+
 
     // Hilfsmethode, um den Code oben kurz zu halten
     private ResponseEntity<ErrorResponse> buildResponse(HttpStatus status, String message, String link) {
