@@ -31,24 +31,39 @@ public class FileUploadController {
         var user = userRepository.findById(principal.getId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        String saved = fileService.saveFile(file, user.getUserId());
-        user.setProfilePicture(saved);
+        String filename  = fileService.saveProfileImage(file, principal.getId());
+
+
+        user.setProfilePicture(filename );
         userRepository.save(user);
 
-        return ResponseEntity.ok(saved);
+        return ResponseEntity.ok().build();
     }
 
 
 
     //  Download eines Bilds
 
-    @GetMapping("/profile/{filename}")
-    @PreAuthorize("hasRole('ADMIN') or @fileSecurity.canAccess(#filename, principal)")
-    public ResponseEntity<byte[]> downloadFile(@PathVariable String filename) {
+    @GetMapping("/profile")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<byte[]> getProfilePicture(@AuthenticationPrincipal SecurityUser principal) {
 
-        byte[] data = fileService.loadFile(filename);
 
-        return ResponseEntity.ok(data);
+        var user = userRepository.findById(principal.getId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+
+        if (user.getProfilePicture() == null) {
+            return ResponseEntity.notFound().build();
+        }
+        byte[] data = fileService.loadProfileImage(user.getProfilePicture());
+
+        MediaType contentType = user.getProfilePicture().endsWith(".png") ?
+                MediaType.IMAGE_PNG : MediaType.IMAGE_JPEG;
+
+        return ResponseEntity.ok()
+                .contentType(contentType)
+                .body(data);
 
 
       //  .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
