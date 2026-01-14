@@ -2,6 +2,8 @@ package at.incrustwetrust.pizzeria.service;
 
 import at.incrustwetrust.pizzeria.dto.product.*;
 import at.incrustwetrust.pizzeria.entity.Product;
+import at.incrustwetrust.pizzeria.exception.ProductAlreadyExistsException;
+import at.incrustwetrust.pizzeria.exception.ResourceNotFoundException;
 import at.incrustwetrust.pizzeria.mapper.ProductMapper;
 import at.incrustwetrust.pizzeria.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +38,7 @@ public class ProductService {
     public ProductResponseDTO read(String id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() ->
-                        new ResponseStatusException(NOT_FOUND, "Kein Produkt mit der ID " + id + " vorhanden"));
+                        new ResourceNotFoundException("Kein Produkt mit der ID " + id + " vorhanden"));
 
         return productMapper.toResponseDto(product);
     }
@@ -52,7 +54,7 @@ public class ProductService {
     public ProductResponseDTO update(ProductUpdateDTO dto, String id) {
         Product existing = productRepository.findById(id)
                 .orElseThrow(() ->
-                        new ResponseStatusException(NOT_FOUND, "Produkt-ID nicht in der Datenbank"));
+                        new ResourceNotFoundException("Produkt-ID nicht in der Datenbank"));
 
         ifProductNameAlreadyExistsThrow(dto.getProductName(), id);
 
@@ -67,7 +69,7 @@ public class ProductService {
     public ProductResponseDTO delete(String id) {
         Product existing = productRepository.findById(id)
                 .orElseThrow(() ->
-                        new ResponseStatusException(NOT_FOUND, "Kein Produkt mit der ID " + id + " vorhanden"));
+                        new ResourceNotFoundException("Kein Produkt mit der ID " + id + " vorhanden"));
 
         productRepository.delete(existing);
         return productMapper.toResponseDto(existing);
@@ -78,13 +80,13 @@ public class ProductService {
 
     private void ifProductNameAlreadyExistsThrow(String productName) {
         productRepository.findProductByProductName(productName).ifPresent(p -> {
-            throw new ResponseStatusException(CONFLICT, "Es ist bereits ein Produkt mit diesem Namen vorhanden");
+            throw new ProductAlreadyExistsException("Es ist bereits ein Produkt mit diesem Namen vorhanden");
         });
     }
 
     private void ifProductNameAlreadyExistsThrow(String productName, String excludedId) {
         productRepository.findProductByProductNameAndProductIdNot(productName, excludedId).ifPresent(p -> {
-            throw new ResponseStatusException(CONFLICT, "Es ist bereits ein Produkt mit diesem Namen vorhanden");
+            throw new ProductAlreadyExistsException("Es ist bereits ein Produkt mit diesem Namen vorhanden");
         });
     }
 }

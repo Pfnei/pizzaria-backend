@@ -3,6 +3,8 @@ package at.incrustwetrust.pizzeria.service;
 import at.incrustwetrust.pizzeria.dto.order.*;
 import at.incrustwetrust.pizzeria.entity.Order;
 import at.incrustwetrust.pizzeria.entity.User;
+import at.incrustwetrust.pizzeria.exception.ResourceNotFoundException;
+import at.incrustwetrust.pizzeria.exception.UserNotFoundException;
 import at.incrustwetrust.pizzeria.mapper.OrderMapper;
 import at.incrustwetrust.pizzeria.repository.OrderRepository;
 import at.incrustwetrust.pizzeria.repository.UserRepository;
@@ -34,7 +36,7 @@ public class OrderService {
     // READ ONE
     public OrderResponseDTO read(String id) {
         Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Keine Bestellung mit der ID " + id + " vorhanden"));
+                .orElseThrow(() -> new ResourceNotFoundException("Keine Bestellung mit der ID " + id + " vorhanden"));
         return orderMapper.toResponseDto(order);
     }
 
@@ -44,7 +46,7 @@ public class OrderService {
         User createdBy = null;
         if (dto.getCreatedById() != null && !dto.getCreatedById().isBlank()) {
             createdBy = userRepository.findById(dto.getCreatedById())
-                    .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "User (createdById) nicht gefunden"));
+                    .orElseThrow(() -> new UserNotFoundException("User (createdById) nicht gefunden"));
         }
         Order entity = orderMapper.toEntity(dto, createdBy);
         Order saved = orderRepository.save(entity);
