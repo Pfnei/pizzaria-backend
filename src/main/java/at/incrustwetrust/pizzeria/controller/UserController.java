@@ -37,7 +37,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') || principal.id == #userId")
     public ResponseEntity<UserResponseDTO> readById(@PathVariable String id) {
         UserResponseDTO user = userService.read(id);
         return ResponseEntity.ok(user);
@@ -46,7 +46,7 @@ public class UserController {
 
 
     @PatchMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') || principal.id == #userId")
     public ResponseEntity<UserResponseDTO> update(
             @PathVariable String id,
             @Valid @RequestBody UserUpdateDTO dto,
@@ -58,11 +58,10 @@ public class UserController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public ResponseEntity<UserResponseDTO> create(@Valid @RequestBody UserCreateDTO dto) {
-        UserResponseDTO created = userService.create(dto, null);
+    public ResponseEntity<UserResponseDTO> create(@Valid @RequestBody UserCreateDTO dto, @AuthenticationPrincipal SecurityUser principal) {
+        UserResponseDTO created = userService.create(dto, principal.getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
-    } // muss noch mit @AuthenticationPrincipal SecurityUser principal erweitert werden fürs etzen beim user wer created hat.
-
+    }
 
 
     @PreAuthorize("hasRole('ADMIN')")

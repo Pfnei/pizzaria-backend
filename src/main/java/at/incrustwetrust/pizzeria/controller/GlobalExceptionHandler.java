@@ -1,6 +1,7 @@
 package at.incrustwetrust.pizzeria.controller;
 
 import at.incrustwetrust.pizzeria.exception.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 
 import org.springframework.http.ResponseEntity;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.time.LocalDateTime;
 
 @RestControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
 
     // 1. Spezifisch: Wenn ein User oder Produkt schon existiert (409)
@@ -40,16 +42,28 @@ public class GlobalExceptionHandler {
         return buildResponse(HttpStatus.BAD_REQUEST, "Eingabedaten sind ungültig.", null);
     }
 
-    // 5. Globaler Catch-All: Für alles, was wir vergessen haben (500)
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleGeneralError(Exception ex) {
-        // Logge den Fehler hier (z.B. logger.error(ex))
-        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Ein unerwarteter Server-Fehler ist aufgetreten.", null);
-    }
+
 
     // Hilfsmethode, um den Code oben kurz zu halten
     private ResponseEntity<ErrorResponse> buildResponse(HttpStatus status, String message, String link) {
         ErrorResponse error = new ErrorResponse(message, link, LocalDateTime.now());
         return ResponseEntity.status(status).body(error);
+    }
+
+
+    // 5. Globaler Catch-All: Für alles, was wir vergessen haben (500)
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleGeneralError(Exception ex) {
+        // 1. Logge den Fehler für dich (inklusive Stacktrace durch das 'ex')
+        log.error("Kritischer Systemfehler: ", ex);
+
+        // 2. Erstelle eine Antwort für den User (ohne technische Details!)
+        ErrorResponse error = new ErrorResponse(
+                "Ein unerwarteter Fehler ist aufgetreten. Bitte versuche es später erneut.",
+                null,
+                LocalDateTime.now()
+        );
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }
 }

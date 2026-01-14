@@ -3,12 +3,14 @@ package at.incrustwetrust.pizzeria.service;
 import at.incrustwetrust.pizzeria.dto.order.*;
 import at.incrustwetrust.pizzeria.entity.Order;
 import at.incrustwetrust.pizzeria.entity.User;
+import at.incrustwetrust.pizzeria.exception.OrderNotFoundException;
 import at.incrustwetrust.pizzeria.exception.ResourceNotFoundException;
 import at.incrustwetrust.pizzeria.exception.UserNotFoundException;
 import at.incrustwetrust.pizzeria.mapper.OrderMapper;
 import at.incrustwetrust.pizzeria.repository.OrderRepository;
 import at.incrustwetrust.pizzeria.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -19,6 +21,7 @@ import static org.springframework.http.HttpStatus.*;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class OrderService {
 
     private final OrderRepository orderRepository;
@@ -36,8 +39,9 @@ public class OrderService {
     // READ ONE
     public OrderResponseDTO read(String id) {
         Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Keine Bestellung mit der ID " + id + " vorhanden"));
+                .orElseThrow(() -> new OrderNotFoundException("Keine Bestellung mit der ID " + id + " vorhanden"));
         return orderMapper.toResponseDto(order);
+
     }
 
     // CREATE
