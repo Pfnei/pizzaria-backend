@@ -21,20 +21,20 @@ public class FileUploadController {
 
     // Upload eines Profilbilds
 
-    @PostMapping(value = "/profilepicture", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @PreAuthorize("isAuthenticated()")
+    @PostMapping(value = "/profilepicture/{userId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasRole('ADMIN') || principal.id == #userId")
     public ResponseEntity<String> uploadProfileImage(
+            @PathVariable String userId,
             @RequestParam("file") MultipartFile file,
             @AuthenticationPrincipal SecurityUser principal
     ) {
+        // Hier nutzen wir jetzt die userId aus dem Pfad statt principal.getId()
+        String filename = fileService.saveProfileImage(file, userId);
 
-        var user = userRepository.findById(principal.getId())
+        var user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        String filename  = fileService.saveProfileImage(file, principal.getId());
-
-
-        user.setProfilePicture(filename );
+        user.setProfilePicture(filename);
         userRepository.save(user);
 
         return ResponseEntity.ok().build();
@@ -44,19 +44,19 @@ public class FileUploadController {
 
     //  Download eines Bilds
 
-    @GetMapping("/profile")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<byte[]> getProfilePicture(@AuthenticationPrincipal SecurityUser principal) {
+    @GetMapping("/profile/{userId}")
+    @PreAuthorize("hasRole('ADMIN') || principal.id == #userId")
+    public ResponseEntity<byte[]> getProfilePicture(@PathVariable String userId,@AuthenticationPrincipal SecurityUser principal) {
 
 
-        var user = userRepository.findById(principal.getId())
+        var user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
 
         if (user.getProfilePicture() == null) {
             return ResponseEntity.notFound().build();
         }
-        byte[] data = fileService.loadProfileImage(user.getProfilePicture());
+        byte[] data = fileService.loadProfileImage(userId);
 
         MediaType contentType = user.getProfilePicture().endsWith(".png") ?
                 MediaType.IMAGE_PNG : MediaType.IMAGE_JPEG;
@@ -70,6 +70,7 @@ public class FileUploadController {
              //   .contentType(MediaType.IMAGE_JPEG)
             //    .body(data);
     }
+
 
 
 }
