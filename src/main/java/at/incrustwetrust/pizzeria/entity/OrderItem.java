@@ -3,6 +3,7 @@ package at.incrustwetrust.pizzeria.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -24,8 +25,8 @@ public class OrderItem {
     @NotBlank
     @Column (nullable = false)
     private String productName;
-    @NotNull
-    @Column (nullable = false)
+    @NotNull // statt @NotBlank
+    @Min(1)  // Sicherstellen, dass niemand 0 Pizzen bestellt
     private int quantity;
     // = quantity * price/unit
     @NotNull

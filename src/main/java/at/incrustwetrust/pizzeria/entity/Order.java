@@ -17,8 +17,8 @@ public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String orderId;
-    @CreationTimestamp
-    // in our case- same as createdAT
+  //  @CreationTimestamp
+    // in our case- same as createdAT --> ich lass es mla weg, damit man richtig umsetzen lernt und so...^^
     private Instant deliveredAt;
     @NotNull
     @Column (nullable = false)
@@ -61,7 +61,7 @@ public class Order {
     private User createdBy;
     // orders can not be manipulated - no updated Timestamps required
 
-    @OneToMany(mappedBy = "order")
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> items;
 
     public Order (){};

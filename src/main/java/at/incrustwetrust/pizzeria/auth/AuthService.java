@@ -3,6 +3,8 @@ package at.incrustwetrust.pizzeria.auth;
 import at.incrustwetrust.pizzeria.dto.user.UserCreateDTO;
 import at.incrustwetrust.pizzeria.dto.user.UserResponseLightDTO;
 import at.incrustwetrust.pizzeria.entity.User;
+import at.incrustwetrust.pizzeria.exception.UserAlreadyExistsException;
+import at.incrustwetrust.pizzeria.exception.UserNotFoundException;
 import at.incrustwetrust.pizzeria.mapper.UserMapper;
 import at.incrustwetrust.pizzeria.repository.UserRepository;
 import at.incrustwetrust.pizzeria.security.JwtService;
@@ -41,8 +43,7 @@ public class AuthService {
 
         User userEntity = userRepository
                 .findUserByEmail(principal.getUsername())
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
+                .orElseThrow(() -> new UserNotFoundException(
                         "User not found: " + principal.getUsername()
                 ));
 
@@ -55,7 +56,7 @@ public class AuthService {
     public UserResponseLightDTO register(UserCreateDTO request) {
 
         if (userRepository.findUserByEmail(request.getEmail()).isPresent()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+            throw new UserAlreadyExistsException(
                     "User with email already exists: " + request.getEmail());
         }
 
