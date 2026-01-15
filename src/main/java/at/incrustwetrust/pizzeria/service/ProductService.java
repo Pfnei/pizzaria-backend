@@ -43,6 +43,7 @@ public class ProductService {
         return productMapper.toResponseDto(product);
     }
 
+
     public List<ProductResponseLightDTO> readAll() {
         List<Product> products = productRepository.findAll();
         return productMapper.toResponseLightDtoList(products);

@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,6 +23,7 @@ public class ProductController {
     private final ProductService productService;
 
     @GetMapping
+    @Transactional(readOnly = true)
     public ResponseEntity<List<ProductResponseLightDTO>> readAll() {
         List<ProductResponseLightDTO> products = productService.readAll();
         return ResponseEntity.ok(products);
@@ -29,6 +31,7 @@ public class ProductController {
 
 
     @GetMapping("/{id}")
+    @Transactional(readOnly = true)
     public ResponseEntity<ProductResponseDTO> read(@PathVariable String id) {
         ProductResponseDTO product = productService.read(id);
         return ResponseEntity.ok(product);

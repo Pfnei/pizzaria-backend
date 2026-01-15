@@ -3,6 +3,7 @@ package at.incrustwetrust.pizzeria.config;
 import at.incrustwetrust.pizzeria.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -38,8 +39,14 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        // 1. Öffentlich: Auth, Swagger UND die Produkt-Liste (nur GET)
                         .requestMatchers("/auth/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/products/**").permitAll()
+
+                        // 2. Admin-Bereiche
                         .requestMatchers("/admin/**").hasRole("ADMIN")
+
+                        // 3. Alles andere (auch POST/PATCH/DELETE auf /products) erfordert Login
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
