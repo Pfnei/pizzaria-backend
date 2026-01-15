@@ -49,10 +49,8 @@ public class FileStorageServiceImpl implements FileStorageService {
 
         var user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
+
         validate(file);
-
-
-
 
         String oldFilename = user.getProfilePicture();
         String extension = file.getContentType().equals("image/png") ? "png" : "jpg";
@@ -111,43 +109,45 @@ public class FileStorageServiceImpl implements FileStorageService {
     @Override
     public Resource loadProfileImageAsResource(String filename) {
         try {
-            Path filePath;
-
-            // Wenn kein Dateiname da ist, nimm den Default-Pfad
             if (filename == null || filename.isEmpty()) {
-                return getDefaultAvatar();
+                log.info("Lade Default-Avatar...");
+                Resource res = new ClassPathResource("static/images/default-avatar.png");
+
+                if (res.exists()) {
+                    log.info("Default-Avatar gefunden! Pfad: {}", res.getURL());
+                    return res;
+                } else {
+                    log.error("Default-Avatar EXISTIERT NICHT im Pfad: src/main/resources/static/images/default-avatar.png");
+                    // Letzter Rettungsversuch: Schau mal ob es direkt in static liegt
+                    return new ClassPathResource("static/default-avatar.png");
+                }
             }
 
-            filePath = root.resolve(filename).normalize();
+            Path filePath = root.resolve(filename).normalize();
+            return new UrlResource(filePath.toUri());
 
-            // Sicherheitscheck
-            if (!filePath.startsWith(root)) {
-                throw new SecurityException("Invalid file path");
-            }
-
-            Resource resource = new UrlResource(filePath.toUri());
-
-            if (resource.exists() && resource.isReadable()) {
-                return resource;
-            } else {
-                // Falls der Dateiname in der DB stand, aber die Datei gelöscht wurde
-                log.warn("File {} not found, serving default avatar", filename);
-                return new ClassPathResource("static/images/default-avatar.png");
-            }
         } catch (Exception e) {
-            log.error("Error loading image, serving default", e);
+            log.error("Fehler beim Laden der Resource: ", e);
             return new ClassPathResource("static/images/default-avatar.png");
         }
     }
 
     private Resource getDefaultAvatar() {
+        // WICHTIG: Kein führender Slash bei ClassPathResource
         Resource defaultImage = new ClassPathResource("static/images/default-avatar.png");
+
+        log.info("Versuche Default-Avatar zu laden: {}", defaultImage.getDescription());
+
         if (!defaultImage.exists()) {
-            // Wenn selbst das fehlt, ist beim Deployment was schiefgelaufen
-            log.error("KRITISCH: Default-Avatar unter resources/static/images/default-avatar.png fehlt!");
-            // Hier könntest du eine Fallback-Exception werfen oder eine leere Resource
-            throw new ResourceNotFoundException("Systemressource fehlt");
+            log.error("DATEI NICHT GEFUNDEN! Bitte prüfen: src/main/resources/static/images/default-avatar.png");
+            // Fallback: Falls der Ordner "images" vielleicht im Pfad fehlt
+            defaultImage = new ClassPathResource("static/default-avatar.png");
         }
+
+        if (!defaultImage.exists()) {
+            throw new ResourceNotFoundException("Absolut kein Standard-Bild gefunden.");
+        }
+
         return defaultImage;
     }
     private void validate(MultipartFile file) {

@@ -45,17 +45,26 @@ public class FileUploadController {
     @GetMapping("/profile/{userId}")
     @PreAuthorize("hasRole('ADMIN') || principal.id == #userId")
     public ResponseEntity<Resource> getProfilePicture(@PathVariable String userId) {
-        // 1. User finden
         var user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        // 2. Datei als Resource laden (nicht als byte[])
+        // 1. Wir rufen den Service auf. Dieser gibt IMMER eine Resource zurück
+        // (entweder das echte Bild oder den Default-Avatar).
         Resource fileResource = fileService.loadProfileImageAsResource(user.getProfilePicture());
 
-        // 3. Content-Type dynamisch bestimmen
-        String filename = (user.getProfilePicture()) != null ? user.getProfilePicture() : "default-avatar.png";
-        MediaType contentType = filename.toLowerCase().endsWith(".png") ?
-                MediaType.IMAGE_PNG : MediaType.IMAGE_JPEG;
+        // 2. Wir müssen den richtigen Header bestimmen
+        String filename = user.getProfilePicture();
+        MediaType contentType;
+
+        if (filename == null || filename.isEmpty()) {
+            // Falls kein Bild da ist, wissen wir, dass der Service "default-avatar.png" liefert
+            contentType = MediaType.IMAGE_PNG;
+            filename = "default-avatar.png";
+        } else {
+            // Falls ein Bild da ist, bestimmen wir den Typ dynamisch
+            contentType = filename.toLowerCase().endsWith(".png") ?
+                    MediaType.IMAGE_PNG : MediaType.IMAGE_JPEG;
+        }
 
         return ResponseEntity.ok()
                 .contentType(contentType)
