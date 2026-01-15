@@ -1,9 +1,12 @@
 package at.incrustwetrust.pizzeria.controller;
 
+import at.incrustwetrust.pizzeria.exception.UserNotFoundException;
 import at.incrustwetrust.pizzeria.repository.UserRepository;
 import at.incrustwetrust.pizzeria.security.SecurityUser;
 import at.incrustwetrust.pizzeria.service.FileStorageService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,14 +31,9 @@ public class FileUploadController {
             @RequestParam("file") MultipartFile file,
             @AuthenticationPrincipal SecurityUser principal
     ) {
+
         // Hier nutzen wir jetzt die userId aus dem Pfad statt principal.getId()
         String filename = fileService.saveProfileImage(file, userId);
-
-        var user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        user.setProfilePicture(filename);
-        userRepository.save(user);
 
         return ResponseEntity.ok().build();
     }
@@ -46,31 +44,24 @@ public class FileUploadController {
 
     @GetMapping("/profile/{userId}")
     @PreAuthorize("hasRole('ADMIN') || principal.id == #userId")
-    public ResponseEntity<byte[]> getProfilePicture(@PathVariable String userId,@AuthenticationPrincipal SecurityUser principal) {
-
-
+    public ResponseEntity<Resource> getProfilePicture(@PathVariable String userId) {
+        // 1. User finden
         var user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
 
+        // 2. Datei als Resource laden (nicht als byte[])
+        Resource fileResource = fileService.loadProfileImageAsResource(user.getProfilePicture());
 
-        if (user.getProfilePicture() == null) {
-            return ResponseEntity.notFound().build();
-        }
-        byte[] data = fileService.loadProfileImage(user.getProfilePicture());
-
-        MediaType contentType = user.getProfilePicture().endsWith(".png") ?
+        // 3. Content-Type dynamisch bestimmen
+        String filename = (user.getProfilePicture()) != null ? user.getProfilePicture() : "default-avatar.png";
+        MediaType contentType = filename.toLowerCase().endsWith(".png") ?
                 MediaType.IMAGE_PNG : MediaType.IMAGE_JPEG;
 
         return ResponseEntity.ok()
                 .contentType(contentType)
-                .body(data);
-
-
-      //  .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
-             //   .contentType(MediaType.IMAGE_JPEG)
-            //    .body(data);
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + filename + "\"")
+                .body(fileResource);
     }
-
 
 
 }

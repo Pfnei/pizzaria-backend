@@ -53,6 +53,10 @@ public class GlobalExceptionHandler {
         );
     }
 
+    @ExceptionHandler(UpdateFailedException.class)
+        public ResponseEntity<ErrorResponse> handleUpdateFailAction(Exception ex){
+            return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage()+"update failed", null);
+    }
 
     // Hilfsmethode, um den Code oben kurz zu halten
     private ResponseEntity<ErrorResponse> buildResponse(HttpStatus status, String message, String link) {
