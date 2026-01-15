@@ -18,7 +18,7 @@ public interface OrderMapper {
             @Mapping(target = "items", ignore = true),
             @Mapping(target = "createdBy", ignore = true) // wird im AfterMapping gesetzt
     })
-    Order toEntity(OrderCreateDTO dto);
+    Order toEntity(OrderCreateDTO dto, User createdBy);
 
     // ======= UPDATE DTO -> ENTITY (PATCH) =======
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
