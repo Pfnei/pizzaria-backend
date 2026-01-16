@@ -21,14 +21,14 @@ public class OrderController {
     private final OrderService orderService;
 
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("isAuthenticated()")
     @GetMapping
     public ResponseEntity<List<OrderResponseDTO>> readAll(
             @RequestParam(required = false) String createdBy, @AuthenticationPrincipal SecurityUser principal) {
         return ResponseEntity.ok(orderService.readAll(Optional.ofNullable(createdBy), principal));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/{id}")
     public ResponseEntity<OrderResponseDTO> read(@PathVariable String id,@AuthenticationPrincipal SecurityUser principal) {
         return ResponseEntity.ok(orderService.read(id,principal));
@@ -41,7 +41,7 @@ public class OrderController {
     }
 
     // Optional, falls Updates erlaubt sind:
-    @PreAuthorize("hasRole('ADMIN') || principal.id == #userId")
+    @PreAuthorize("isAuthenticated()")
     @PatchMapping("/{id}")
     public ResponseEntity<OrderResponseDTO> update(
             @PathVariable String id,
