@@ -82,8 +82,19 @@ public class OrderService {
 
     // update muss noch gemacht werden, create, read, readalll sollten passen !
     public OrderResponseDTO update(String id, OrderUpdateDTO dto, SecurityUser principal) {
+        // Prüfen ob eingeloggt
+        loggedInUserCheck(principal);
+
+        // Order suchen
         Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Keine Bestellung mit der ID " + id + " vorhanden"));
+                .orElseThrow(() -> new OrderNotFoundException("Keine Bestellung mit der ID " + id + " vorhanden"));
+
+        // Berechtigung prüfen (Admin oder Besitzer)
+        if (!principal.isAdmin() && !principal.getId().equals(order.getCreatedBy().getUserId())) {
+            throw new OrderNotFoundException("Bestellung nicht gefunden"); // Tarnung als 'nicht gefunden'
+        }
+
+        //Mappen und speichern
         orderMapper.updateEntity(dto, order);
         Order saved = orderRepository.save(order);
         return orderMapper.toResponseDto(saved);
