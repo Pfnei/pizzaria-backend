@@ -16,7 +16,14 @@ public interface OrderMapper {
             @Mapping(target = "createdAt", ignore = true),
             @Mapping(target = "deliveredAt", ignore = true),
             @Mapping(target = "items", ignore = true),
-            @Mapping(target = "createdBy", ignore = true) // wird im AfterMapping gesetzt
+            @Mapping(target = "createdBy", ignore = true), // wird im AfterMapping gesetzt
+            // HIER DIE FIXES: Explizit das DTO als Quelle angeben
+            @Mapping(source = "dto.firstname", target = "firstname"),
+            @Mapping(source = "dto.lastname", target = "lastname"),
+            @Mapping(source = "dto.phoneNumber", target = "phoneNumber"),
+            @Mapping(source = "dto.address", target = "address"),
+            @Mapping(source = "dto.zipcode", target = "zipcode"),
+            @Mapping(source = "dto.city", target = "city")
     })
     Order toEntity(OrderCreateDTO dto, User createdBy);
 
