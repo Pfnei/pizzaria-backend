@@ -13,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.security.Security;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -51,7 +52,7 @@ public class UserService {
 
     // READ
 
-    public UserResponseDTO read(String id) {
+    public UserResponseDTO read(String id, SecurityUser principal) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("No user found with ID: " + id));
         return mapper.toResponseDto(user);

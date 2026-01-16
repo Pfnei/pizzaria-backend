@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 
+import java.security.Principal;
 import java.util.List;
 @RestController
 @RequestMapping("/users")
@@ -29,17 +30,10 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 
-    @GetMapping("/me")
-    public ResponseEntity<UserResponseDTO> readMe(@AuthenticationPrincipal SecurityUser principal ) {
-
-        UserResponseDTO user = userService.read(principal.getId());
-        return ResponseEntity.ok(user);
-    }
-
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') || principal.id == #userId")
-    public ResponseEntity<UserResponseDTO> readById(@PathVariable String id) {
-        UserResponseDTO user = userService.read(id);
+    public ResponseEntity<UserResponseDTO> readById(@PathVariable String id, @AuthenticationPrincipal SecurityUser principal) {
+        UserResponseDTO user = userService.read(id,principal);
         return ResponseEntity.ok(user);
     }
 
