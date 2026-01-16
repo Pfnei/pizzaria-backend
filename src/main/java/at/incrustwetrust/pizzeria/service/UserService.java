@@ -33,7 +33,7 @@ public class UserService {
         throwIfUsernameOrEmailExists(dto);
 
         User creator = userRepository.findById(createdById)
-                .orElseThrow(() -> new UserNotFoundException("Administrator nicht gefunden"));
+                .orElseThrow(() -> new UserNotFoundException("Creator not found: " + createdById));
 
         // 1. Mapper erstellt die Basis-Entity (createdBy bleibt hier noch leer/ignore)
         User user = mapper.toEntity(dto, null);
