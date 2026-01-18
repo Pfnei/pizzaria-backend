@@ -65,6 +65,9 @@ public class UserService {
 
     // UPDATE
 
+    /**
+     * Updates user if authorized; enforces admin/self password change
+     */
     public UserResponseDTO update(UserUpdateDTO dto, String id, SecurityUser principal) {
         User existingUser = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(
