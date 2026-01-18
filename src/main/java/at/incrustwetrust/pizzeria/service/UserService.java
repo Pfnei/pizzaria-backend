@@ -30,11 +30,11 @@ public class UserService {
 
     // CREATE
 
-    public UserResponseDTO create(UserCreateDTO dto, String createdById) {
+    public UserResponseDTO create(UserCreateDTO dto, SecurityUser principal) {
         throwIfUsernameOrEmailExists(dto);
 
-        User creator = userRepository.findById(createdById)
-                .orElseThrow(() -> new UserNotFoundException("Creator not found: " + createdById));
+        User creator = userRepository.findById(principal.getId())
+                .orElseThrow(() -> new UserNotFoundException("Creator not found: " + principal.getId()));
 
         // 1. Mapper erstellt die Basis-Entity (createdBy bleibt hier noch leer/ignore)
         User user = mapper.toEntity(dto, null);

@@ -53,7 +53,7 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<UserResponseDTO> create(@Valid @RequestBody UserCreateDTO dto, @AuthenticationPrincipal SecurityUser principal) {
-        UserResponseDTO created = userService.create(dto, principal.getId());
+        UserResponseDTO created = userService.create(dto, principal);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
