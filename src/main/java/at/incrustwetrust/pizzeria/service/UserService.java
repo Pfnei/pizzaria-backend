@@ -77,7 +77,7 @@ public class UserService {
         boolean isSelf  = principal.getId().equals(id);
 
         // Zusätzliche Sicherung, falls PreAuthorize irgendwann geändert wird:
-        if (!isAdmin && !isSelf) {
+        if (!isAdmin || !isSelf) {
             throw new UnauthorizedActionException("You are not allowed to update this user.");
         }
 
