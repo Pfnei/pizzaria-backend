@@ -2,12 +2,16 @@ package at.incrustwetrust.pizzeria.service;
 
 import at.incrustwetrust.pizzeria.dto.order.*;
 import at.incrustwetrust.pizzeria.entity.Order;
+import at.incrustwetrust.pizzeria.entity.OrderItem;
+import at.incrustwetrust.pizzeria.entity.Product;
 import at.incrustwetrust.pizzeria.entity.User;
 import at.incrustwetrust.pizzeria.exception.OrderNotFoundException;
+import at.incrustwetrust.pizzeria.exception.ResourceNotFoundException;
 import at.incrustwetrust.pizzeria.exception.UnauthorizedActionException;
 import at.incrustwetrust.pizzeria.exception.UserNotFoundException;
 import at.incrustwetrust.pizzeria.mapper.OrderMapper;
 import at.incrustwetrust.pizzeria.repository.OrderRepository;
+import at.incrustwetrust.pizzeria.repository.ProductRepository;
 import at.incrustwetrust.pizzeria.repository.UserRepository;
 import at.incrustwetrust.pizzeria.security.SecurityUser;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +31,7 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
+    private final ProductRepository productRepository;
     private final OrderMapper orderMapper;
 
     // READ ALL (optional filter)
@@ -76,6 +81,9 @@ public class OrderService {
         }
 
         Order orderToSave = orderMapper.toEntity(dto, createdBy);
+        List<OrderItem> items = buildOrderItems(dto.getItems(), orderToSave);
+        orderToSave.setItems(items);
+        orderToSave.setTotal(calculateTotal(items));
         Order savedOrder = orderRepository.save(orderToSave);
         return orderMapper.toResponseDto(savedOrder);
     }
@@ -104,5 +112,20 @@ public class OrderService {
         if(principal == null){
             throw new UnauthorizedActionException("your not logged in");
         }
+    }
+
+    private List<OrderItem> buildOrderItems(List<OrderItemCreateDTO> itemDtos, Order order) {
+        return itemDtos.stream()
+                .map(itemDto -> {
+                    Product product = productRepository.findById(itemDto.getProductId())
+                            .orElseThrow(() -> new ResourceNotFoundException("Produkt nicht gefunden: " + itemDto.getProductId()));
+                    double lineTotal = product.getPrice() * itemDto.getQuantity();
+                    return new OrderItem(order, product, product.getProductName(), itemDto.getQuantity(), lineTotal);
+                })
+                .toList();
+    }
+
+    private double calculateTotal(List<OrderItem> items) {
+        return items.stream().mapToDouble(OrderItem::getPrice).sum();
     }
 }
