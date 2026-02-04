@@ -54,7 +54,7 @@ class AuthServiceTest {
 
         Authentication authentication = mock(Authentication.class);
         User userEntity = new User();
-        UserResponseLightDTO dto = new UserResponseLightDTO(1L, "test@mail.com");
+        UserResponseLightDTO dto = new UserResponseLightDTO();
 
         when(authenticationManager.authenticate(any()))
                 .thenReturn(authentication);

@@ -7,14 +7,12 @@ import at.incrustwetrust.pizzeria.security.SecurityUser;
 import at.incrustwetrust.pizzeria.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 
-import java.security.Principal;
 import java.util.List;
 @RestController
 @RequestMapping("/users")

@@ -14,12 +14,12 @@ public class UserResponseLightDTO {
     private String firstname;
     private String lastname;
     private String email;
+    private String phoneNumber;
+    private String address;
+    private String zipcode;
+    private String city;
+    private String country;
+    private String profilePicture;
     private boolean active;
     private boolean admin;
-    private String zipcode;
-    private String profilePicture;
-
-    public UserResponseLightDTO(long l, String mail) {
-
-    }
 }
