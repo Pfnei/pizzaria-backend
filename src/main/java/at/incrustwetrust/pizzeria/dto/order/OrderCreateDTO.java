@@ -15,8 +15,6 @@ public class OrderCreateDTO {
     @NotBlank private String zipcode;
     @NotBlank private String city;
 
-
-
     private String deliveryNote;
 
     @PositiveOrZero private double total;
