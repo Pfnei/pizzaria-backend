@@ -36,8 +36,9 @@ public class OrderController {
 
     @PostMapping
     public ResponseEntity<OrderResponseDTO> create(@RequestBody @Valid OrderCreateDTO dto,@AuthenticationPrincipal SecurityUser principal) {
-        OrderResponseDTO created = orderService.create(dto,principal);
-        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+
+        return ResponseEntity.ok(orderService.create(dto,principal));
+
     }
 
     // Optional, falls Updates erlaubt sind:
@@ -46,6 +47,7 @@ public class OrderController {
     public ResponseEntity<OrderResponseDTO> update(
             @PathVariable String id,
             @RequestBody @Valid OrderUpdateDTO dto,@AuthenticationPrincipal SecurityUser principal) {
+
         return ResponseEntity.ok(orderService.update(id, dto,principal));
     }
 }
