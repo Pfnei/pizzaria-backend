@@ -7,7 +7,7 @@ import org.mapstruct.*;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = { UserMapper.class })
+@Mapper(componentModel = "spring", uses = { UserMapper.class, ProductMapper.class })
 public interface OrderMapper {
 
     // ======= CREATE DTO -> ENTITY =======
@@ -54,6 +54,8 @@ public interface OrderMapper {
             @Mapping(target = "createdBy", source = "createdBy")
     })
     OrderResponseLightDTO toResponseLightDto(Order o);
+
+    OrderItemResponseDTO toOrderItemResponseDto(at.incrustwetrust.pizzeria.entity.OrderItem item);
 
     List<OrderResponseDTO> toResponseDtoList(List<Order> orders);
     List<OrderResponseLightDTO> toResponseLightDtoList(List<Order> orders);

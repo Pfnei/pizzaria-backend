@@ -1,7 +1,6 @@
 package at.incrustwetrust.pizzeria.dto.order;
 
 import at.incrustwetrust.pizzeria.dto.user.UserResponseLightDTO;
-import at.incrustwetrust.pizzeria.entity.OrderItem;
 import lombok.*;
 
 import java.time.Instant;
@@ -30,6 +29,5 @@ public class OrderResponseDTO {
 
     private String createdById;
     private UserResponseLightDTO createdBy;
-
-    private List<OrderItem> items;
+    private List<OrderItemResponseDTO> items;
 }

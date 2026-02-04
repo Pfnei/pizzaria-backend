@@ -3,6 +3,8 @@ package at.incrustwetrust.pizzeria.dto.order;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
+import java.util.List;
+
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder @ToString
 public class OrderCreateDTO {
 
@@ -21,4 +23,7 @@ public class OrderCreateDTO {
 
     // optional: Zuordnung zu User
     private String createdById;
+
+    @NotEmpty
+    private List<OrderItemCreateDTO> items;
 }
