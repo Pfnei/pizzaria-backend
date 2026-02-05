@@ -19,20 +19,18 @@ public class UserCreateDTO {
     private String username;
 
     @NotBlank
-    @Size(min = 12, message = "Passwort muss mindestens 12 Zeichen lang sein")
+    @Size(min = 8, message = "Passwort muss mindestens 12 Zeichen lang sein")
     @Pattern(regexp = ".*\\d.*", message = "Passwort benötigt mindestens eine Zahl")
     @Pattern(regexp = ".*[A-Z].*", message = "Passwort benötigt mindestens einen Großbuchstaben")
     @Pattern(regexp = ".*[a-z].*", message = "Passwort benötigt mindestens einen Kleinbuchstaben")
-    @Pattern(regexp = ".*[@$!%*?&].*", message = "Passwort benötigt mindestens ein Sonderzeichen (@$!%*?&)")
+    @Pattern(regexp = ".*[!@#$%^&*(),.?\":{}|<>].*", message = "Passwort benötigt mindestens ein Sonderzeichen (@$!%*?&)")
     private String password;
 
     private String salutation;
     private String salutationDetail;
-
-    @NotBlank
+    
     private String firstname;
 
-    @NotBlank
     private String lastname;
 
     @Email
