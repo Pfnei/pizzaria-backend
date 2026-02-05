@@ -69,48 +69,45 @@ public class UserService {
      * Updates user if authorized; enforces admin/self password change
      */
     public UserResponseDTO update(UserUpdateDTO dto, String id, SecurityUser principal) {
+        // 1. Existenz prüfen
         User existingUser = userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException(
-                        "No user found with ID: " + id
-                ));
+                .orElseThrow(() -> new UserNotFoundException("No user found with ID: " + id));
 
+        // 2. Dubletten-Check (Email/Username)
         throwIfUsernameOrEmailExists(dto, id);
 
         boolean isAdmin = principal.isAdmin();
         boolean isSelf  = principal.getId().equals(id);
 
-        // Zusätzliche Sicherung, falls PreAuthorize irgendwann geändert wird:
-        if (!isAdmin || !isSelf) {
+        // 3. Sicherheits-Check: Nur Admin ODER der User selbst dürfen weiter
+        if (!isAdmin && !isSelf) {
             throw new UnauthorizedActionException("You are not allowed to update this user.");
         }
 
-        // aktuelle Werte sichern, bevor der Mapper drüberbügelt
+        // 4. Status-Werte sichern (Nur Admins dürfen Rollen/Status ändern)
         boolean oldAdmin  = existingUser.isAdmin();
         boolean oldActive = existingUser.isActive();
 
-        // hier werden alle Felder gemäß DTO → Entity gemappt
+        // 5. Mapping der neuen Daten
         mapper.updateEntity(dto, existingUser);
 
-        // Nur Admin darf admin/active wirklich ändern
+        // 6. Schutz der Admin-Felder: Wenn kein Admin, alte Werte wiederherstellen
         if (!isAdmin) {
             existingUser.setAdmin(oldAdmin);
             existingUser.setActive(oldActive);
         }
 
-        // Passwort-Änderung
+        // 7. Passwort-Update Logik
         if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
-            // nur Admin ODER self dürfen das Passwort ändern
-            if (!isAdmin && !isSelf) {
-                throw new UnauthorizedActionException("You are not allowed to change the password.");
-            }
             existingUser.setPassword(passwordEncoder.encode(dto.getPassword()));
         }
 
-        existingUser.setLastUpdatedBy(
-                userRepository.findById(principal.getId())
-                        .orElseThrow(() -> new UserNotFoundException("Current user not found"))
-        );
+        // 8. Meta-Daten setzen (Wer hat zuletzt geändert?)
+        User currentUser = userRepository.findById(principal.getId())
+                .orElseThrow(() -> new UserNotFoundException("Current user not found"));
+        existingUser.setLastUpdatedBy(currentUser);
 
+        // 9. Speichern und zurückgeben
         User saved = userRepository.save(existingUser);
         return mapper.toResponseDto(saved);
     }
