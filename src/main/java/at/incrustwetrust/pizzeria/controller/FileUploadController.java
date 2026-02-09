@@ -1,6 +1,8 @@
 package at.incrustwetrust.pizzeria.controller;
 
+import at.incrustwetrust.pizzeria.exception.ResourceNotFoundException;
 import at.incrustwetrust.pizzeria.exception.UserNotFoundException;
+import at.incrustwetrust.pizzeria.repository.ProductRepository;
 import at.incrustwetrust.pizzeria.repository.UserRepository;
 import at.incrustwetrust.pizzeria.security.SecurityUser;
 import at.incrustwetrust.pizzeria.service.FileStorageService;
@@ -21,6 +23,7 @@ public class FileUploadController {
 
     private final FileStorageService fileService;
     private final UserRepository userRepository;
+    private final ProductRepository productRepository;
 
     // Upload eines Profilbilds
 
@@ -38,6 +41,18 @@ public class FileUploadController {
         return ResponseEntity.ok().build();
     }
 
+    // Upload eines Produktbilds
+
+    @PostMapping(value = "/productpicture/{productId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<String> uploadProductImage(
+            @PathVariable String productId,
+            @RequestParam("file") MultipartFile file
+    ) {
+        fileService.saveProductImage(file, productId);
+        return ResponseEntity.ok().build();
+    }
+
 
 
     //  Download eines Bilds
@@ -52,16 +67,26 @@ public class FileUploadController {
         // (entweder das echte Bild oder den Default-Avatar).
         Resource fileResource = fileService.loadProfileImageAsResource(user.getProfilePicture());
 
-        // 2. Wir müssen den richtigen Header bestimmen
-        String filename = user.getProfilePicture();
+        return createResourceResponse(user.getProfilePicture(), fileResource);
+    }
+
+    @GetMapping("/product/{productId}")
+    public ResponseEntity<Resource> getProductPicture(@PathVariable String productId) {
+        var product = productRepository.findById(productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
+
+        Resource fileResource = fileService.loadProductImageAsResource(product.getProductPicture());
+
+        return createResourceResponse(product.getProductPicture(), fileResource);
+    }
+
+    private ResponseEntity<Resource> createResourceResponse(String filename, Resource fileResource) {
         MediaType contentType;
 
         if (filename == null || filename.isEmpty()) {
-            // Falls kein Bild da ist, wissen wir, dass der Service "default-avatar.png" liefert
             contentType = MediaType.IMAGE_PNG;
-            filename = "default-avatar.png";
+            filename = "default.png";
         } else {
-            // Falls ein Bild da ist, bestimmen wir den Typ dynamisch
             contentType = filename.toLowerCase().endsWith(".png") ?
                     MediaType.IMAGE_PNG : MediaType.IMAGE_JPEG;
         }

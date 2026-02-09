@@ -1,9 +1,11 @@
 package at.incrustwetrust.pizzeria.service.impl;
 
+import at.incrustwetrust.pizzeria.entity.Product;
 import at.incrustwetrust.pizzeria.entity.User;
 import at.incrustwetrust.pizzeria.exception.ResourceNotFoundException;
 import at.incrustwetrust.pizzeria.exception.UpdateFailedException;
 import at.incrustwetrust.pizzeria.exception.UserNotFoundException;
+import at.incrustwetrust.pizzeria.repository.ProductRepository;
 import at.incrustwetrust.pizzeria.repository.UserRepository;
 import at.incrustwetrust.pizzeria.service.FileStorageService;
 import jakarta.transaction.Transactional;
@@ -30,14 +32,18 @@ import java.util.UUID;
 public class FileStorageServiceImpl implements FileStorageService {
 
     private final UserRepository userRepository;
+    private final ProductRepository productRepository;
 
 
-    private final Path root = Paths.get("uploads/profile-images");
+    private final Path profileRoot = Paths.get("uploads/profile-images");
+    private final Path productRoot = Paths.get("uploads/product-images");
 
-    public FileStorageServiceImpl(UserRepository userRepository) {
+    public FileStorageServiceImpl(UserRepository userRepository, ProductRepository productRepository) {
         this.userRepository = userRepository;
+        this.productRepository = productRepository;
         try {
-            Files.createDirectories(root);
+            Files.createDirectories(profileRoot);
+            Files.createDirectories(productRoot);
         } catch (IOException e) {
             throw new RuntimeException("Could not create upload directory!", e);
         }
@@ -56,9 +62,9 @@ public class FileStorageServiceImpl implements FileStorageService {
         String extension = file.getContentType().equals("image/png") ? "png" : "jpg";
         String filename = UUID.randomUUID()  +  "." + extension;
 
-        Path destination = root.resolve(filename).normalize();
+        Path destination = profileRoot.resolve(filename).normalize();
 
-        if (!destination.startsWith(root)) {
+        if (!destination.startsWith(profileRoot)) {
             throw new SecurityException("Invalid file path");
         }
 
@@ -74,52 +80,106 @@ public class FileStorageServiceImpl implements FileStorageService {
             user.setProfilePicture(filename);
             userRepository.save(user); // Wenn das kracht -> ab in den catch
         } catch (Exception e) {
-            deletePhysicalFile(filename); // Neue Datei löschen, da DB-Eintrag fehlgeschlagen
+            deletePhysicalFile(profileRoot, filename); // Neue Datei löschen, da DB-Eintrag fehlgeschlagen
             log.error("Error saving user profile picture in DB", e);
             throw new UpdateFailedException("Could not update user profile in database");
         }
 
         // 4. Cleanup: Altes Bild erst löschen, wenn ALLES andere geklappt hat
         if (oldFilename != null) {
-            deletePhysicalFile(oldFilename);
+            deletePhysicalFile(profileRoot, oldFilename);
         }
 
         return filename;
+    }
 
+    @Override
+    @Transactional
+    public String saveProductImage(MultipartFile file, String productId) {
+        var product = productRepository.findById(productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
 
+        validate(file);
+
+        String oldFilename = product.getProductPicture();
+        String extension = file.getContentType().equals("image/png") ? "png" : "jpg";
+        String filename = UUID.randomUUID() + "." + extension;
+
+        Path destination = productRoot.resolve(filename).normalize();
+
+        if (!destination.startsWith(productRoot)) {
+            throw new SecurityException("Invalid file path");
+        }
+
+        try {
+            Files.copy(file.getInputStream(), destination, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            throw new RuntimeException("Could not store product image", e);
+        }
+
+        try {
+            product.setProductPicture(filename);
+            productRepository.save(product);
+        } catch (Exception e) {
+            deletePhysicalFile(productRoot, filename);
+            log.error("Error saving product picture in DB", e);
+            throw new UpdateFailedException("Could not update product picture in database");
+        }
+
+        if (oldFilename != null) {
+            deletePhysicalFile(productRoot, oldFilename);
+        }
+
+        return filename;
     }
 
 
 
     @Override
     public byte[] loadProfileImage(String filename) {
+        return loadFile(profileRoot, filename);
+    }
 
-            Path file = root.resolve(filename).normalize();
+    @Override
+    public byte[] loadProductImage(String filename) {
+        return loadFile(productRoot, filename);
+    }
+
+    private byte[] loadFile(Path root, String filename) {
+        Path file = root.resolve(filename).normalize();
         if (!file.startsWith(root)) {
             throw new SecurityException("Invalid file path");
         }
 
-            try{
+        try {
             return Files.readAllBytes(file);
         } catch (IOException e) {
-            throw new ResourceNotFoundException("Could not read profile image");
+            throw new ResourceNotFoundException("Could not read file");
         }
     }
 
     @Override
     public Resource loadProfileImageAsResource(String filename) {
+        return loadResource(profileRoot, filename, "static/images/default-avatar.png");
+    }
+
+    @Override
+    public Resource loadProductImageAsResource(String filename) {
+        // Hier könnte man ein default-product-image.png hinzufügen, falls gewünscht
+        return loadResource(productRoot, filename, "static/images/default-product-avatar.jpg");
+    }
+
+    private Resource loadResource(Path root, String filename, String defaultPath) {
         try {
             if (filename == null || filename.isEmpty()) {
-                log.info("Lade Default-Avatar...");
-                Resource res = new ClassPathResource("static/images/default-avatar.png");
+                log.info("Lade Default-Resource...");
+                Resource res = new ClassPathResource(defaultPath);
 
                 if (res.exists()) {
-                    log.info("Default-Avatar gefunden! Pfad: {}", res.getURL());
                     return res;
                 } else {
-                    log.error("Default-Avatar EXISTIERT NICHT im Pfad: src/main/resources/static/images/default-avatar.png");
-                    // Letzter Rettungsversuch: Schau mal ob es direkt in static liegt
-                    return new ClassPathResource("static/default-avatar.png");
+                    log.error("Default-Resource EXISTIERT NICHT im Pfad: {}", defaultPath);
+                    return new ClassPathResource("static/images/default-avatar.png");
                 }
             }
 
@@ -132,24 +192,20 @@ public class FileStorageServiceImpl implements FileStorageService {
         }
     }
 
-    private Resource getDefaultAvatar() {
-        // WICHTIG: Kein führender Slash bei ClassPathResource
-        Resource defaultImage = new ClassPathResource("static/images/default-avatar.png");
-
-        log.info("Versuche Default-Avatar zu laden: {}", defaultImage.getDescription());
-
-        if (!defaultImage.exists()) {
-            log.error("DATEI NICHT GEFUNDEN! Bitte prüfen: src/main/resources/static/images/default-avatar.png");
-            // Fallback: Falls der Ordner "images" vielleicht im Pfad fehlt
-            defaultImage = new ClassPathResource("static/default-avatar.png");
+    @Override
+    public void deleteProfileImage(String filename) {
+        if (filename != null) {
+            deletePhysicalFile(profileRoot, filename);
         }
-
-        if (!defaultImage.exists()) {
-            throw new ResourceNotFoundException("Absolut kein Standard-Bild gefunden.");
-        }
-
-        return defaultImage;
     }
+
+    @Override
+    public void deleteProductImage(String filename) {
+        if (filename != null) {
+            deletePhysicalFile(productRoot, filename);
+        }
+    }
+
     private void validate(MultipartFile file) {
 
         if (file.isEmpty()) {
@@ -165,12 +221,12 @@ public class FileStorageServiceImpl implements FileStorageService {
         }
     }
 
-    private void deletePhysicalFile(String filename) {
+    private void deletePhysicalFile(Path root, String filename) {
         Path file = root.resolve(filename).normalize();
         try {
             Files.deleteIfExists(file);
         } catch (IOException e) {
-            log.warn("Could not delete profile image: {}", file, e);
+            log.warn("Could not delete file: {}", file, e);
         }
     }
 

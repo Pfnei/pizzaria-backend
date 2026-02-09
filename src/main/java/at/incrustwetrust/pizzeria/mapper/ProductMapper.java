@@ -20,7 +20,7 @@ public interface ProductMapper {
             @Mapping(target = "lastUpdatedBy", ignore = true),
 
             // Diese beiden Ziele existieren in der Entity, sind aber hier (erstmal) nicht befüllt:
-            @Mapping(target = "productPicture", ignore = true),
+            @Mapping(target = "productPicture", source = "productPicture"),
             @Mapping(target = "orders", ignore = true),
 
             // Allergene brauchen Lookup -> erstmal ignorieren
@@ -36,7 +36,7 @@ public interface ProductMapper {
             @Mapping(target = "lastUpdatedAt", ignore = true),
             @Mapping(target = "createdBy", ignore = true),
             @Mapping(target = "lastUpdatedBy", ignore = true),
-            @Mapping(target = "productPicture", ignore = true),
+            @Mapping(target = "productPicture", source = "productPicture"),
             @Mapping(target = "orders", ignore = true),
 
             // Gleiches Thema: kein automatisches Mapping ohne Lookup

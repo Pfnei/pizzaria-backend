@@ -29,6 +29,7 @@ public class ProductService {
     private final AllergenRepository allergenRepository;
     private final CurrentUserService currentUserService;
     private final ProductMapper productMapper;
+    private final FileStorageService fileService;
 
 
     // CREATE
@@ -102,6 +103,11 @@ public class ProductService {
         Product existing = productRepository.findById(id)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Kein Produkt mit der ID " + id + " vorhanden"));
+
+        // Bild löschen, falls vorhanden
+        if (existing.getProductPicture() != null) {
+            fileService.deleteProductImage(existing.getProductPicture());
+        }
 
         productRepository.delete(existing);
         return productMapper.toResponseDto(existing);

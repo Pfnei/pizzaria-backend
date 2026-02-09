@@ -11,6 +11,7 @@ public class ProductResponseDTO {
     private String productName;
     private String productDescription;
     private Double price;
+    private String productPicture;
 
 
     private boolean vegetarian;

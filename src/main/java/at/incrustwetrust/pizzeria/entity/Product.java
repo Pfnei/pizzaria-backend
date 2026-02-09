@@ -28,8 +28,8 @@ public class Product {
     private String productName;
     private String productDescription;
     private double price;
-    @Transient
-    private File productPicture;
+    @Column(name = "product_picture")
+    private String productPicture;
     private boolean vegetarian;
     @ManyToMany
     @JoinTable(
@@ -60,7 +60,7 @@ public class Product {
 
     public Product (){};
 
-    public Product(String productName, String productDescription, double price, File productPicture, boolean isVegetarian, List<Allergen> allergens, MainCategory mainCategory, SubCategory subCategory, boolean isActive, User createdBy, List<OrderItem> orders) {
+    public Product(String productName, String productDescription, double price, String productPicture, boolean isVegetarian, List<Allergen> allergens, MainCategory mainCategory, SubCategory subCategory, boolean isActive, User createdBy, List<OrderItem> orders) {
         this.productName = productName;
         this.productDescription = productDescription;
         this.price = price;
@@ -106,11 +106,11 @@ public class Product {
         this.price = price;
     }
 
-    public File getProductPicture() {
+    public String getProductPicture() {
         return productPicture;
     }
 
-    public void setProductPicture(File productPicture) {
+    public void setProductPicture(String productPicture) {
         this.productPicture = productPicture;
     }
 

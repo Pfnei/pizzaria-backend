@@ -14,6 +14,7 @@ public class ProductCreateDTO {
     private String productName;
     private String productDescription;
     private Double price;
+    private String productPicture;
     private boolean vegetarian;
     private boolean active;
     private String mainCategory;

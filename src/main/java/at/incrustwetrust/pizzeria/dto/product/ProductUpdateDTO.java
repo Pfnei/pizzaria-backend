@@ -12,6 +12,7 @@ public class ProductUpdateDTO {
     private String productName;
     private String productDescription;
     private Double price;
+    private String productPicture;
     private Boolean vegetarian;
     private Boolean active;
     private String mainCategory;

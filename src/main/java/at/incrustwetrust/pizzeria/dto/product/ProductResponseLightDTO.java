@@ -13,6 +13,7 @@ public class ProductResponseLightDTO {
     private String productId;
     private String productName;
     private Double price;
+    private String productPicture;
 
     private boolean vegetarian;
     private boolean active;

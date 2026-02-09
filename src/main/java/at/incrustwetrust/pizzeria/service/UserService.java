@@ -27,6 +27,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserMapper mapper;
+    private final FileStorageService fileService;
 
     // CREATE
 
@@ -119,6 +120,12 @@ public class UserService {
     public UserResponseDTO delete(String id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("No user found with ID: " + id));
+
+        // Profilbild löschen, falls vorhanden
+        if (user.getProfilePicture() != null) {
+            fileService.deleteProfileImage(user.getProfilePicture());
+        }
+
         userRepository.delete(user);
         return mapper.toResponseDto(user);
     }
