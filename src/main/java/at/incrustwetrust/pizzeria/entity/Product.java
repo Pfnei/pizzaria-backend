@@ -180,6 +180,10 @@ public class Product {
     public User getLastUpdatedBy() {
         return lastUpdatedBy;
     }
+    
+    public void setLastUpdatedBy(User lastUpdatedBy) {
+        this.lastUpdatedBy = lastUpdatedBy;
+    }
 
 
     public List<OrderItem> getOrders() {

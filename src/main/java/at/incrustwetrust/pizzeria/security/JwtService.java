@@ -57,7 +57,7 @@ public class JwtService {
     }
 
     public boolean extractIsAdmin(String token) {
-        return verify(token).getClaim("isAdmin").asBoolean();
+        return verify(token).getClaim("admin").asBoolean();
     }
 
     public String extractDisplayUsername(String token) {
