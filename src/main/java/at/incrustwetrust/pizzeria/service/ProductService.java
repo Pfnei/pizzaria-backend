@@ -1,35 +1,43 @@
 package at.incrustwetrust.pizzeria.service;
 
 import at.incrustwetrust.pizzeria.dto.product.*;
+import at.incrustwetrust.pizzeria.entity.Allergen;
 import at.incrustwetrust.pizzeria.entity.Product;
 import at.incrustwetrust.pizzeria.exception.ProductAlreadyExistsException;
 import at.incrustwetrust.pizzeria.exception.ResourceNotFoundException;
 import at.incrustwetrust.pizzeria.mapper.ProductMapper;
+import at.incrustwetrust.pizzeria.repository.AllergenRepository;
 import at.incrustwetrust.pizzeria.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
+
 
 import java.util.List;
 
-import static org.springframework.http.HttpStatus.*;
+
 
 @Service
 @RequiredArgsConstructor
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final AllergenRepository allergenRepository;
     private final ProductMapper productMapper;
 
 
     // CREATE
-
+    
     public ProductResponseDTO create(ProductCreateDTO dto) {
         ifProductNameAlreadyExistsThrow(dto.getProductName());
-
+        
         Product product = productMapper.toEntity(dto);
+        
+        if (dto.getAllergens() != null) {
+            List<Allergen> allergens = allergenRepository.findAllById(dto.getAllergens());
+            product.setAllergens(allergens);
+        }
+        
         Product saved = productRepository.save(product);
-
         return productMapper.toResponseDto(saved);
     }
 
@@ -51,16 +59,26 @@ public class ProductService {
 
 
     // UPDATE
-
+    
     public ProductResponseDTO update(ProductUpdateDTO dto, String id) {
         Product existing = productRepository.findById(id)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Produkt-ID nicht in der Datenbank"));
-
+                .orElseThrow(() -> new ResourceNotFoundException("Produkt-ID nicht in der Datenbank"));
+        
         ifProductNameAlreadyExistsThrow(dto.getProductName(), id);
-
+        
         productMapper.updateEntity(dto, existing);
-
+        
+        if (dto.getAllergens() != null) {
+            List<Allergen> allergens = allergenRepository.findAllById(dto.getAllergens());
+            
+            if (existing.getAllergens() != null) {
+                existing.getAllergens().clear();
+                existing.getAllergens().addAll(allergens);
+            } else {
+                existing.setAllergens(allergens);
+            }
+        }
+        
         Product saved = productRepository.save(existing);
         return productMapper.toResponseDto(saved);
     }
