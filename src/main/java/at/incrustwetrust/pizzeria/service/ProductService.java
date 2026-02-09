@@ -1,13 +1,18 @@
 package at.incrustwetrust.pizzeria.service;
 
-import at.incrustwetrust.pizzeria.dto.product.*;
+import at.incrustwetrust.pizzeria.dto.product.ProductCreateDTO;
+import at.incrustwetrust.pizzeria.dto.product.ProductResponseDTO;
+import at.incrustwetrust.pizzeria.dto.product.ProductResponseLightDTO;
+import at.incrustwetrust.pizzeria.dto.product.ProductUpdateDTO;
 import at.incrustwetrust.pizzeria.entity.Allergen;
 import at.incrustwetrust.pizzeria.entity.Product;
+import at.incrustwetrust.pizzeria.entity.User;
 import at.incrustwetrust.pizzeria.exception.ProductAlreadyExistsException;
 import at.incrustwetrust.pizzeria.exception.ResourceNotFoundException;
 import at.incrustwetrust.pizzeria.mapper.ProductMapper;
 import at.incrustwetrust.pizzeria.repository.AllergenRepository;
 import at.incrustwetrust.pizzeria.repository.ProductRepository;
+import at.incrustwetrust.pizzeria.utils.CurrentUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +27,7 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final AllergenRepository allergenRepository;
+    private final CurrentUserService currentUserService;
     private final ProductMapper productMapper;
 
 
@@ -31,6 +37,10 @@ public class ProductService {
         ifProductNameAlreadyExistsThrow(dto.getProductName());
         
         Product product = productMapper.toEntity(dto);
+        
+        User currentUser = currentUserService.getCurrentUserEntity();
+        product.setCreatedBy(currentUser);
+        product.setLastUpdatedBy(currentUser);
         
         if (dto.getAllergens() != null) {
             List<Allergen> allergens = allergenRepository.findAllById(dto.getAllergens());
@@ -67,6 +77,9 @@ public class ProductService {
         ifProductNameAlreadyExistsThrow(dto.getProductName(), id);
         
         productMapper.updateEntity(dto, existing);
+        
+        User currentUser = currentUserService.getCurrentUserEntity();
+        existing.setLastUpdatedBy(currentUser);
         
         if (dto.getAllergens() != null) {
             List<Allergen> allergens = allergenRepository.findAllById(dto.getAllergens());
