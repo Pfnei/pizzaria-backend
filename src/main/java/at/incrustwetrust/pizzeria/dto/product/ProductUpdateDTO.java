@@ -1,6 +1,9 @@
 package at.incrustwetrust.pizzeria.dto.product;
 
+import jakarta.validation.constraints.Positive;
 import lombok.*;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -11,11 +14,12 @@ import lombok.*;
 public class ProductUpdateDTO {
     private String productName;
     private String productDescription;
+    @Positive(message = "Preis muss positiv sein")
     private Double price;
     private String productPicture;
     private Boolean vegetarian;
     private Boolean active;
     private String mainCategory;
     private String subCategory;
-    private java.util.List<String> allergens;
+    private List<String> allergens;
 }

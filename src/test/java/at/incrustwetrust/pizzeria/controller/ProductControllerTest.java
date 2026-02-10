@@ -3,6 +3,7 @@ package at.incrustwetrust.pizzeria.controller;
 import at.incrustwetrust.pizzeria.dto.product.ProductCreateDTO;
 import at.incrustwetrust.pizzeria.dto.product.ProductResponseDTO;
 import at.incrustwetrust.pizzeria.dto.product.ProductResponseLightDTO;
+import at.incrustwetrust.pizzeria.dto.product.ProductUpdateDTO;
 import at.incrustwetrust.pizzeria.exception.ProductAlreadyExistsException;
 import at.incrustwetrust.pizzeria.exception.ResourceNotFoundException;
 import at.incrustwetrust.pizzeria.security.JwtService;
@@ -20,9 +21,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -154,5 +155,89 @@ class ProductControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isBadRequest());
+    }
+
+    // 7. Happy Path: PATCH /products/{id} als Admin -> 200
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void update_returnsProduct_whenAdmin() throws Exception {
+        ProductUpdateDTO dto = ProductUpdateDTO.builder()
+                .productName("Salami New")
+                .price(10.50)
+                .build();
+
+        ProductResponseDTO resp = ProductResponseDTO.builder()
+                .productId("2")
+                .productName("Salami New")
+                .build();
+
+        when(productService.update(any(), eq("2"))).thenReturn(resp);
+
+        mockMvc.perform(patch("/products/2")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.productName").value("Salami New"));
+    }
+
+    // 8. Security Check: PATCH /products/{id} ohne Admin -> 403
+    @Test
+    @WithMockUser(roles = "USER")
+    void update_returns403_forNonAdmin() throws Exception {
+        ProductUpdateDTO dto = ProductUpdateDTO.builder().productName("Pizza").build();
+
+        mockMvc.perform(patch("/products/2")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isForbidden());
+    }
+
+    // 9. Exception Mapping: PATCH /products/{id} -> 404
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void update_returns404_whenNotFound() throws Exception {
+        when(productService.update(any(), eq("999"))).thenThrow(new ResourceNotFoundException("Not found"));
+        ProductUpdateDTO dto = ProductUpdateDTO.builder().productName("Pizza").build();
+
+        mockMvc.perform(patch("/products/999")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isNotFound());
+    }
+
+    // 10. Happy Path: DELETE /products/{id} als Admin -> 200
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void delete_returnsProduct_whenAdmin() throws Exception {
+        ProductResponseDTO resp = ProductResponseDTO.builder().productId("2").build();
+        when(productService.delete("2")).thenReturn(resp);
+
+        mockMvc.perform(delete("/products/2")
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.productId").value("2"));
+    }
+
+    // 11. Security Check: DELETE /products/{id} ohne Admin -> 403
+    @Test
+    @WithMockUser(roles = "USER")
+    void delete_returns403_forNonAdmin() throws Exception {
+        mockMvc.perform(delete("/products/2")
+                        .with(csrf()))
+                .andExpect(status().isForbidden());
+    }
+
+    // 12. Exception Mapping: DELETE /products/{id} -> 404
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void delete_returns404_whenNotFound() throws Exception {
+        when(productService.delete("999")).thenThrow(new ResourceNotFoundException("Not found"));
+
+        mockMvc.perform(delete("/products/999")
+                        .with(csrf()))
+                .andExpect(status().isNotFound());
     }
 }
