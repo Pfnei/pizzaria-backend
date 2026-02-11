@@ -63,7 +63,7 @@ class OrderServiceTest {
         when(orderRepository.findAll()).thenReturn(orders);
         List<OrderResponseDTO> mapped = List.of(new OrderResponseDTO(), new OrderResponseDTO());
         when(orderMapper.toResponseDtoList(orders)).thenReturn(mapped);
-        List<OrderResponseDTO> res = orderService.readAll(Optional.empty(), admin);
+        List<OrderResponseDTO> res = orderService.readAll(Optional.empty(), Optional.empty(), admin);
         assertThat(res).isSameAs(mapped);
         verify(orderRepository).findAll();
     }
@@ -74,7 +74,7 @@ class OrderServiceTest {
         List<Order> orders = List.of(new Order());
         when(orderRepository.findAllByCreatedBy_UserId("u1")).thenReturn(orders);
         when(orderMapper.toResponseDtoList(orders)).thenReturn(List.of(new OrderResponseDTO()));
-        List<OrderResponseDTO> res = orderService.readAll(Optional.of("u1"), admin);
+        List<OrderResponseDTO> res = orderService.readAll(Optional.of("u1"), Optional.empty(),admin);
         assertThat(res).hasSize(1);
         verify(orderRepository).findAllByCreatedBy_UserId("u1");
     }
@@ -85,14 +85,14 @@ class OrderServiceTest {
         List<Order> userOrders = List.of(new Order());
         when(orderRepository.findAllByCreatedBy_UserId("u1")).thenReturn(userOrders);
         when(orderMapper.toResponseDtoList(userOrders)).thenReturn(List.of(new OrderResponseDTO()));
-        List<OrderResponseDTO> res = orderService.readAll(Optional.of("other"), user);
+        List<OrderResponseDTO> res = orderService.readAll(Optional.of("other"), Optional.empty(), user);
         assertThat(res).hasSize(1);
         verify(orderRepository).findAllByCreatedBy_UserId("u1");
     }
 
     @Test
     void readAll_throws_whenNotLoggedIn() {
-        assertThatThrownBy(() -> orderService.readAll(Optional.empty(), null))
+        assertThatThrownBy(() -> orderService.readAll(Optional.empty(), Optional.empty(),null))
                 .isInstanceOf(UnauthorizedActionException.class);
     }
 

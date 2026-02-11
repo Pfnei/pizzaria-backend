@@ -7,4 +7,5 @@ import java.util.Optional;
 
 public interface OrderRepository extends JpaRepository<Order, String> {
     List<Order> findAllByCreatedBy_UserId(String userId);
+    List<Order>  findDistinctByItems_Product_ProductId(String productId);
 }

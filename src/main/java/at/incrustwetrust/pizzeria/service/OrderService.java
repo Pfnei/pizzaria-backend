@@ -23,109 +23,114 @@ import java.util.List;
 import java.util.Optional;
 
 
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class OrderService {
+	
+	private final OrderRepository orderRepository;
+	private final UserRepository userRepository;
+	private final ProductRepository productRepository;
+	private final OrderMapper orderMapper;
+	
+	// READ ALL (optional filter)
+	public List<OrderResponseDTO> readAll(Optional<String> createdBy, Optional<String> productId, SecurityUser principal) {
+		loggedInUserCheck(principal);
+		
+		
+		List<Order> orders;
+		
+		if (principal.isAdmin()) {
+			if (createdBy.isPresent()) {
+				orders = orderRepository.findAllByCreatedBy_UserId(createdBy.get());
+			} else if (productId.isPresent()) {
+				orders = orderRepository.findDistinctByItems_Product_ProductId(productId.get());
+			} else {
+				orders = orderRepository.findAll();
+			}
+		} else {
+			String userId = principal.getId();
+			orders = orderRepository.findAllByCreatedBy_UserId(userId);
+		}
+	
+		return orderMapper.toResponseDtoList(orders);
+	
+}
 
-    private final OrderRepository orderRepository;
-    private final UserRepository userRepository;
-    private final ProductRepository productRepository;
-    private final OrderMapper orderMapper;
+// READ ONE
+public OrderResponseDTO read(String orderId, SecurityUser principal) {
+	if (principal == null) {
+		throw new UnauthorizedActionException("your not logged in");
+	}
+	Order order = orderRepository.findById(orderId)
+			.orElseThrow(() -> new OrderNotFoundException("Keine Bestellung mit der ID " + orderId + " vorhanden"));
+	
+	if (principal.isAdmin()) {
+		return orderMapper.toResponseDto(order);
+	} else if (!principal.isAdmin()) {
+		if (!principal.getId().equals(order.getCreatedBy().getUserId())) {
+			throw new OrderNotFoundException("order not found");
+		}
+		return orderMapper.toResponseDto(order);
+	}
+	return null;
+}
 
-    // READ ALL (optional filter)
-    public List<OrderResponseDTO> readAll(Optional<String> createdBy, SecurityUser principal) {
-        loggedInUserCheck(principal);
+// CREATE
+public OrderResponseDTO create(OrderCreateDTO dto, SecurityUser principal) {
+	
+	User createdBy = null;
+	if (principal != null) {
+		createdBy = userRepository.findById(principal.getId())
+				.orElseThrow(() -> new UserNotFoundException("User nicht gefunden"));
+	}
+	
+	Order orderToSave = orderMapper.toEntity(dto, createdBy);
+	List<OrderItem> items = buildOrderItems(dto.getItems(), orderToSave);
+	orderToSave.setItems(items);
+	orderToSave.setTotal(calculateTotal(items));
+	Order savedOrder = orderRepository.save(orderToSave);
+	return orderMapper.toResponseDto(savedOrder);
+}
 
-        if (principal.isAdmin()) {
-            // Admin darf filtern oder alles sehen
-            List<Order> orders = createdBy
-                    .map(orderRepository::findAllByCreatedBy_UserId)
-                    .orElseGet(orderRepository::findAll);
-            return orderMapper.toResponseDtoList(orders);
-        } else {
-            // Normaler User:  ignorieren den Filter und nehmen eingeloggte ID vom principal
-            return orderMapper.toResponseDtoList(
-                    orderRepository.findAllByCreatedBy_UserId(principal.getId())
-            );
-        }
-    }
+// update muss noch gemacht werden, create, read, readalll sollten passen !
+public OrderResponseDTO update(String id, OrderUpdateDTO dto, SecurityUser principal) {
+	// Prüfen ob eingeloggt
+	loggedInUserCheck(principal);
+	
+	// Order suchen
+	Order order = orderRepository.findById(id)
+			.orElseThrow(() -> new OrderNotFoundException("Keine Bestellung mit der ID " + id + " vorhanden"));
+	
+	// Berechtigung prüfen (Admin oder Besitzer)
+	if (!principal.isAdmin() && !principal.getId().equals(order.getCreatedBy().getUserId())) {
+		throw new OrderNotFoundException("Bestellung nicht gefunden"); // Tarnung als 'nicht gefunden'
+	}
+	
+	//Mappen und speichern
+	orderMapper.updateEntity(dto, order);
+	Order saved = orderRepository.save(order);
+	return orderMapper.toResponseDto(saved);
+}
 
-    // READ ONE
-    public OrderResponseDTO read(String orderId,SecurityUser principal) {
-        if (principal == null) {
-            throw new UnauthorizedActionException("your not logged in");
-        }
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new OrderNotFoundException("Keine Bestellung mit der ID " + orderId + " vorhanden"));
+private void loggedInUserCheck(SecurityUser principal) {
+	if (principal == null) {
+		throw new UnauthorizedActionException("your not logged in");
+	}
+}
 
-        if (principal.isAdmin()) {
-            return orderMapper.toResponseDto(order);
-        } else if (!principal.isAdmin()) {
-            if (!principal.getId().equals(order.getCreatedBy().getUserId())) {
-                throw new OrderNotFoundException("order not found");
-            }
-            return orderMapper.toResponseDto(order);
-        }
-        return null;
-    }
+private List<OrderItem> buildOrderItems(List<OrderItemCreateDTO> itemDtos, Order order) {
+	return itemDtos.stream()
+			.map(itemDto -> {
+				Product product = productRepository.findById(itemDto.getProductId())
+						.orElseThrow(() -> new ResourceNotFoundException("Produkt nicht gefunden: " + itemDto.getProductId()));
+				double lineTotal = product.getPrice() * itemDto.getQuantity();
+				return new OrderItem(order, product, product.getProductName(), itemDto.getQuantity(), lineTotal);
+			})
+			.toList();
+}
 
-    // CREATE
-    public OrderResponseDTO create(OrderCreateDTO dto,SecurityUser principal) {
-
-        User createdBy = null;
-        if (principal != null) {
-            createdBy = userRepository.findById(principal.getId())
-                    .orElseThrow(() -> new UserNotFoundException("User nicht gefunden"));
-        }
-
-        Order orderToSave = orderMapper.toEntity(dto, createdBy);
-        List<OrderItem> items = buildOrderItems(dto.getItems(), orderToSave);
-        orderToSave.setItems(items);
-        orderToSave.setTotal(calculateTotal(items));
-        Order savedOrder = orderRepository.save(orderToSave);
-        return orderMapper.toResponseDto(savedOrder);
-    }
-
-    // update muss noch gemacht werden, create, read, readalll sollten passen !
-    public OrderResponseDTO update(String id, OrderUpdateDTO dto, SecurityUser principal) {
-        // Prüfen ob eingeloggt
-        loggedInUserCheck(principal);
-
-        // Order suchen
-        Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new OrderNotFoundException("Keine Bestellung mit der ID " + id + " vorhanden"));
-
-        // Berechtigung prüfen (Admin oder Besitzer)
-        if (!principal.isAdmin() && !principal.getId().equals(order.getCreatedBy().getUserId())) {
-            throw new OrderNotFoundException("Bestellung nicht gefunden"); // Tarnung als 'nicht gefunden'
-        }
-
-        //Mappen und speichern
-        orderMapper.updateEntity(dto, order);
-        Order saved = orderRepository.save(order);
-        return orderMapper.toResponseDto(saved);
-    }
-
-    private void loggedInUserCheck(SecurityUser principal){
-        if(principal == null){
-            throw new UnauthorizedActionException("your not logged in");
-        }
-    }
-
-    private List<OrderItem> buildOrderItems(List<OrderItemCreateDTO> itemDtos, Order order) {
-        return itemDtos.stream()
-                .map(itemDto -> {
-                    Product product = productRepository.findById(itemDto.getProductId())
-                            .orElseThrow(() -> new ResourceNotFoundException("Produkt nicht gefunden: " + itemDto.getProductId()));
-                    double lineTotal = product.getPrice() * itemDto.getQuantity();
-                    return new OrderItem(order, product, product.getProductName(), itemDto.getQuantity(), lineTotal);
-                })
-                .toList();
-    }
-
-    private double calculateTotal(List<OrderItem> items) {
-        return items.stream().mapToDouble(OrderItem::getPrice).sum();
-    }
+private double calculateTotal(List<OrderItem> items) {
+	return items.stream().mapToDouble(OrderItem::getPrice).sum();
+}
 }
