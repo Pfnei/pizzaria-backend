@@ -17,8 +17,6 @@ public class ProductCreateDTO {
     @NotBlank(message = "Produktname darf nicht leer sein")
     private String productName;
     private String productDescription;
-    @NotNull(message = "Preis muss angegeben werden")
-    @Positive(message = "Preis muss positiv sein")
     private Double price;
     private String productPicture;
     private boolean vegetarian;

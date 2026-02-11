@@ -6,6 +6,11 @@
 /target/
 !/target/.gitkeep
 
+# pictures/upload
+/uploads/
+
+
+
 # IDEs & Tools
 ### IntelliJ IDEA ###
 .idea/
