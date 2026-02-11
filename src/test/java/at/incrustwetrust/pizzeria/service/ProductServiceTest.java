@@ -187,24 +187,36 @@ class ProductServiceTest {
 
     @Test
     void delete_deletesImageIfPresent_andReturnsDto() {
+        // Arrange
         Product existing = new Product();
         existing.setProductPicture("img.png");
         when(productRepository.findById("pid")).thenReturn(Optional.of(existing));
 
         ProductResponseDTO mapped = new ProductResponseDTO();
+        // Wir mocken den Aufruf von toResponseDto, den der Service jetzt macht
         when(productMapper.toResponseDto(existing)).thenReturn(mapped);
 
-        ProductDeleteDTO result = productService.delete("pid");
+        // Act
+        // GEÄNDERT: Rückgabetyp ist jetzt ProductResponseDTO
+        ProductResponseDTO result = productService.delete("pid");
 
+        // Assert
         verify(fileService).deleteProductImage("img.png");
         verify(productRepository).delete(existing);
+
+        // Jetzt referenzieren beide auf das gleiche 'mapped' Objekt -> Test wird grün
         assertThat(result).isSameAs(mapped);
     }
 
     @Test
     void delete_throws_whenNotFound() {
+        // Arrange
         when(productRepository.findById("pid")).thenReturn(Optional.empty());
+
+        // Act & Assert
         assertThatThrownBy(() -> productService.delete("pid"))
                 .isInstanceOf(ResourceNotFoundException.class);
+
+        verify(productRepository, never()).delete(any());
     }
 }

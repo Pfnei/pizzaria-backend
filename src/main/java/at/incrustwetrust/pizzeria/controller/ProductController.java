@@ -52,10 +52,9 @@ public class ProductController {
     }
 
 
-    @PreAuthorize( "hasRole('ADMIN')")
     @DeleteMapping("/{id}")
-    public ResponseEntity<ProductDeleteDTO> delete(@PathVariable String id) {
-        ProductDeleteDTO deleted = productService.delete(id);
-        return ResponseEntity.ok(deleted);
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ProductResponseDTO> delete(@PathVariable String id) {
+        return ResponseEntity.ok(productService.delete(id));
     }
 }

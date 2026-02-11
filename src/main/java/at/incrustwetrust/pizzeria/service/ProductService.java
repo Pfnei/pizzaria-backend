@@ -95,7 +95,7 @@ public class ProductService {
 
     // DELETE
 
-    public ProductDeleteDTO delete(String id) {
+    public ProductResponseDTO delete(String id) {
         Product existing = productRepository.findById(id)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Kein Produkt mit der ID " + id + " vorhanden"));
@@ -105,8 +105,11 @@ public class ProductService {
             fileService.deleteProductImage(existing.getProductPicture());
         }
 
+        // Zuerst mappen, dann löschen
+        ProductResponseDTO response = productMapper.toResponseDto(existing);
+
         productRepository.delete(existing);
-        return productMapper.toDeleteDto(existing);
+        return response;
     }
 
 
