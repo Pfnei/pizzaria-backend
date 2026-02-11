@@ -1,9 +1,6 @@
 package at.incrustwetrust.pizzeria.service;
 
-import at.incrustwetrust.pizzeria.dto.product.ProductCreateDTO;
-import at.incrustwetrust.pizzeria.dto.product.ProductResponseDTO;
-import at.incrustwetrust.pizzeria.dto.product.ProductResponseLightDTO;
-import at.incrustwetrust.pizzeria.dto.product.ProductUpdateDTO;
+import at.incrustwetrust.pizzeria.dto.product.*;
 import at.incrustwetrust.pizzeria.entity.Allergen;
 import at.incrustwetrust.pizzeria.entity.Product;
 import at.incrustwetrust.pizzeria.entity.User;
@@ -98,7 +95,7 @@ public class ProductService {
 
     // DELETE
 
-    public ProductResponseDTO delete(String id) {
+    public ProductDeleteDTO delete(String id) {
         Product existing = productRepository.findById(id)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Kein Produkt mit der ID " + id + " vorhanden"));
@@ -109,7 +106,7 @@ public class ProductService {
         }
 
         productRepository.delete(existing);
-        return productMapper.toResponseDto(existing);
+        return productMapper.toDeleteDto(existing);
     }
 
 
