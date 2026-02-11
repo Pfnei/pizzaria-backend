@@ -35,6 +35,13 @@ public class GlobalExceptionHandler {
         return buildResponse(HttpStatus.FORBIDDEN, ex.getMessage(), "https://pizzeria.at/security-policy");
     }
 
+    // 3a. Spring Security: Zugriff verweigert -> 403
+    @ExceptionHandler({org.springframework.security.access.AccessDeniedException.class,
+            org.springframework.security.authorization.AuthorizationDeniedException.class})
+    public ResponseEntity<ErrorResponse> handleSpringAccessDenied(Exception ex) {
+        return buildResponse(HttpStatus.FORBIDDEN, "Access Denied", "https://pizzeria.at/help/permissions");
+    }
+
     // 4. Wichtig: Validierungsfehler (400)
     // Wenn z.B. @Valid im Controller fehlschlägt (z.B. E-Mail Format falsch)
     @ExceptionHandler(org.springframework.web.bind.MethodArgumentNotValidException.class)

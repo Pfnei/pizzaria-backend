@@ -1,4 +1,4 @@
-package at.incrustwetrust.pizzeria.utils;
+package at.incrustwetrust.pizzeria.service;
 
 import at.incrustwetrust.pizzeria.entity.User;
 import at.incrustwetrust.pizzeria.exception.ResourceNotFoundException;

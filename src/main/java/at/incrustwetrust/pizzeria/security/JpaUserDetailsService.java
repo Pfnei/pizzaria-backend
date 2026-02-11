@@ -2,7 +2,6 @@ package at.incrustwetrust.pizzeria.security;
 
 import at.incrustwetrust.pizzeria.entity.User;
 import at.incrustwetrust.pizzeria.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.*;
 import org.springframework.stereotype.Service;
 

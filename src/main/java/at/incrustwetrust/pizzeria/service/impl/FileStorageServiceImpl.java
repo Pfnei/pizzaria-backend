@@ -1,7 +1,6 @@
 package at.incrustwetrust.pizzeria.service.impl;
 
-import at.incrustwetrust.pizzeria.entity.Product;
-import at.incrustwetrust.pizzeria.entity.User;
+
 import at.incrustwetrust.pizzeria.exception.ResourceNotFoundException;
 import at.incrustwetrust.pizzeria.exception.UpdateFailedException;
 import at.incrustwetrust.pizzeria.exception.UserNotFoundException;
@@ -9,20 +8,20 @@ import at.incrustwetrust.pizzeria.repository.ProductRepository;
 import at.incrustwetrust.pizzeria.repository.UserRepository;
 import at.incrustwetrust.pizzeria.service.FileStorageService;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
+
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
+
 import java.io.IOException;
-import java.net.MalformedURLException;
+
 import java.nio.file.*;
-import java.time.LocalDateTime;
+
 import java.util.List;
 import java.util.UUID;
 
