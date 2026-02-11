@@ -1,9 +1,6 @@
 package at.incrustwetrust.pizzeria.service;
 
-import at.incrustwetrust.pizzeria.dto.product.ProductCreateDTO;
-import at.incrustwetrust.pizzeria.dto.product.ProductResponseDTO;
-import at.incrustwetrust.pizzeria.dto.product.ProductResponseLightDTO;
-import at.incrustwetrust.pizzeria.dto.product.ProductUpdateDTO;
+import at.incrustwetrust.pizzeria.dto.product.*;
 import at.incrustwetrust.pizzeria.entity.Allergen;
 import at.incrustwetrust.pizzeria.entity.Product;
 import at.incrustwetrust.pizzeria.entity.User;
@@ -197,7 +194,7 @@ class ProductServiceTest {
         ProductResponseDTO mapped = new ProductResponseDTO();
         when(productMapper.toResponseDto(existing)).thenReturn(mapped);
 
-        ProductResponseDTO result = productService.delete("pid");
+        ProductDeleteDTO result = productService.delete("pid");
 
         verify(fileService).deleteProductImage("img.png");
         verify(productRepository).delete(existing);

@@ -1,9 +1,6 @@
 package at.incrustwetrust.pizzeria.controller;
 
-import at.incrustwetrust.pizzeria.dto.product.ProductCreateDTO;
-import at.incrustwetrust.pizzeria.dto.product.ProductUpdateDTO;
-import at.incrustwetrust.pizzeria.dto.product.ProductResponseDTO;
-import at.incrustwetrust.pizzeria.dto.product.ProductResponseLightDTO;
+import at.incrustwetrust.pizzeria.dto.product.*;
 import at.incrustwetrust.pizzeria.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -57,8 +54,8 @@ public class ProductController {
 
     @PreAuthorize( "hasRole('ADMIN')")
     @DeleteMapping("/{id}")
-    public ResponseEntity<ProductResponseDTO> delete(@PathVariable String id) {
-        ProductResponseDTO deleted = productService.delete(id);
+    public ResponseEntity<ProductDeleteDTO> delete(@PathVariable String id) {
+        ProductDeleteDTO deleted = productService.delete(id);
         return ResponseEntity.ok(deleted);
     }
 }

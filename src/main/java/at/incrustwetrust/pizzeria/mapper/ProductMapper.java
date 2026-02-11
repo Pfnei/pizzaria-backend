@@ -69,6 +69,13 @@ public interface ProductMapper {
             @Mapping(target = "allergens",  source = "allergens", qualifiedByName = "allergensToStrings")
     })
     ProductResponseLightDTO toResponseLightDto(Product p);
+    
+    
+    
+    // ============== ENTITY -> DELET DTO ==============
+    @Mappings({
+                })
+    ProductDeleteDTO toDeleteDto(Product p);
 
     // ============== LISTEN ==============
     List<ProductResponseDTO> toResponseDtoList(List<Product> products);
