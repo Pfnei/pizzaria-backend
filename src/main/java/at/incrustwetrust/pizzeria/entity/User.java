@@ -34,10 +34,7 @@ public class User {
     private String password;
 
     private String salutation;
-
-    @Column(length = 30)
     private String salutationDetail;
-
     private String firstname;
     private String lastname;
 
@@ -49,7 +46,6 @@ public class User {
 
     @Column(length = 10)
     private String zipcode;
-
     private String city;
     private String country;
 
@@ -75,8 +71,8 @@ public class User {
     @JsonIgnore
     private User lastUpdatedBy;
 
-    // WICHTIG: mappedBy muss auf das Feld in der Order-Entity zeigen (meist "user")
-    @OneToMany(mappedBy = "user")
+    // FIX: Muss "createdBy" heißen, da das Feld in Order.java so heißt!
+    @OneToMany(mappedBy = "createdBy")
     @JsonIgnore
     private List<Order> orders;
 }

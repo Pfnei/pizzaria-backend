@@ -115,23 +115,22 @@ public class UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("No user found with ID: " + id));
 
-        // Falls Profilbild vorhanden -> immer löschen (Platz sparen)
+        // Falls ein Profilbild existiert, löschen wir es in beiden Fällen
         if (user.getProfilePicture() != null) {
             fileService.deleteProfileImage(user.getProfilePicture());
             user.setProfilePicture(null);
         }
 
-        // Check: Hat der User Bestellungen?
+        // Check: Hat der User bereits Bestellungen getätigt?
         boolean hasOrders = user.getOrders() != null && !user.getOrders().isEmpty();
 
         if (hasOrders) {
-            // SOFT DELETE
+            // SOFT DELETE: Da Datenbank-Constraints das Löschen verhindern würden
             user.setActive(false);
             user.setAdmin(false);
-            User saved = userRepository.save(user);
-            return mapper.toResponseDto(saved);
+            return mapper.toResponseDto(userRepository.save(user));
         } else {
-            // HARD DELETE
+            // HARD DELETE: User kann sicher gelöscht werden
             userRepository.delete(user);
             return mapper.toResponseDto(user);
         }
