@@ -12,6 +12,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.dao.DataIntegrityViolationException;
 
 
 import java.util.List;
@@ -124,13 +127,39 @@ public class UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("No user found with ID: " + id));
 
-        // Profilbild löschen, falls vorhanden
-        if (user.getProfilePicture() != null) {
-            fileService.deleteProfileImage(user.getProfilePicture());
+        try {
+            // Zuerst versuchen wir das harte Löschen
+            userRepository.delete(user);
+            // Wir erzwingen das SQL-Statement SOFORT, um den Constraint-Fehler hier zu fangen
+            userRepository.flush();
+
+            // Wenn wir hier ankommen, war das Löschen erfolgreich (keine Bestellungen)
+            if (user.getProfilePicture() != null) {
+                fileService.deleteProfileImage(user.getProfilePicture());
+            }
+        } catch (DataIntegrityViolationException e) {
+            // CONSTRAINT ausgelöst! Wir catchen und machen den User inaktiv.
+            // ACHTUNG: Das muss in einer neuen Transaktion passieren!
+            return softDeleteUser(id);
         }
 
-        userRepository.delete(user);
         return mapper.toResponseDto(user);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public UserResponseDTO softDeleteUser(String id) {
+        User user = userRepository.findById(id).get();
+        user.setActive(false);
+        user.setAdmin(false); // Sicherheitshalber
+
+        // Profilbild löschen wir trotzdem, um Platz zu sparen
+        if (user.getProfilePicture() != null) {
+            fileService.deleteProfileImage(user.getProfilePicture());
+            user.setProfilePicture(null);
+        }
+
+        User saved = userRepository.save(user);
+        return mapper.toResponseDto(saved);
     }
 
 
