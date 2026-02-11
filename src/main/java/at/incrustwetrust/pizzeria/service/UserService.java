@@ -127,23 +127,32 @@ public class UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("No user found with ID: " + id));
 
-        try {
-            // Zuerst versuchen wir das harte Löschen
-            userRepository.delete(user);
-            // Wir erzwingen das SQL-Statement SOFORT, um den Constraint-Fehler hier zu fangen
-            userRepository.flush();
+        // Wir schauen einfach nach: Hat er Bestellungen?
+        // Das ist sicherer als ein Try-Catch, der die Transaktion killt.
+        boolean hasOrders = user.getOrders() != null && !user.getOrders().isEmpty();
 
-            // Wenn wir hier ankommen, war das Löschen erfolgreich (keine Bestellungen)
+        if (hasOrders) {
+            // Soft Delete (User hat Bestellungen, darf nicht aus DB gelöscht werden)
+            user.setActive(false);
+            user.setAdmin(false);
+
+            // Bild löschen wir trotzdem
+            if (user.getProfilePicture() != null) {
+                fileService.deleteProfileImage(user.getProfilePicture());
+                user.setProfilePicture(null);
+            }
+
+            User saved = userRepository.save(user);
+            return mapper.toResponseDto(saved);
+        } else {
+            // Hard Delete (Keine Bestellungen vorhanden)
             if (user.getProfilePicture() != null) {
                 fileService.deleteProfileImage(user.getProfilePicture());
             }
-        } catch (DataIntegrityViolationException e) {
-            // CONSTRAINT ausgelöst! Wir catchen und machen den User inaktiv.
-            // ACHTUNG: Das muss in einer neuen Transaktion passieren!
-            return softDeleteUser(id);
+            userRepository.delete(user);
+            // Wir geben das DTO des gerade gelöschten Users zurück
+            return mapper.toResponseDto(user);
         }
-
-        return mapper.toResponseDto(user);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
