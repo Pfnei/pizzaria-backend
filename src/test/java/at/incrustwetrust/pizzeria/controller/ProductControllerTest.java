@@ -1,9 +1,6 @@
 package at.incrustwetrust.pizzeria.controller;
 
-import at.incrustwetrust.pizzeria.dto.product.ProductCreateDTO;
-import at.incrustwetrust.pizzeria.dto.product.ProductResponseDTO;
-import at.incrustwetrust.pizzeria.dto.product.ProductResponseLightDTO;
-import at.incrustwetrust.pizzeria.dto.product.ProductUpdateDTO;
+import at.incrustwetrust.pizzeria.dto.product.*;
 import at.incrustwetrust.pizzeria.exception.ProductAlreadyExistsException;
 import at.incrustwetrust.pizzeria.exception.ResourceNotFoundException;
 import at.incrustwetrust.pizzeria.security.JwtService;
@@ -212,7 +209,7 @@ class ProductControllerTest {
     @Test
     @WithMockUser(roles = "ADMIN")
     void delete_returnsProduct_whenAdmin() throws Exception {
-        ProductResponseDTO resp = ProductResponseDTO.builder().productId("2").build();
+        ProductDeleteDTO resp = ProductDeleteDTO.builder().productId("2").build();
         when(productService.delete("2")).thenReturn(resp);
 
         mockMvc.perform(delete("/products/2")
