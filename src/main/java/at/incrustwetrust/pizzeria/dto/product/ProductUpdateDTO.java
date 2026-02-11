@@ -14,7 +14,6 @@ import java.util.List;
 public class ProductUpdateDTO {
     private String productName;
     private String productDescription;
-    @Positive(message = "Preis muss positiv sein")
     private Double price;
     private String productPicture;
     private Boolean vegetarian;
