@@ -12,7 +12,7 @@ import at.incrustwetrust.pizzeria.exception.ResourceNotFoundException;
 import at.incrustwetrust.pizzeria.mapper.ProductMapper;
 import at.incrustwetrust.pizzeria.repository.AllergenRepository;
 import at.incrustwetrust.pizzeria.repository.ProductRepository;
-import at.incrustwetrust.pizzeria.utils.CurrentUserService;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
