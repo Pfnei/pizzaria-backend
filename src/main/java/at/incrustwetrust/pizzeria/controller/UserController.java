@@ -44,7 +44,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') || principal.userId == #id")
+    @PreAuthorize("hasRole('ADMIN') || principal.id == #id")
     public ResponseEntity<UserResponseDTO> readById(@PathVariable String id, @AuthenticationPrincipal SecurityUser principal) {
         UserResponseDTO user = userService.read(id,principal);
         return ResponseEntity.ok(user);
@@ -53,7 +53,7 @@ public class UserController {
 
 
     @PatchMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') || principal.userId == #id")
+    @PreAuthorize("hasRole('ADMIN') || principal.id == #id")
     public ResponseEntity<UserResponseDTO> update(
             @PathVariable String id,
             @Valid @RequestBody UserUpdateDTO dto,
