@@ -3,7 +3,10 @@ package at.incrustwetrust.pizzeria.controller;
 import at.incrustwetrust.pizzeria.dto.user.UserCreateDTO;
 import at.incrustwetrust.pizzeria.dto.user.UserUpdateDTO;
 import at.incrustwetrust.pizzeria.dto.user.UserResponseDTO;
+import at.incrustwetrust.pizzeria.entity.User;
+import at.incrustwetrust.pizzeria.mapper.UserMapper;
 import at.incrustwetrust.pizzeria.security.SecurityUser;
+import at.incrustwetrust.pizzeria.service.CurrentUserService;
 import at.incrustwetrust.pizzeria.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +23,18 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    private final CurrentUserService currentUserService;
+    private final UserMapper userMapper;
+
+
+    @GetMapping("/me")
+    public ResponseEntity<UserResponseDTO> getMyProfile() {
+        // Nutzt deinen CurrentUserService, um die Entity aus dem Context zu holen
+        User currentUser = currentUserService.getCurrentUserEntity();
+
+        // Mappt die Entity direkt in das ResponseDTO
+        return ResponseEntity.ok(userMapper.toResponseDto(currentUser));
+    }
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
@@ -29,7 +44,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') || principal.id == #userId")
+    @PreAuthorize("hasRole('ADMIN') || principal.id == #id")
     public ResponseEntity<UserResponseDTO> readById(@PathVariable String id, @AuthenticationPrincipal SecurityUser principal) {
         UserResponseDTO user = userService.read(id,principal);
         return ResponseEntity.ok(user);
@@ -38,7 +53,7 @@ public class UserController {
 
 
     @PatchMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') || principal.id == #userId")
+    @PreAuthorize("hasRole('ADMIN') || principal.id == #id")
     public ResponseEntity<UserResponseDTO> update(
             @PathVariable String id,
             @Valid @RequestBody UserUpdateDTO dto,
