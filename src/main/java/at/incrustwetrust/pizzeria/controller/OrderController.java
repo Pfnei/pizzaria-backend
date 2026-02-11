@@ -24,8 +24,10 @@ public class OrderController {
     @PreAuthorize("isAuthenticated()")
     @GetMapping
     public ResponseEntity<List<OrderResponseDTO>> readAll(
-            @RequestParam(required = false) String createdBy, @AuthenticationPrincipal SecurityUser principal) {
-        return ResponseEntity.ok(orderService.readAll(Optional.ofNullable(createdBy), principal));
+            @RequestParam(required = false) String createdBy,
+            @RequestParam(required = false) String productId,
+            @AuthenticationPrincipal SecurityUser principal) {
+        return ResponseEntity.ok(orderService.readAll(Optional.ofNullable(createdBy), Optional.ofNullable(productId), principal));
     }
 
     @PreAuthorize("isAuthenticated()")
