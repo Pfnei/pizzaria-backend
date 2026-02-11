@@ -75,100 +75,66 @@ public class UserService {
     /**
      * Updates user if authorized; enforces admin/self password change
      */
+    @Transactional
     public UserResponseDTO update(UserUpdateDTO dto, String id, SecurityUser principal) {
-        // 1. Existenz prüfen
         User existingUser = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("No user found with ID: " + id));
 
-        // 2. Dubletten-Check (Email/Username)
         throwIfUsernameOrEmailExists(dto, id);
 
         boolean isAdmin = principal.isAdmin();
         boolean isSelf  = principal.getId().equals(id);
 
-        // 3. Sicherheits-Check: Nur Admin ODER der User selbst dürfen weiter
         if (!isAdmin && !isSelf) {
             throw new UnauthorizedActionException("You are not allowed to update this user.");
         }
 
-        // 4. Status-Werte sichern (Nur Admins dürfen Rollen/Status ändern)
         boolean oldAdmin  = existingUser.isAdmin();
         boolean oldActive = existingUser.isActive();
 
-        // 5. Mapping der neuen Daten
         mapper.updateEntity(dto, existingUser);
 
-        // 6. Schutz der Admin-Felder: Wenn kein Admin, alte Werte wiederherstellen
         if (!isAdmin) {
             existingUser.setAdmin(oldAdmin);
             existingUser.setActive(oldActive);
         }
 
-        // 7. Passwort-Update Logik
         if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
             existingUser.setPassword(passwordEncoder.encode(dto.getPassword()));
         }
 
-        // 8. Meta-Daten setzen (Wer hat zuletzt geändert?)
         User currentUser = userRepository.findById(principal.getId())
                 .orElseThrow(() -> new UserNotFoundException("Current user not found"));
         existingUser.setLastUpdatedBy(currentUser);
 
-        // 9. Speichern und zurückgeben
-        User saved = userRepository.save(existingUser);
-        return mapper.toResponseDto(saved);
+        return mapper.toResponseDto(userRepository.save(existingUser));
     }
 
-
-
-    // DELETE
-
+    @Transactional
     public UserResponseDTO delete(String id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("No user found with ID: " + id));
 
-        // Wir schauen einfach nach: Hat er Bestellungen?
-        // Das ist sicherer als ein Try-Catch, der die Transaktion killt.
-        boolean hasOrders = user.getOrders() != null && !user.getOrders().isEmpty();
-
-        if (hasOrders) {
-            // Soft Delete (User hat Bestellungen, darf nicht aus DB gelöscht werden)
-            user.setActive(false);
-            user.setAdmin(false);
-
-            // Bild löschen wir trotzdem
-            if (user.getProfilePicture() != null) {
-                fileService.deleteProfileImage(user.getProfilePicture());
-                user.setProfilePicture(null);
-            }
-
-            User saved = userRepository.save(user);
-            return mapper.toResponseDto(saved);
-        } else {
-            // Hard Delete (Keine Bestellungen vorhanden)
-            if (user.getProfilePicture() != null) {
-                fileService.deleteProfileImage(user.getProfilePicture());
-            }
-            userRepository.delete(user);
-            // Wir geben das DTO des gerade gelöschten Users zurück
-            return mapper.toResponseDto(user);
-        }
-    }
-
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public UserResponseDTO softDeleteUser(String id) {
-        User user = userRepository.findById(id).get();
-        user.setActive(false);
-        user.setAdmin(false); // Sicherheitshalber
-
-        // Profilbild löschen wir trotzdem, um Platz zu sparen
+        // Falls Profilbild vorhanden -> immer löschen (Platz sparen)
         if (user.getProfilePicture() != null) {
             fileService.deleteProfileImage(user.getProfilePicture());
             user.setProfilePicture(null);
         }
 
-        User saved = userRepository.save(user);
-        return mapper.toResponseDto(saved);
+        // Check: Hat der User Bestellungen?
+        boolean hasOrders = user.getOrders() != null && !user.getOrders().isEmpty();
+
+        if (hasOrders) {
+            // SOFT DELETE
+            user.setActive(false);
+            user.setAdmin(false);
+            User saved = userRepository.save(user);
+            return mapper.toResponseDto(saved);
+        } else {
+            // HARD DELETE
+            userRepository.delete(user);
+            return mapper.toResponseDto(user);
+        }
     }
 
 

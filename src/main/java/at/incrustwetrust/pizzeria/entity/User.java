@@ -9,7 +9,6 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-
 import java.time.Instant;
 import java.util.List;
 
@@ -24,7 +23,6 @@ public class User {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String userId;
 
-    // dauerhaft gespeicherter Dateiname, z. B. "profile_<id>.jpg"
     @Column(name = "profile_picture")
     private String profilePicture;
 
@@ -32,9 +30,9 @@ public class User {
     private String username;
 
     @Column(nullable = false)
+    @JsonIgnore
     private String password;
 
-    // z. B. "MR", "MRS" – kannst du später auch auf Enum ändern
     private String salutation;
 
     @Column(length = 30)
@@ -77,6 +75,8 @@ public class User {
     @JsonIgnore
     private User lastUpdatedBy;
 
-    @OneToMany(mappedBy = "createdBy")
+    // WICHTIG: mappedBy muss auf das Feld in der Order-Entity zeigen (meist "user")
+    @OneToMany(mappedBy = "user")
+    @JsonIgnore
     private List<Order> orders;
 }
