@@ -19,8 +19,17 @@ import java.util.Optional;
 public class OrderController {
 
     private final OrderService orderService;
-
-
+    
+    
+    
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/mine")
+    public ResponseEntity<List<OrderResponseDTO>> getMyOrders( @AuthenticationPrincipal SecurityUser principal) {
+        return ResponseEntity.ok(orderService.readMyOrders(principal));
+    }
+    
+    
+    
     @PreAuthorize("isAuthenticated()")
     @GetMapping
     public ResponseEntity<List<OrderResponseDTO>> readAll(
