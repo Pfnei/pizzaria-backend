@@ -104,6 +104,7 @@ public class OrderService {
 		
 		Order orderToSave = orderMapper.toEntity(dto, createdBy);
 		List<OrderItem> items = buildOrderItems(dto.getItems(), orderToSave);
+		orderToSave.setCreatedBy(createdBy);
 		orderToSave.setItems(items);
 		orderToSave.setTotal(calculateTotal(items));
 		Order savedOrder = orderRepository.save(orderToSave);
