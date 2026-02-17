@@ -1,0 +1,28 @@
+services:
+  db:
+    image: postgres:latest
+    container_name: pizzeria-postgres-codespace
+    environment:
+      POSTGRES_DB: pizzeria
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: pizzapass
+    ports:
+      - "5433:5432"
+
+  adminer:
+    image: adminer:latest
+    container_name: pizzeria-adminer-codespace
+    ports:
+      - "8085:8080"
+
+  backend:
+    build: .
+    container_name: pizzaria-backend-codespace
+    depends_on:
+      - db
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
