@@ -41,7 +41,7 @@ public class SecurityConfig {
                         // 1. Öffentlich: Auth, Swagger UND die Produkt-Liste (nur GET)
                         .requestMatchers("/auth/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/products/**").permitAll()
-
+                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/orders").permitAll()
                         // 2. Admin-Bereiche
                         .requestMatchers("/admin/**").hasRole("ADMIN")
 
