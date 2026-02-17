@@ -2,24 +2,28 @@ services:
   db:
     image: postgres:latest
     container_name: pizzeria-postgres
-    restart: always
-    ports:
-      - "5433:5432"
     environment:
+      POSTGRES_DB: pizzeria
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: pizzapass
-      POSTGRES_DB: pizzeria
-    volumes:
-      - postgres_data:/var/lib/postgresql
+    ports:
+      - "5433:5432"
 
   adminer:
     image: adminer:latest
     container_name: pizzeria-adminer
-    restart: always
-    depends_on:
-      - db
     ports:
       - "8085:8080"
 
-volumes:
-  postgres_data:
+  backend:
+    image: pizzaria-backend
+    container_name: pizzaria-backend
+    build: .
+    depends_on:
+      - db
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/pizzeria
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: pizzapass
