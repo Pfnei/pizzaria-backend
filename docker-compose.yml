@@ -29,7 +29,11 @@ services:
     ports:
       - "8081:8081"
     environment:
-      SPRING_PROFILES_ACTIVE: default   # optional, Spring Boot nutzt application.properties automatisch
+      # Wir biegen localhost auf den Namen des DB-Services "db" um
+      # Und wir nutzen den INTERNEN Port 5432 (nicht 5433)
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/pizzeria
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=pizzapass
 
 volumes:
   postgres_data:
