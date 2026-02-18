@@ -13,3 +13,6 @@ docker logs -f pizzaria-backend-codespace
 docker compose up -d
 docker logs -f pizzaria-backend
 
+
+env dateien mal entfernt, jetzt ist das docker setup final für uns..^^
+
