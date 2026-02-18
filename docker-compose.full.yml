@@ -15,7 +15,7 @@ services:
       timeout: 5s
       retries: 5
     volumes:
-      - postgres_data_full:/var/lib/postgresql/data
+      - postgres_data_full:/var/lib/postgresql
 
   backend:
     build: .
