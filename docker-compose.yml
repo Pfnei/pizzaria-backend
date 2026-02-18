@@ -9,6 +9,11 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: pizzapass
       POSTGRES_DB: pizzeria
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d pizzeria"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     volumes:
       - postgres_data:/var/lib/postgresql
 
@@ -25,11 +30,11 @@ services:
     build: .
     container_name: pizzaria-backend
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     ports:
       - "8081:8081"
     environment:
-      # Hardcoded Werte passend zur application.properties
       - DB_HOST=db
       - DB_PORT=5432
       - DB_NAME=pizzeria
