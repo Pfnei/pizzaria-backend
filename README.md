@@ -4,7 +4,7 @@
 
 Wir nutzen verschiedene Docker-Konfigurationen, je nachdem, wie du entwickeln möchtest.
 
-### 1. Für Kollegen (Entwicklung in der IDE)
+### 1. (Entwicklung in der IDE)
 *Nutzt Docker nur für die Datenbank und Adminer. Das Backend wird in IntelliJ/Rider gestartet.*
 
 * **Start:** `docker compose up -d`
@@ -13,7 +13,7 @@ Wir nutzen verschiedene Docker-Konfigurationen, je nachdem, wie du entwickeln m�
 
 ---
 
-### 2. Für dich (Full Docker - Ohne IDE)
+### 2. (Full Docker - Ohne IDE)
 *Startet alles (DB, Adminer & Backend) komplett in Docker. Das Backend nutzt Port **8082**, um Konflikte mit der IDE zu vermeiden.*
 
 * **Start:** `docker compose -f docker-compose.full.yml up -d --build`
