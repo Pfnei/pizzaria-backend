@@ -29,11 +29,11 @@ services:
     ports:
       - "8081:8081"
     environment:
-      # Wir biegen localhost auf den Namen des DB-Services "db" um
-      # Und wir nutzen den INTERNEN Port 5432 (nicht 5433)
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/pizzeria
-      - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=pizzapass
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=pizzeria
+      - DB_USER=postgres
+      - DB_PW=pizzapass
 
 volumes:
   postgres_data:

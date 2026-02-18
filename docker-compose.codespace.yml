@@ -2,6 +2,7 @@ services:
   db:
     image: postgres:latest
     container_name: pizzeria-postgres-codespace
+    env_file: .env.codespace  
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
@@ -20,10 +21,13 @@ services:
     container_name: pizzaria-backend-codespace
     depends_on:
       - db
+    env_file: .env.codespace  
     ports:
       - "8081:8081"
     environment:
-      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
-      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
-      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
-      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=${POSTGRES_DB}
+      - DB_USER=${POSTGRES_USER}
+      - DB_PW=${POSTGRES_PASSWORD}
