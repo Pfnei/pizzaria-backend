@@ -29,6 +29,7 @@ services:
     ports:
       - "8081:8081"
     environment:
+      # Hardcoded Werte passend zur application.properties
       - DB_HOST=db
       - DB_PORT=5432
       - DB_NAME=pizzeria
