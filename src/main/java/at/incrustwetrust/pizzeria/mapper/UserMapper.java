@@ -23,14 +23,14 @@ public interface UserMapper {
 
             @Mapping(target = "createdBy", ignore = true),
 
-            // DTO verwendet 'active/isAdmin' (primitive), Entity verwendet 'active/isAdmin' (primitive)
-            // Automatisches Mapping funktioniert jetzt besser.
+            // DTO uses 'active/isAdmin' (primitive), Entity uses 'active/isAdmin' (primitive)
+            // Automatic mapping works better now.
             @Mapping(target = "active",ignore = true),  // expression = "java(true)"
             @Mapping(target = "admin",ignore = true),  // expression = "java(true)"
     })
     User toEntity(UserCreateDTO dto, @Context User createdBy);
 
-    // ======= UPDATE / PATCH (BEREINIGT) =======
+    // ======= UPDATE / PATCH (CLEANED) =======
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mappings({
             @Mapping(target = "userId", ignore = true),
@@ -49,9 +49,9 @@ public interface UserMapper {
     })
     void updateEntity(UserUpdateDTO dto, @MappingTarget User user);
 
-    // ======= READ: ENTITY → DTO (VEREINFACHT) =======
+    // ======= READ: ENTITY → DTO (SIMPLIFIED) =======
     @Mappings({
-            // Automatisches Mapping funktioniert, keine expliziten Booleans nötig, wenn Namen übereinstimmen.
+            // Automatic mapping works, no explicit booleans needed if names match.
             @Mapping(target = "createdById",
                     expression = "java(u.getCreatedBy()!=null ? u.getCreatedBy().getUserId() : null)"),
             @Mapping(target = "lastUpdatedById",
@@ -64,14 +64,14 @@ public interface UserMapper {
     })
     UserResponseDTO toResponseDto(User u);
 
-    // ======= READ: ENTITY → LIGHT DTO (VEREINFACHT) =======
-    // Hier ist kein Mapping mehr nötig, da die Entity-Getter isActive/isAdmin auf DTO active/isAdmin mappen.
+    // ======= READ: ENTITY → LIGHT DTO (SIMPLIFIED) =======
+    // No mapping needed here anymore, as the Entity getters isActive/isAdmin map to DTO active/isAdmin.
     UserResponseLightDTO toResponseLightDto(User u);
 
     List<UserResponseDTO> toResponseDtoList(List<User> users);
     List<UserResponseLightDTO> toResponseLightDtoList(List<User> users);
 
-    // ======= Konverter =======
+    // ======= Converters =======
     @Named("toSalutation")
     default Salutation toSalutation(String src) {
         if (src == null || src.isBlank()) return null;

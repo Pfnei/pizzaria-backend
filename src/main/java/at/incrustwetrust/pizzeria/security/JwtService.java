@@ -30,10 +30,10 @@ public class JwtService {
 
         Instant now = Instant.now();
 
-        String email    = secUser.getEmail();            // Login-Identität
-        String userId   = secUser.getId();           // DB-ID
+        String email    = secUser.getEmail();            // Login identity
+        String userId   = secUser.getId();           // DB ID
         boolean isAdmin = secUser.isAdmin();
-        String username = secUser.getDisplayUsername();  // UI-Name
+        String username = secUser.getDisplayUsername();  // UI name
 
         return JWT.create()
                 .withIssuer(issuer)
@@ -46,12 +46,12 @@ public class JwtService {
                 .sign(Algorithm.HMAC256(secret));
     }
 
-    // Subject (bei dir = Email)
+    // Subject (for you = Email)
     public String extractUsername(String token) {
         return verify(token).getSubject();
     }
 
-    // Individuelle Claims
+    // Individual Claims
     public String extractUserId(String token) {
         return verify(token).getClaim("userId").asString();
     }

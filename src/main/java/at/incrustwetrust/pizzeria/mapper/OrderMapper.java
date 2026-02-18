@@ -16,8 +16,8 @@ public interface OrderMapper {
             @Mapping(target = "createdAt", ignore = true),
             @Mapping(target = "deliveredAt", ignore = true),
             @Mapping(target = "items", ignore = true),
-            @Mapping(target = "createdBy", ignore = true), // wird im AfterMapping gesetzt
-            // HIER DIE FIXES: Explizit das DTO als Quelle angeben
+            @Mapping(target = "createdBy", ignore = true), // will be set in AfterMapping
+            // HERE THE FIXES: Explicitly specify the DTO as source
             @Mapping(source = "dto.firstname", target = "firstname"),
             @Mapping(source = "dto.lastname", target = "lastname"),
             @Mapping(source = "dto.phoneNumber", target = "phoneNumber"),
@@ -34,8 +34,8 @@ public interface OrderMapper {
             @Mapping(target = "createdAt", ignore = true),
             @Mapping(target = "createdBy", ignore = true),
             @Mapping(target = "items", ignore = true)
-            // deliveredAt, total, address, ... werden, falls gesetzt, übernommen
-            // status existiert nicht in der Entity -> wird automatisch ignoriert (Quell-Property ohne Ziel)
+            // deliveredAt, total, address, ... will be taken over if set
+            // status does not exist in the Entity -> will be automatically ignored (source property without target)
     })
     void updateEntity(OrderUpdateDTO dto, @MappingTarget Order order);
 
@@ -43,7 +43,7 @@ public interface OrderMapper {
     @Mappings({
             @Mapping(target = "createdById",
                     expression = "java(o.getCreatedBy()!=null ? o.getCreatedBy().getUserId() : null)"),
-            @Mapping(target = "createdBy", source = "createdBy") // nutzt UserMapper.toResponseLightDto
+            @Mapping(target = "createdBy", source = "createdBy") // uses UserMapper.toResponseLightDto
     })
     OrderResponseDTO toResponseDto(Order o);
 
@@ -60,7 +60,7 @@ public interface OrderMapper {
     List<OrderResponseDTO> toResponseDtoList(List<Order> orders);
     List<OrderResponseLightDTO> toResponseLightDtoList(List<Order> orders);
 
-    // ======= AfterMapping: createdBy aus @Context setzen =======
+    // ======= AfterMapping: set createdBy from @Context =======
     @AfterMapping
     default void setCreatedBy(@MappingTarget Order order, @Context User createdBy) {
         if (createdBy != null) {

@@ -20,9 +20,9 @@ public class UserUpdateDTO {
     private String address;
     private String city;
     private String zipcode;
-    private String salutation;        // z. B. "MR", "MRS"
+    private String salutation;        // e.g. "MR", "MRS"
     private String salutationDetail;
-    private String country;           // z. B. "AT", "DE"
+    private String country;           // e.g. "AT", "DE"
     private String password;
 
 }

@@ -29,10 +29,10 @@ public class UserController {
 
     @GetMapping("/me")
     public ResponseEntity<UserResponseDTO> getMyProfile() {
-        // Nutzt deinen CurrentUserService, um die Entity aus dem Context zu holen
+        // Uses your CurrentUserService to get the entity from the context
         User currentUser = currentUserService.getCurrentUserEntity();
 
-        // Mappt die Entity direkt in das ResponseDTO
+        // Maps the entity directly to the ResponseDTO
         return ResponseEntity.ok(userMapper.toResponseDto(currentUser));
     }
 

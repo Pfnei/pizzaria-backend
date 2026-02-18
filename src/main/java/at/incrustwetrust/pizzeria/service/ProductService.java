@@ -53,7 +53,7 @@ public class ProductService {
     public ProductResponseDTO read(String id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() ->
-                        new ResourceNotFoundException("Kein Produkt mit der ID " + id + " vorhanden"));
+                        new ResourceNotFoundException("No product found with ID " + id));
 
         return productMapper.toResponseDto(product);
     }
@@ -69,7 +69,7 @@ public class ProductService {
     
     public ProductResponseDTO update(ProductUpdateDTO dto, String id) {
         Product existing = productRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Produkt-ID nicht in der Datenbank"));
+                .orElseThrow(() -> new ResourceNotFoundException("Product ID not in database"));
         
         ifProductNameAlreadyExistsThrow(dto.getProductName(), id);
         
@@ -98,14 +98,14 @@ public class ProductService {
     public ProductResponseDTO delete(String id) {
         Product existing = productRepository.findById(id)
                 .orElseThrow(() ->
-                        new ResourceNotFoundException("Kein Produkt mit der ID " + id + " vorhanden"));
+                        new ResourceNotFoundException("No product found with ID " + id));
 
-        // Bild löschen, falls vorhanden
+        // Delete image if exists
         if (existing.getProductPicture() != null) {
             fileService.deleteProductImage(existing.getProductPicture());
         }
 
-        // Zuerst mappen, dann löschen
+        // Map first, then delete
         ProductResponseDTO response = productMapper.toResponseDto(existing);
 
         productRepository.delete(existing);
@@ -117,13 +117,13 @@ public class ProductService {
 
     private void ifProductNameAlreadyExistsThrow(String productName) {
         productRepository.findProductByProductName(productName).ifPresent(p -> {
-            throw new ProductAlreadyExistsException("Es ist bereits ein Produkt mit diesem Namen vorhanden");
+            throw new ProductAlreadyExistsException("A product with this name already exists");
         });
     }
 
     private void ifProductNameAlreadyExistsThrow(String productName, String excludedId) {
         productRepository.findProductByProductNameAndProductIdNot(productName, excludedId).ifPresent(p -> {
-            throw new ProductAlreadyExistsException("Es ist bereits ein Produkt mit diesem Namen vorhanden");
+            throw new ProductAlreadyExistsException("A product with this name already exists");
         });
     }
 }

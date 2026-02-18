@@ -18,30 +18,30 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String orderId;
   //  @CreationTimestamp
-    // in our case- same as createdAT --> ich lass es mla weg, damit man richtig umsetzen lernt und so...^^
+    // in our case- same as createdAT --> I'll leave it out so you learn how to implement it correctly and so on...^^
     private Instant deliveredAt;
     @NotNull
     @Column (nullable = false)
     private double total;
     @NotBlank
     @Column (nullable = false)
-    @Size(min = 3 , message = "mindestens 3 Zeichen erforderlich")
-    @Size(max = 30, message = "Maximale Länge = 30 Zeichen")
+    @Size(min = 3 , message = "at least 3 characters required")
+    @Size(max = 30, message = "Maximum length = 30 characters")
     private String firstname;
     @NotBlank
     @Column (nullable = false)
-    @Size(min = 2 , message = "mindestens 2 Zeichen erforderlich")
-    @Size(max = 100, message = "Maximale Länge = 100 Zeichen")
+    @Size(min = 2 , message = "at least 2 characters required")
+    @Size(max = 100, message = "Maximum length = 100 characters")
     private String lastname;
     @NotBlank
     @Column (nullable = false)
-    @Size(min = 7 , message = "mindestens 7 Zeichen erforderlich")
-    @Size(max = 30, message = "Maximale Länge = 30 Zeichen")
+    @Size(min = 7 , message = "at least 7 characters required")
+    @Size(max = 30, message = "Maximum length = 30 characters")
     private String phoneNumber;
     @NotBlank
     @Column (nullable = false)
-    @Size(min = 7 , message = "mindestens 7 Zeichen erforderlich")
-    @Size(max = 100, message = "Maximale Länge = 30 Zeichen")
+    @Size(min = 7 , message = "at least 7 characters required")
+    @Size(max = 100, message = "Maximum length = 30 characters")
     private String address;
     // can be worldwide - means alphanumeric
     @NotBlank
@@ -167,7 +167,7 @@ public class Order {
         return createdBy;
     }
 
-    // Setter für createdBy wird benötigt, wenn im Mapper gesetzt wird
+    // Setter for createdBy is required if set in the mapper
     public void setCreatedBy(User createdBy) {
         this.createdBy = createdBy;
     }

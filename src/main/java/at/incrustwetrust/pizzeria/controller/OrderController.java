@@ -52,7 +52,7 @@ public class OrderController {
 
     }
 
-    // Optional, falls Updates erlaubt sind:
+    // Optional, if updates are allowed:
     @PreAuthorize("isAuthenticated()")
     @PatchMapping("/{id}")
     public ResponseEntity<OrderResponseDTO> update(

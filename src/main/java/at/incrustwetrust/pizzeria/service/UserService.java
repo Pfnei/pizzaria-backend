@@ -40,13 +40,13 @@ public class UserService {
         User creator = userRepository.findById(principal.getId())
                 .orElseThrow(() -> new UserNotFoundException("Creator not found: " + principal.getId()));
 
-        // 1. Mapper erstellt die Basis-Entity (createdBy bleibt hier noch leer/ignore)
+        // 1. Mapper creates the base entity (createdBy remains empty/ignore here)
         User user = mapper.toEntity(dto, null);
 
-        // 2. Passwort setzen
+        // 2. Set password
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
 
-        // 3. Den Creator manuell als Objekt setzen
+        // 3. Manually set the creator as object
         user.setCreatedBy(creator);
 
         User saved = userRepository.save(user);
@@ -115,22 +115,22 @@ public class UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("No user found with ID: " + id));
 
-        // Falls ein Profilbild existiert, löschen wir es in beiden Fällen
+        // If a profile picture exists, we delete it in both cases
         if (user.getProfilePicture() != null) {
             fileService.deleteProfileImage(user.getProfilePicture());
             user.setProfilePicture(null);
         }
 
-        // Check: Hat der User bereits Bestellungen getätigt?
+        // Check: Has the user already placed orders?
         boolean hasOrders = user.getOrders() != null && !user.getOrders().isEmpty();
 
         if (hasOrders) {
-            // SOFT DELETE: Da Datenbank-Constraints das Löschen verhindern würden
+            // SOFT DELETE: Since database constraints would prevent deletion
             user.setActive(false);
             user.setAdmin(false);
             return mapper.toResponseDto(userRepository.save(user));
         } else {
-            // HARD DELETE: User kann sicher gelöscht werden
+            // HARD DELETE: User can be safely deleted
             userRepository.delete(user);
             return mapper.toResponseDto(user);
         }
@@ -158,7 +158,7 @@ public class UserService {
     }
 
     public Optional<User> findEntityById(String userId) {
-        // Nutzt das UserRepository, um die User-Entity zu finden
+        // Uses the UserRepository to find the User entity
         return userRepository.findById(userId);
     }
 }

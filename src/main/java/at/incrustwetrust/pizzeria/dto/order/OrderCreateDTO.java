@@ -19,7 +19,7 @@ public class OrderCreateDTO {
 
     @PositiveOrZero private double total;
 
-    // optional: Zuordnung zu User
+    // optional: Assignment to User
     private String createdById;
 
     @NotEmpty

@@ -67,24 +67,24 @@ public class FileStorageServiceImpl implements FileStorageService {
             throw new SecurityException("Invalid file path");
         }
 
-        // 2. Neue Datei physisch speichern
+        // 2. Save new file physically
         try {
             Files.copy(file.getInputStream(), destination, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
             throw new RuntimeException("Could not store profile image", e);
         }
 
-        // 3. Datenbank-Update mit Rollback-Schutz für die Datei
+        // 3. Database update with rollback protection for the file
         try {
             user.setProfilePicture(filename);
-            userRepository.save(user); // Wenn das kracht -> ab in den catch
+            userRepository.save(user); // If this crashes -> go to catch
         } catch (Exception e) {
-            deletePhysicalFile(profileRoot, filename); // Neue Datei löschen, da DB-Eintrag fehlgeschlagen
+            deletePhysicalFile(profileRoot, filename); // Delete new file because DB entry failed
             log.error("Error saving user profile picture in DB", e);
             throw new UpdateFailedException("Could not update user profile in database");
         }
 
-        // 4. Cleanup: Altes Bild erst löschen, wenn ALLES andere geklappt hat
+        // 4. Cleanup: Delete old image only if EVERYTHING else worked
         if (oldFilename != null) {
             deletePhysicalFile(profileRoot, oldFilename);
         }
@@ -164,20 +164,20 @@ public class FileStorageServiceImpl implements FileStorageService {
 
     @Override
     public Resource loadProductImageAsResource(String filename) {
-        // Hier könnte man ein default-product-image.png hinzufügen, falls gewünscht
+        // Here you could add a default-product-image.png if desired
         return loadResource(productRoot, filename, "static/images/default-product-avatar.jpg");
     }
 
     private Resource loadResource(Path root, String filename, String defaultPath) {
         try {
             if (filename == null || filename.isEmpty()) {
-                log.info("Lade Default-Resource...");
+                log.info("Loading default resource...");
                 Resource res = new ClassPathResource(defaultPath);
 
                 if (res.exists()) {
                     return res;
                 } else {
-                    log.error("Default-Resource EXISTIERT NICHT im Pfad: {}", defaultPath);
+                    log.error("Default resource DOES NOT EXIST in path: {}", defaultPath);
                     return new ClassPathResource("static/images/default-avatar.png");
                 }
             }
@@ -186,7 +186,7 @@ public class FileStorageServiceImpl implements FileStorageService {
             return new UrlResource(filePath.toUri());
 
         } catch (Exception e) {
-            log.error("Fehler beim Laden der Resource: ", e);
+            log.error("Error loading resource: ", e);
             return new ClassPathResource("static/images/default-avatar.png");
         }
     }

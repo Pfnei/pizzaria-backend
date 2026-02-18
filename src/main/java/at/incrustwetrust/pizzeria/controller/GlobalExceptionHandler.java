@@ -15,44 +15,44 @@ import java.time.LocalDateTime;
 @Slf4j
 public class GlobalExceptionHandler {
 
-    // 1. Spezifisch: Wenn ein User oder Produkt schon existiert (409)
+    // 1. Specific: If a user or product already exists (409)
     @ExceptionHandler({UserAlreadyExistsException.class, ProductAlreadyExistsException.class})
     public ResponseEntity<ErrorResponse> handleConflict(RuntimeException ex) {
         return buildResponse(HttpStatus.CONFLICT, ex.getMessage(), null);
     }
 
-    // 2. Spezifisch: Wenn etwas nicht gefunden wurde (404)
-    // Das fängt auch UserNotFoundException ab, da diese von ResourceNotFound erbt!
+    // 2. Specific: If something was not found (404)
+    // This also catches UserNotFoundException, as it inherits from ResourceNotFound!
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleNotFound(ResourceNotFoundException ex) {
         String link = (ex instanceof UserNotFoundException) ? "https://pizzeria.at/register" : null;
         return buildResponse(HttpStatus.NOT_FOUND, ex.getMessage(), link);
     }
 
-    // 3. Spezifisch: Sicherheitsfehler / Virenscanner (403)
+    // 3. Specific: Security error / Virus scanner (403)
     @ExceptionHandler(InsecureFileException.class)
     public ResponseEntity<ErrorResponse> handleInsecureFile(InsecureFileException ex) {
         return buildResponse(HttpStatus.FORBIDDEN, ex.getMessage(), "https://pizzeria.at/security-policy");
     }
 
-    // 3a. Spring Security: Zugriff verweigert -> 403
+    // 3a. Spring Security: Access denied -> 403
     @ExceptionHandler({org.springframework.security.access.AccessDeniedException.class,
             org.springframework.security.authorization.AuthorizationDeniedException.class})
     public ResponseEntity<ErrorResponse> handleSpringAccessDenied(Exception ex) {
         return buildResponse(HttpStatus.FORBIDDEN, "Access Denied", "https://pizzeria.at/help/permissions");
     }
 
-    // 4. Wichtig: Validierungsfehler (400)
-    // Wenn z.B. @Valid im Controller fehlschlägt (z.B. E-Mail Format falsch)
+    // 4. Important: Validation error (400)
+    // If e.g. @Valid fails in the controller (e.g. email format wrong)
     @ExceptionHandler(org.springframework.web.bind.MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidation(org.springframework.web.bind.MethodArgumentNotValidException ex) {
-        return buildResponse(HttpStatus.BAD_REQUEST, "Eingabedaten sind ungültig.", null);
+        return buildResponse(HttpStatus.BAD_REQUEST, "Input data is invalid.", null);
     }
 
 
     @ExceptionHandler(UnauthorizedActionException.class)
     public ResponseEntity<ErrorResponse> handleUnauthorizedAction(UnauthorizedActionException ex) {
-        // Welchen Statuscode und welche Nachricht bauen wir hier zusammen?
+        // Which status code and which message do we assemble here?
         return buildResponse(
                 HttpStatus.FORBIDDEN,
                 ex.getMessage(),
@@ -65,22 +65,22 @@ public class GlobalExceptionHandler {
             return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage()+"update failed", null);
     }
 
-    // Hilfsmethode, um den Code oben kurz zu halten
+    // Helper method to keep the code above short
     private ResponseEntity<ErrorResponse> buildResponse(HttpStatus status, String message, String link) {
         ErrorResponse error = new ErrorResponse(message, link, LocalDateTime.now());
         return ResponseEntity.status(status).body(error);
     }
 
 
-    // 5. Globaler Catch-All: Für alles, was wir vergessen haben (500)
+    // 5. Global Catch-All: For everything we forgot (500)
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGeneralError(Exception ex) {
-        // 1. Logge den Fehler für dich (inklusive Stacktrace durch das 'ex')
-        log.error("Kritischer Systemfehler: ", ex);
+        // 1. Log the error for you (including stacktrace through 'ex')
+        log.error("Critical system error: ", ex);
 
-        // 2. Erstelle eine Antwort für den User (ohne technische Details!)
+        // 2. Create a response for the user (without technical details!)
         ErrorResponse error = new ErrorResponse(
-                "Ein unerwarteter Fehler ist aufgetreten. Bitte versuche es später erneut.",
+                "An unexpected error occurred. Please try again later.",
                 null,
                 LocalDateTime.now()
         );

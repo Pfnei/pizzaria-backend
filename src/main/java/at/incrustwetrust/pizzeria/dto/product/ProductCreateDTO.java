@@ -14,7 +14,7 @@ import lombok.*;
 @Builder
 @ToString
 public class ProductCreateDTO {
-    @NotBlank(message = "Produktname darf nicht leer sein")
+    @NotBlank(message = "Product name must not be empty")
     private String productName;
     private String productDescription;
     private Double price;

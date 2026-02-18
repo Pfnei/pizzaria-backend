@@ -71,7 +71,7 @@ public class User {
     @JsonIgnore
     private User lastUpdatedBy;
 
-    // FIX: Muss "createdBy" heißen, da das Feld in Order.java so heißt!
+    // FIX: Must be named "createdBy" because the field in Order.java is named like that!
     @OneToMany(mappedBy = "createdBy")
     @JsonIgnore
     private List<Order> orders;

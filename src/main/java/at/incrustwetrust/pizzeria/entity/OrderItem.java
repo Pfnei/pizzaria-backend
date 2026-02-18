@@ -25,8 +25,8 @@ public class OrderItem {
     @NotBlank
     @Column (nullable = false)
     private String productName;
-    @NotNull // statt @NotBlank
-    @Min(1)  // Sicherstellen, dass niemand 0 Pizzen bestellt
+    @NotNull // instead of @NotBlank
+    @Min(1)  // Ensure that no one orders 0 pizzas
     private int quantity;
     // = quantity * price/unit
     @NotNull

@@ -16,21 +16,21 @@ public class SecurityUser implements UserDetails {
         this.user = user;
     }
 
-    // --- Rollen / Authorities ---
+    // --- Roles / Authorities ---
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(user.isAdmin() ? "ROLE_ADMIN" : "ROLE_USER"));
     }
 
-    // --- Login-Daten (Security-Sicht) ---
+    // --- Login data (Security view) ---
     @Override
     public String getPassword() {
         return user.getPassword();
     }
 
     /**
-     * Security-"Username" = Login-Identität
-     * Bei uns email
+     * Security "Username" = Login identity
+     * For us email
      */
     @Override
     public String getUsername() {
@@ -38,7 +38,7 @@ public class SecurityUser implements UserDetails {
     }
     public User getUserEntity() { return this.user; }
 
-    // --- Account-Status ---
+    // --- Account Status ---
     @Override
     public boolean isAccountNonExpired() {
         return user.isActive();
@@ -59,20 +59,20 @@ public class SecurityUser implements UserDetails {
         return user.isActive();
     }
 
-    // --- Convenience-Methoden für JWT & App-Logik ---
+    // --- Convenience methods for JWT & App Logic ---
 
 
-   //  * E-Mail, wie oben in getUsername(), aber explizit benannt.
+   //  * Email, as above in getUsername(), but explicitly named.
 
     public String getEmail() {
         return user.getEmail();
     }
 
 
-     //* Das ist dein "Benutzername" aus der Entity (für UI/Anzeige).
+     //* This is your "username" from the entity (for UI/display).
 
     public String getDisplayUsername() {
-        return user.getUsername(); // Feld in deiner User-Entity
+        return user.getUsername(); // Field in your User entity
     }
 
     public boolean isAdmin() {

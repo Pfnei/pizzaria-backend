@@ -13,7 +13,7 @@ public class CurrentUserService {
 	public User getCurrentUserEntity() {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		if (auth == null || !(auth.getPrincipal() instanceof SecurityUser secUser)) {
-			throw new ResourceNotFoundException("Kein eingeloggter User im SecurityContext");
+			throw new ResourceNotFoundException("No logged in user in SecurityContext");
 		}
 		return secUser.getUserEntity();
 	}

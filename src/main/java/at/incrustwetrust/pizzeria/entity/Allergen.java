@@ -20,10 +20,10 @@ import java.util.List;
 public class Allergen {
 
 
-    // ID (praktischer Primärschlüssel)
+    // ID (practical primary key)
 
     @Id
-    @Column(length = 5) // z. B. "A", "B", "GLU", "LAC"
+    @Column(length = 5) // e.g. "A", "B", "GLU", "LAC"
     private String abbreviation;
 
     @NotBlank
@@ -47,7 +47,7 @@ public class Allergen {
     private List<Product> products;
 
 
-    // Convenience-Konstruktor
+    // Convenience constructor
 
     public Allergen(String abbreviation, String description, User createdBy) {
         this.abbreviation = abbreviation.toUpperCase();

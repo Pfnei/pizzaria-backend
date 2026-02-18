@@ -71,8 +71,8 @@ public class OrderService {
 		return orderMapper.toResponseDtoList(orders);
 		
 	}
-//Order Mapper Controller Service und Tests müssen refactored werden für etwas , das hier
-// aktueller main, test geschen natürlcih in andere branch...
+//Order Mapper Controller Service and Tests need to be refactored for something that here
+// current main, test happen of course in another branch...
 	
 	// READ ONE
 	public OrderResponseDTO read(String orderId, SecurityUser principal) {
@@ -80,7 +80,7 @@ public class OrderService {
 			throw new UnauthorizedActionException("your not logged in");
 		}
 		Order order = orderRepository.findById(orderId)
-				.orElseThrow(() -> new OrderNotFoundException("Keine Bestellung mit der ID " + orderId + " vorhanden"));
+				.orElseThrow(() -> new OrderNotFoundException("No order found with ID " + orderId));
 		
 		if (principal.isAdmin()) {
 			return orderMapper.toResponseDto(order);
@@ -99,7 +99,7 @@ public class OrderService {
 		User createdBy = null;
 		if (principal != null) {
 			createdBy = userRepository.findById(principal.getId())
-					.orElseThrow(() -> new UserNotFoundException("User nicht gefunden"));
+					.orElseThrow(() -> new UserNotFoundException("User not found"));
 		}
 		
 		Order orderToSave = orderMapper.toEntity(dto, createdBy);
@@ -111,21 +111,21 @@ public class OrderService {
 		return orderMapper.toResponseDto(savedOrder);
 	}
 	
-	// update muss noch gemacht werden, create, read, readalll sollten passen !
+	// update still needs to be done, create, read, readalll should fit !
 	public OrderResponseDTO update(String id, OrderUpdateDTO dto, SecurityUser principal) {
-		// Prüfen ob eingeloggt
+		// Check if logged in
 		loggedInUserCheck(principal);
 		
-		// Order suchen
+		// Find order
 		Order order = orderRepository.findById(id)
-				.orElseThrow(() -> new OrderNotFoundException("Keine Bestellung mit der ID " + id + " vorhanden"));
+				.orElseThrow(() -> new OrderNotFoundException("No order found with ID " + id));
 		
-		// Berechtigung prüfen (Admin oder Besitzer)
+		// Check permission (Admin or Owner)
 		if (!principal.isAdmin() && !principal.getId().equals(order.getCreatedBy().getUserId())) {
-			throw new OrderNotFoundException("Bestellung nicht gefunden"); // Tarnung als 'nicht gefunden'
+			throw new OrderNotFoundException("Order not found"); // Disguise as 'not found'
 		}
 		
-		//Mappen und speichern
+		//Map and save
 		orderMapper.updateEntity(dto, order);
 		Order saved = orderRepository.save(order);
 		return orderMapper.toResponseDto(saved);
@@ -141,7 +141,7 @@ public class OrderService {
 		return itemDtos.stream()
 				.map(itemDto -> {
 					Product product = productRepository.findById(itemDto.getProductId())
-							.orElseThrow(() -> new ResourceNotFoundException("Produkt nicht gefunden: " + itemDto.getProductId()));
+							.orElseThrow(() -> new ResourceNotFoundException("Product not found: " + itemDto.getProductId()));
 					double lineTotal = product.getPrice() * itemDto.getQuantity();
 					return new OrderItem(order, product, product.getProductName(), itemDto.getQuantity(), lineTotal);
 				})

@@ -50,7 +50,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
 
             } catch (JWTVerificationException e) {
-                // optional: loggen
+                // optional: log
             }
         }
 

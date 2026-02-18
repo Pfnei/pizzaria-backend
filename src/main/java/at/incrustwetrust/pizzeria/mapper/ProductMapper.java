@@ -19,7 +19,7 @@ public interface ProductMapper {
             @Mapping(target = "createdBy", ignore = true),
             @Mapping(target = "lastUpdatedBy", ignore = true),
             @Mapping(target = "orders", ignore = true),
-            @Mapping(target = "allergens", ignore = true) // Wird im Service via Repository-Lookup gesetzt
+            @Mapping(target = "allergens", ignore = true) // Will be set in Service via Repository-Lookup
     })
     Product toEntity(ProductCreateDTO dto);
 
@@ -32,16 +32,16 @@ public interface ProductMapper {
             @Mapping(target = "createdBy", ignore = true),
             @Mapping(target = "lastUpdatedBy", ignore = true),
             @Mapping(target = "orders", ignore = true),
-            @Mapping(target = "allergens", ignore = true) // Wird im Service manuell gehandhabt
+            @Mapping(target = "allergens", ignore = true) // Will be handled manually in Service
     })
     void updateEntity(ProductUpdateDTO dto, @MappingTarget Product entity);
 
     // ============== ENTITY -> DETAIL DTO ==============
     @Mappings({
-            // IDs extrahieren
+            // Extract IDs
             @Mapping(target = "createdById", source = "createdBy.userId"),
             @Mapping(target = "lastUpdatedById", source = "lastUpdatedBy.userId"),
-            // Allergene konvertieren
+            // Convert allergens
             @Mapping(target = "allergens", source = "allergens", qualifiedByName = "allergensToStrings")
     })
     ProductResponseDTO toResponseDto(Product p);
@@ -52,11 +52,11 @@ public interface ProductMapper {
     })
     ProductResponseLightDTO toResponseLightDto(Product p);
 
-    // ============== LISTEN ==============
+    // ============== LISTS ==============
     List<ProductResponseDTO> toResponseDtoList(List<Product> products);
     List<ProductResponseLightDTO> toResponseLightDtoList(List<Product> products);
 
-    // ============== HELFER: Allergene -> Strings ==============
+    // ============== HELPER: Allergens -> Strings ==============
     @Named("allergensToStrings")
     default List<String> allergensToStrings(List<Allergen> allergens) {
         if (allergens == null) return null;

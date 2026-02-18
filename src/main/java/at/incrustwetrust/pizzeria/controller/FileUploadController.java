@@ -25,7 +25,7 @@ public class FileUploadController {
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
 
-    // Upload eines Profilbilds
+    // Upload of a profile picture
 
     @PostMapping(value = "/profilepicture/{userId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasRole('ADMIN') || principal.id == #userId")
@@ -35,13 +35,13 @@ public class FileUploadController {
             @AuthenticationPrincipal SecurityUser principal
     ) {
 
-        // Hier nutzen wir jetzt die userId aus dem Pfad statt principal.getId()
+        // Here we now use the userId from the path instead of principal.getId()
         String filename = fileService.saveProfileImage(file, userId);
 
         return ResponseEntity.ok().build();
     }
 
-    // Upload eines Produktbilds
+    // Upload of a product picture
 
     @PostMapping(value = "/productpicture/{productId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasRole('ADMIN')")
@@ -55,7 +55,7 @@ public class FileUploadController {
 
 
 
-    //  Download eines Bilds
+    //  Download of a picture
 
     @GetMapping("/profile/{userId}")
     @PreAuthorize("hasRole('ADMIN') || principal.id == #userId")
@@ -63,8 +63,8 @@ public class FileUploadController {
         var user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        // 1. Wir rufen den Service auf. Dieser gibt IMMER eine Resource zurück
-        // (entweder das echte Bild oder den Default-Avatar).
+        // 1. We call the service. This ALWAYS returns a resource
+        // (either the real image or the default avatar).
         Resource fileResource = fileService.loadProfileImageAsResource(user.getProfilePicture());
 
         return createResourceResponse(user.getProfilePicture(), fileResource);

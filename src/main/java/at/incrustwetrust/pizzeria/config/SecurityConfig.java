@@ -38,14 +38,14 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // 1. Öffentlich: Auth, Swagger UND die Produkt-Liste (nur GET)
+                        // 1. Public: Auth, Swagger AND the product list (only GET)
                         .requestMatchers("/auth/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/products/**").permitAll()
                         .requestMatchers(org.springframework.http.HttpMethod.POST, "/orders").permitAll()
-                        // 2. Admin-Bereiche
+                        // 2. Admin areas
                         .requestMatchers("/admin/**").hasRole("ADMIN")
 
-                        // 3. Alles andere (auch POST/PATCH/DELETE auf /products) erfordert Login
+                        // 3. Everything else (also POST/PATCH/DELETE on /products) requires login
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)

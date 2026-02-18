@@ -15,15 +15,15 @@ import lombok.*;
 public class UserCreateDTO {
 
     @NotBlank
-    @Size(min = 5, max = 30, message = "Username muss zwischen 5 und 30 Zeichen lang sein")
+    @Size(min = 5, max = 30, message = "Username must be between 5 and 30 characters long")
     private String username;
 
     @NotBlank
-    @Size(min = 8, message = "Passwort muss mindestens 12 Zeichen lang sein")
-    @Pattern(regexp = ".*\\d.*", message = "Passwort benötigt mindestens eine Zahl")
-    @Pattern(regexp = ".*[A-Z].*", message = "Passwort benötigt mindestens einen Großbuchstaben")
-    @Pattern(regexp = ".*[a-z].*", message = "Passwort benötigt mindestens einen Kleinbuchstaben")
-    @Pattern(regexp = ".*[!@#$%^&*(),.?\":{}|<>].*", message = "Passwort benötigt mindestens ein Sonderzeichen (@$!%*?&)")
+    @Size(min = 8, message = "Password must be at least 8 characters long")
+    @Pattern(regexp = ".*\\d.*", message = "Password requires at least one digit")
+    @Pattern(regexp = ".*[A-Z].*", message = "Password requires at least one uppercase letter")
+    @Pattern(regexp = ".*[a-z].*", message = "Password requires at least one lowercase letter")
+    @Pattern(regexp = ".*[!@#$%^&*(),.?\":{}|<>].*", message = "Password requires at least one special character (@$!%*?&)")
     private String password;
 
     private String salutation;
@@ -47,8 +47,8 @@ public class UserCreateDTO {
     private String city;
     private String country;
 
-    // Für Create kannst du die eigentlich auch weglassen,
-    // oder vom Backend setzen (immer active=true, admin=false)
+    // For create, you can actually leave them out,
+    // or have them set by the backend (always active=true, admin=false)
     private Boolean active;
     private Boolean admin;
 }

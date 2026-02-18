@@ -15,5 +15,5 @@ public class OrderUpdateDTO {
     private String city;
     private String address;
     private String phoneNumber;
-    private String status; // wird ignoriert
+    private String status; // will be ignored
 }
