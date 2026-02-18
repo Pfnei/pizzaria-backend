@@ -11,7 +11,7 @@ services:
       POSTGRES_DB: pizzeria
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d pizzeria"]
-      interval: 5s
+      interval: 10s # Etwas mehr Zeit geben
       timeout: 5s
       retries: 5
     volumes:
