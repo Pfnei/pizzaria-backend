@@ -1,7 +1,7 @@
 services:
   db:
     image: postgres:latest
-    container_name: pizzeria-postgres-codespace
+    container_name: pizzeria-postgres
     restart: always
     ports:
       - "5433:5432"
@@ -14,28 +14,16 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
   adminer:
     image: adminer:latest
-    container_name: pizzeria-adminer-codespace
-    restart: always
+    container_name: pizzeria-adminer
     depends_on:
       - db
     ports:
       - "8085:8080"
 
-  backend:
-    build: .
-    container_name: pizzaria-backend-codespace
-    depends_on:
-      db:
-        condition: service_healthy
-    ports:
-      - "8081:8081"
-    environment:
-      - SPRING_PROFILES_ACTIVE=codespace
-      - DB_HOST=db
-      - DB_PORT=5432
-      - DB_NAME=pizzeria
-      - DB_USER=postgres
-      - DB_PW=pizzapass
+volumes:
+  postgres_data:

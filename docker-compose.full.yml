@@ -1,7 +1,7 @@
 services:
   db:
     image: postgres:latest
-    container_name: pizzeria-postgres
+    container_name: pizzeria-postgres-full
     restart: always
     ports:
       - "5433:5432"
@@ -17,29 +17,28 @@ services:
     volumes:
       - postgres_data_full:/var/lib/postgresql/data
 
-  adminer:
-    image: adminer:latest
-    container_name: pizzeria-adminer
-    restart: always
-    depends_on:
-      - db
-    ports:
-      - "8085:8080"
-
   backend:
     build: .
-    container_name: pizzaria-backend
+    container_name: pizzaria-backend-full
     depends_on:
       db:
         condition: service_healthy
     ports:
-      - "8082:8081" # <--- Dein spezieller Port
+      - "8082:8081" # <--- Außen 8082 für dich, Intern bleibt es 8081
     environment:
       - DB_HOST=db
       - DB_PORT=5432
       - DB_NAME=pizzeria
       - DB_USER=postgres
       - DB_PW=pizzapass
+
+  adminer:
+    image: adminer:latest
+    container_name: pizzeria-adminer-full
+    depends_on:
+      - db
+    ports:
+      - "8086:8080" # Auch hier ein anderer Port, falls die Kollegen Adminer schon auf 8085 haben
 
 volumes:
   postgres_data_full:
