@@ -70,17 +70,27 @@ public interface UserMapper {
 
     // ======= Converters =======
     @Named("toSalutation")
-    default Salutation toSalutation(String src) {
+    default String toSalutation(String src) {
         if (src == null || src.isBlank()) return null;
-        try { return Salutation.valueOf(src.trim().toUpperCase()); }
-        catch (Exception e) { throw new IllegalArgumentException("Invalid salutation: " + src); }
+        String v = src.trim().toUpperCase();
+        try {
+            Salutation.valueOf(v);
+            return v;
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Invalid salutation: " + src);
+        }
     }
-
+    
     @Named("toCountry")
-    default CountryCode toCountry(String src) {
+    default String toCountry(String src) {
         if (src == null || src.isBlank()) return null;
-        try { return CountryCode.valueOf(src.trim().toUpperCase()); }
-        catch (Exception e) { throw new IllegalArgumentException("Invalid country code: " + src); }
+        String v = src.trim().toUpperCase();
+        try {
+            CountryCode.valueOf(v);
+            return v;
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Invalid country code: " + src);
+        }
     }
 
     @AfterMapping
