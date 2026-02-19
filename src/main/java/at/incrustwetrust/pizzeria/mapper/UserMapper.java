@@ -40,12 +40,9 @@ public interface UserMapper {
             @Mapping(target = "createdBy", ignore = true),
             @Mapping(target = "lastUpdatedBy", ignore = true),
             @Mapping(target = "orders", ignore = true),
-
-            // Strings -> Enums
             @Mapping(target = "salutation", source = "salutation", qualifiedByName = "toSalutation"),
             @Mapping(target = "country", source = "country", qualifiedByName = "toCountry"),
-
-
+            @Mapping(target = "password", ignore = true)
     })
     void updateEntity(UserUpdateDTO dto, @MappingTarget User user);
 
