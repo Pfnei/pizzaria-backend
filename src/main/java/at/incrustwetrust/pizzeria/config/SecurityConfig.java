@@ -8,7 +8,7 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -31,6 +31,25 @@ public class SecurityConfig {
         this.jwtFilter = jwtFilter;
     }
 
+    /**
+     * 1. DER HOLZHAMMER:
+     * Diese Pfade werden von Spring Security KOMPLETT ignoriert.
+     * Kein JWT-Filter, keine Rollenprüfung, nichts.
+     */
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return (web) -> web.ignoring().requestMatchers(
+                "/v3/api-docs/**",
+                "/v3/api-docs.yaml",
+                "/swagger-ui/**",
+                "/swagger-ui.html",
+                "/swagger-resources/**",
+                "/configuration/**",
+                "/webjars/**",
+                "/api-docs/**"
+        );
+    }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
@@ -38,14 +57,24 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // 1. Public: Auth, Swagger AND the product list (only GET)
-                        .requestMatchers("/auth/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        // Public Auth Pfade
+                        .requestMatchers("/auth/**").permitAll()
+                        
+                        // Swagger Pfade (Sicherheitshalber auch hier in der Chain)
+                        .requestMatchers(
+                                "/v3/api-docs/**", 
+                                "/swagger-ui/**", 
+                                "/swagger-ui.html"
+                        ).permitAll()
+
+                        // Pizzeria Endpunkte
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/products/**").permitAll()
                         .requestMatchers(org.springframework.http.HttpMethod.POST, "/orders").permitAll()
-                        // 2. Admin areas
+                        
+                        // Admin Bereich
                         .requestMatchers("/admin/**").hasRole("ADMIN")
 
-                        // 3. Everything else (also POST/PATCH/DELETE on /products) requires login
+                        // Rest erfordert Login
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
@@ -65,11 +94,11 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration cfg = new CorsConfiguration();
-        cfg.setAllowedOriginPatterns(List.of("*")); // all Origins
-        cfg.setAllowedMethods(List.of("*"));        // GET, POST, PATCH, DELETE, ...
-        cfg.setAllowedHeaders(List.of("*"));        // all Headers
-        cfg.setAllowCredentials(false);             // important for "*"
-        cfg.setMaxAge(3600L);                       // Preflight-Caching
+        cfg.setAllowedOriginPatterns(List.of("*"));
+        cfg.setAllowedMethods(List.of("*"));
+        cfg.setAllowedHeaders(List.of("*"));
+        cfg.setAllowCredentials(false);
+        cfg.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", cfg);

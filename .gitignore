@@ -9,7 +9,13 @@
 # pictures/upload
 /uploads/
 
-
+# --- BRUNO API CLIENT ---
+# Wir ignorieren lokale Umgebungs-Einstellungen (Secrets/Passwörter)
+# Die Requests selbst (.bru Dateien in anderen Ordnern) werden hochgeladen
+api-requests/environments/*.bru
+# Falls Bruno Backup-Dateien erstellt
+api-requests/**/*.bak
+api-requests/**/*.tmp
 
 # IDEs & Tools
 ### IntelliJ IDEA ###
@@ -36,12 +42,9 @@ logs/
 # OS-spezifisch
 ### macOS ###
 .DS_Store
-.AppleDouble
-.LSOverride
 
 ### Windows ###
 Thumbs.db
-ehthumbs.db
 Desktop.ini
 
 # Java & Maven
@@ -49,21 +52,10 @@ Desktop.ini
 *.jar
 *.war
 *.ear
-*.nar
-*.zip
-*.tar.gz
-*.rar
 
 # Maven-specific
 .mvn/wrapper/maven-wrapper.jar
 .mvn/timing.properties
-
-# Gradle-specific (falls du Gradle nutzt)
-.gradle/
-build/
-
-# Lombok
-*.lombok.config.backup
 
 # Environment / Secrets
 .env
@@ -77,5 +69,3 @@ application-*.properties
 surefire-reports/
 failsafe-reports/
 jacoco.exec
-coverage/
-coverage-report/
