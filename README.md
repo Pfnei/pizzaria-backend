@@ -1,11 +1,26 @@
-#  Pizzeria Backend
+# 🍕 Pizzeria Backend
 
 Ein leistungsstarkes Spring Boot Backend für ein Pizzeria-Bestellsystem.
-**Tech-Stack:** Java 21, Spring Boot 3.4.5, PostgreSQL, JWT Auth, MapStruct & Lombok.
+Dieses Projekt dient als zentrale API für die Verwaltung von Produkten, Bestellungen und Benutzern.
 
 ---
 
-##  Setup & Start
+## 🛠 Voraussetzungen & Tools
+
+Bevor du startest, stelle sicher, dass du **Docker** installiert hast. Das Projekt wurde mit folgenden Tools entwickelt und getestet:
+
+| Kategorie | Tool | Verwendung |
+| :--- | :--- | :--- |
+| **Laufzeit** | ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=flat&logo=docker&logoColor=white) | Containerisierung von App & DB |
+| **Backend** | ![Java](https://img.shields.io/badge/java-%23ED8B00.svg?style=flat&logo=openjdk&logoColor=white) | Spring Boot 3 (Java 21) |
+| **IDE** | ![IntelliJ IDEA](https://img.shields.io/badge/IntelliJ_IDEA-000000.svg?style=flat&logo=intellij-idea&logoColor=white) | Haupt-Entwicklungsumgebung |
+| **IDE** | ![VS Code](https://img.shields.io/badge/VS%20Code-007ACC?style=flat&logo=visual-studio-code&logoColor=white) | Alternative für schnelle Fixes / WebStorm |
+| **API Test** | ![Bruno](https://img.shields.io/badge/Bruno-ff4500?style=flat) | API Testing & Dokumentation |
+| **Datenbank** | ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=flat&logo=postgresql&logoColor=white) | Persistente Speicherung |
+
+---
+
+## 🚀 Setup & Start
 
 Wir nutzen verschiedene Docker-Konfigurationen, je nachdem, wie du entwickeln möchtest.
 
@@ -24,11 +39,16 @@ Wir nutzen verschiedene Docker-Konfigurationen, je nachdem, wie du entwickeln m�
 * **Adminer:** `http://localhost:8086`
 * **Logs verfolgen:** `docker logs -f pizzaria-backend-full`
 
+### 3. Codespace (Cloud)
+* **Start:** `docker compose -f docker-compose.codespace.yml up -d`
+
 ---
 
 ## 📖 API-Dokumentation (Swagger)
 
 Das Projekt nutzt **SpringDoc OpenAPI**. Die Dokumentation wird automatisch generiert und erlaubt das direkte Testen der Endpunkte.
+
+
 
 * **Swagger UI:** [http://localhost:8082/swagger-ui.html](http://localhost:8082/swagger-ui.html)
 * **OpenAPI JSON:** [http://localhost:8082/v3/api-docs](http://localhost:8082/v3/api-docs)
@@ -37,18 +57,18 @@ Das Projekt nutzt **SpringDoc OpenAPI**. Die Dokumentation wird automatisch gene
 
 ---
 
-##  API-Tests mit Bruno
+## 🧪 API-Tests mit Bruno
 
-Die Test-Requests sind direkt im Repository eingecheckt, damit du sofort loslegen kannst.
+Die Test-Requests sind direkt im Repository eingecheckt (`/api-requests`), damit du sofort loslegen kannst.
 
-1. Installiere den [Bruno API Client](https://usebruno.com/).
-2. Klicke auf **"Open Collection"** und wähle den Ordner `api-requests/` in diesem Projekt.
-3. Wähle oben rechts das Environment **"Docker-Local"** (für Port 8082).
-4. **JWT-Auth:** Die Collection ist so vorkonfiguriert, dass nach einem erfolgreichen Login (`/auth/login`) der Token automatisch für alle geschützten Endpunkte genutzt wird.
+1.  Installiere den [Bruno API Client](https://usebruno.com/).
+2.  Klicke auf **"Open Collection"** und wähle den Ordner `api-requests/` in diesem Projekt.
+3.  Wähle oben rechts das Environment **"Docker-Local"** (für Port 8082).
+4.  **JWT-Auth:** Die Collection ist so vorkonfiguriert, dass nach einem erfolgreichen Login (`/auth/login`) der Token automatisch für alle geschützten Endpunkte genutzt wird.
 
 ---
 
-##  Wichtige Befehle
+## ⚙️ Wichtige Befehle
 
 | Ziel | Befehl |
 | :--- | :--- |
@@ -56,11 +76,11 @@ Die Test-Requests sind direkt im Repository eingecheckt, damit du sofort loslege
 | **Logs live verfolgen** | `docker logs -f pizzaria-backend-full` |
 | **Stoppen (Daten behalten)** | `docker compose -f docker-compose.full.yml stop` |
 | **Beenden (Container löschen)** | `docker compose -f docker-compose.full.yml down` |
-| **Hard Reset (Inkl. Datenbank-Löschung)** | `docker compose -f docker-compose.full.yml down -v` |
+| **Hard Reset (Inkl. DB-Löschung)** | `docker compose -f docker-compose.full.yml down -v` |
 
 ---
 
-##  Security & Architektur
+## 🛡 Security & Architektur
 
 * **Authentifizierung:** JWT (JSON Web Token) via `Authorization: Bearer <token>` Header.
 * **Öffentliche Pfade:** `/auth/**`, `/v3/api-docs/**`, `/swagger-ui/**`, sowie Produkt-Listen (GET).
