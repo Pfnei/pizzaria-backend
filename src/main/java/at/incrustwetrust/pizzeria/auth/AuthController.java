@@ -2,6 +2,7 @@ package at.incrustwetrust.pizzeria.auth;
 
 import at.incrustwetrust.pizzeria.dto.user.UserCreateDTO;
 import at.incrustwetrust.pizzeria.dto.user.UserResponseLightDTO;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,10 @@ public class AuthController {
 
     private final AuthService authService;
 
+    @Operation(
+        summary = "Login für Benutzer",
+        description = "Gibt bei Erfolg einen JWT-Token zurück. Kopiere diesen ohne das Wort 'Bearer' für den Authorize-Button oben rechts."
+    )
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
         return ResponseEntity.ok(authService.login(request));

@@ -1,6 +1,11 @@
 package at.incrustwetrust.pizzeria.config;
 
 import at.incrustwetrust.pizzeria.security.JwtAuthenticationFilter;
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -32,9 +37,30 @@ public class SecurityConfig {
     }
 
     /**
+     * Swagger Konfiguration für den "Authorize" Button.
+     * Ermöglicht es, den JWT-Token direkt in der UI zu hinterlegen.
+     */
+    @Bean
+    public OpenAPI customOpenAPI() {
+        final String securitySchemeName = "bearerAuth";
+        return new OpenAPI()
+                .info(new Info()
+                        .title("Pizzeria API")
+                        .version("1.0")
+                        .description("API für das Pizzeria Bestellsystem. Token bitte ohne 'Bearer ' Präfix eingeben."))
+                .addSecurityItem(new SecurityRequirement().addList(securitySchemeName))
+                .components(new Components()
+                        .addSecuritySchemes(securitySchemeName,
+                                new SecurityScheme()
+                                        .name(securitySchemeName)
+                                        .type(SecurityScheme.Type.HTTP)
+                                        .scheme("bearer")
+                                        .bearerFormat("JWT")));
+    }
+
+    /**
      * 1. DER HOLZHAMMER:
      * Diese Pfade werden von Spring Security KOMPLETT ignoriert.
-     * Kein JWT-Filter, keine Rollenprüfung, nichts.
      */
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
@@ -60,7 +86,7 @@ public class SecurityConfig {
                         // Public Auth Pfade
                         .requestMatchers("/auth/**").permitAll()
                         
-                        // Swagger Pfade (Sicherheitshalber auch hier in der Chain)
+                        // Swagger Pfade
                         .requestMatchers(
                                 "/v3/api-docs/**", 
                                 "/swagger-ui/**", 
