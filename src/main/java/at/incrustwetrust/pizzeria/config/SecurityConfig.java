@@ -85,6 +85,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Public Auth Pfade
                         .requestMatchers("/auth/**").permitAll()
+                        //Public Feedback-Pfade
+                        .requestMatchers("/api/feedback/**").permitAll()
                         
                         // Swagger Pfade
                         .requestMatchers(

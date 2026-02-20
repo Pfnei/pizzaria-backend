@@ -11,11 +11,38 @@ services:
       POSTGRES_DB: pizzeria
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d pizzeria"]
-      interval: 10s # Etwas mehr Zeit geben
+      interval: 10s
       timeout: 5s
       retries: 5
     volumes:
       - postgres_data_full:/var/lib/postgresql
+
+  # --- UNSERE NEUE SPIELWIESE ---
+  mongodb:
+    image: mongo:latest
+    container_name: pizzeria-mongodb-full
+    restart: always
+    ports:
+      - "27018:27017" # Außen 27018, falls du lokal schon Mongo hast
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+    volumes:
+      - mongo_data_full:/data/db
+
+  mongo-express:
+    image: mongo-express:latest
+    container_name: pizzeria-mongo-ui-full
+    restart: always
+    depends_on:
+      - mongodb
+    ports:
+      - "8087:8081" # Web-Interface für Mongo auf Port 8087
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: admin
+      ME_CONFIG_MONGODB_ADMINPASSWORD: password
+      ME_CONFIG_MONGODB_URL: mongodb://admin:password@mongodb:27017/
+  # ------------------------------
 
   backend:
     build: .
@@ -23,14 +50,18 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      mongodb:
+        condition: service_started
     ports:
-      - "8082:8081" # <--- Außen 8082 für dich, Intern bleibt es 8081
+      - "8082:8081"
     environment:
       - DB_HOST=db
       - DB_PORT=5432
       - DB_NAME=pizzeria
       - DB_USER=postgres
       - DB_PW=pizzapass
+      # NEU: Verbindung zu MongoDB innerhalb von Docker
+      - SPRING_DATA_MONGODB_URI=mongodb://admin:password@mongodb:27017/pizzeria?authSource=admin
 
   adminer:
     image: adminer:latest
@@ -38,7 +69,8 @@ services:
     depends_on:
       - db
     ports:
-      - "8086:8080" # Auch hier ein anderer Port, falls die Kollegen Adminer schon auf 8085 haben
+      - "8086:8080"
 
 volumes:
   postgres_data_full:
+  mongo_data_full: # Volume für MongoDB Daten
