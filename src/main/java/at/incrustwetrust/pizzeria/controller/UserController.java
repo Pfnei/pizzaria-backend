@@ -17,6 +17,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 
 import java.util.List;
+import java.util.Optional;
+
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
@@ -38,8 +40,12 @@ public class UserController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
-    public ResponseEntity<List<UserResponseDTO>> readAll() {
-        List<UserResponseDTO> users = userService.readAll();
+    public ResponseEntity<List<UserResponseDTO>> readAll(
+            @RequestParam(required = false) String createdBy,
+            @AuthenticationPrincipal SecurityUser principal)
+            
+     {
+        List<UserResponseDTO> users = userService.readAll(Optional.ofNullable(createdBy), principal);
         return ResponseEntity.ok(users);
     }
 
