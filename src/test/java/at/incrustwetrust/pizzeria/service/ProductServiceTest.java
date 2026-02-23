@@ -10,6 +10,7 @@ import at.incrustwetrust.pizzeria.mapper.ProductMapper;
 import at.incrustwetrust.pizzeria.repository.AllergenRepository;
 import at.incrustwetrust.pizzeria.repository.ProductRepository;
 
+import at.incrustwetrust.pizzeria.security.SecurityUser;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -40,6 +41,17 @@ class ProductServiceTest {
 
     @InjectMocks
     ProductService productService;
+    
+    private SecurityUser principal(String id, boolean admin) {
+        User u = new User();
+        u.setUserId(id);
+        u.setAdmin(admin);
+        u.setActive(true);
+        u.setEmail("u@x");
+        u.setUsername("user");
+        u.setPassword("pw");
+        return new SecurityUser(u);
+    }
 
     @Test
     void create_savesProduct_andReturnsResponseDto() {
@@ -101,12 +113,13 @@ class ProductServiceTest {
 
     @Test
     void readAll_mapsList_toLightDtos() {
+        SecurityUser admin = principal("a1", true);
         List<Product> products = List.of(new Product(), new Product());
         when(productRepository.findAll()).thenReturn(products);
         List<ProductResponseLightDTO> light = List.of(new ProductResponseLightDTO(), new ProductResponseLightDTO());
         when(productMapper.toResponseLightDtoList(products)).thenReturn(light);
 
-        List<ProductResponseLightDTO> result = productService.readAll();
+        List<ProductResponseLightDTO> result = productService.readAll(Optional.empty(), admin);
         assertThat(result).isSameAs(light);
     }
 
