@@ -213,16 +213,19 @@ INSERT INTO products_allergens (product_id, allergen_abbreviation)
 SELECT
     p.product_id,
     a.abbreviation
-FROM
-    products p
-        JOIN LATERAL (
-        SELECT abbreviation
-        FROM allergens
-        ORDER BY random()
-            LIMIT floor(random() * 4 + 1)::int
-        ) AS a ON TRUE;
-
-
+FROM products p
+         JOIN LATERAL (
+    SELECT x.abbreviation
+    FROM (
+             SELECT ab.abbreviation
+             FROM allergens ab
+         ) x
+             CROSS JOIN LATERAL (
+        SELECT setseed( (abs(hashtext(p.product_id)) % 100000)::float8 / 100000 )
+            ) s
+    ORDER BY random()
+        LIMIT (1 + (abs(hashtext(p.product_id || '_cnt')) % 4))
+    ) a ON TRUE;
 
 INSERT INTO orders
 (order_id, address, city, zipcode, firstname, lastname, phone_number,
