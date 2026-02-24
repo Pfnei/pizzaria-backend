@@ -1,15 +1,18 @@
 package at.incrustwetrust.pizzeria.controller;
 
 import at.incrustwetrust.pizzeria.dto.product.*;
+import at.incrustwetrust.pizzeria.security.SecurityUser;
 import at.incrustwetrust.pizzeria.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/products")
@@ -20,8 +23,10 @@ public class ProductController {
 
     @GetMapping
     @Transactional(readOnly = true)
-    public ResponseEntity<List<ProductResponseLightDTO>> readAll() {
-        List<ProductResponseLightDTO> products = productService.readAll();
+    public ResponseEntity<List<ProductResponseLightDTO>> readAll(
+            @RequestParam(required = false) String createdBy,
+            @AuthenticationPrincipal SecurityUser principal) {
+        List<ProductResponseLightDTO> products = productService.readAll(Optional.ofNullable(createdBy), principal);
         return ResponseEntity.ok(products);
     }
 

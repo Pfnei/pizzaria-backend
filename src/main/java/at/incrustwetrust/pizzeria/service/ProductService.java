@@ -2,19 +2,22 @@ package at.incrustwetrust.pizzeria.service;
 
 import at.incrustwetrust.pizzeria.dto.product.*;
 import at.incrustwetrust.pizzeria.entity.Allergen;
+import at.incrustwetrust.pizzeria.entity.Order;
 import at.incrustwetrust.pizzeria.entity.Product;
 import at.incrustwetrust.pizzeria.entity.User;
 import at.incrustwetrust.pizzeria.exception.ProductAlreadyExistsException;
 import at.incrustwetrust.pizzeria.exception.ResourceNotFoundException;
+import at.incrustwetrust.pizzeria.exception.UnauthorizedActionException;
 import at.incrustwetrust.pizzeria.mapper.ProductMapper;
 import at.incrustwetrust.pizzeria.repository.AllergenRepository;
 import at.incrustwetrust.pizzeria.repository.ProductRepository;
+import at.incrustwetrust.pizzeria.security.SecurityUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 
 import java.util.List;
-
+import java.util.Optional;
 
 
 @Service
@@ -59,11 +62,18 @@ public class ProductService {
     }
 
 
-    public List<ProductResponseLightDTO> readAll() {
-        List<Product> products = productRepository.findAll();
+    public List<ProductResponseLightDTO> readAll(Optional<String> createdBy, SecurityUser principal) {
+        loggedInUserCheck(principal);
+        
+        List<Product> products = null;
+        
+        if (principal.isAdmin()) if (createdBy.isPresent()) {
+			products = productRepository.findAllByCreatedBy_UserId(createdBy.get());
+		} else {
+			products = productRepository.findAll();
+		}
         return productMapper.toResponseLightDtoList(products);
     }
-
 
     // UPDATE
     
@@ -126,4 +136,11 @@ public class ProductService {
             throw new ProductAlreadyExistsException("A product with this name already exists");
         });
     }
+    
+    private void loggedInUserCheck(SecurityUser principal) {
+        if (principal == null) {
+            throw new UnauthorizedActionException("your not logged in");
+        }
+    }
+    
 }

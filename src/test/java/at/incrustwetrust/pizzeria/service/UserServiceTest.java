@@ -114,10 +114,11 @@ class UserServiceTest {
 
     @Test
     void readAll_mapsList() {
+        SecurityUser admin = principal("a1", true);
         when(userRepository.findAll()).thenReturn(List.of(new User(), new User()));
         List<UserResponseDTO> list = List.of(new UserResponseDTO(), new UserResponseDTO());
         when(mapper.toResponseDtoList(anyList())).thenReturn(list);
-        List<UserResponseDTO> res = userService.readAll();
+        List<UserResponseDTO> res = userService.readAll(Optional.empty(), admin);
         assertThat(res).isSameAs(list);
     }
 
