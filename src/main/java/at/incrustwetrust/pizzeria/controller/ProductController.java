@@ -24,9 +24,8 @@ public class ProductController {
     @GetMapping
     @Transactional(readOnly = true)
     public ResponseEntity<List<ProductResponseLightDTO>> readAll(
-            @RequestParam(required = false) String createdBy,
-            @AuthenticationPrincipal SecurityUser principal) {
-        List<ProductResponseLightDTO> products = productService.readAll(Optional.ofNullable(createdBy), principal);
+            ) {
+        List<ProductResponseLightDTO> products = productService.readAll();
         return ResponseEntity.ok(products);
     }
 
