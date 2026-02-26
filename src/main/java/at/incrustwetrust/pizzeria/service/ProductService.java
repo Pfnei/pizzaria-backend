@@ -62,16 +62,12 @@ public class ProductService {
     }
 
 
-    public List<ProductResponseLightDTO> readAll(Optional<String> createdBy, SecurityUser principal) {
-        loggedInUserCheck(principal);
+    public List<ProductResponseLightDTO> readAll() {
         
         List<Product> products = null;
         
-        if (principal.isAdmin()) if (createdBy.isPresent()) {
-			products = productRepository.findAllByCreatedBy_UserId(createdBy.get());
-		} else {
-			products = productRepository.findAll();
-		}
+      	products = productRepository.findAll();
+		
         return productMapper.toResponseLightDtoList(products);
     }
 

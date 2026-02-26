@@ -113,13 +113,12 @@ class ProductServiceTest {
 
     @Test
     void readAll_mapsList_toLightDtos() {
-        SecurityUser admin = principal("a1", true);
         List<Product> products = List.of(new Product(), new Product());
         when(productRepository.findAll()).thenReturn(products);
         List<ProductResponseLightDTO> light = List.of(new ProductResponseLightDTO(), new ProductResponseLightDTO());
         when(productMapper.toResponseLightDtoList(products)).thenReturn(light);
 
-        List<ProductResponseLightDTO> result = productService.readAll(Optional.empty(), admin);
+        List<ProductResponseLightDTO> result = productService.readAll();
         assertThat(result).isSameAs(light);
     }
 
