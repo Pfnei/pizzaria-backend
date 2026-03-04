@@ -95,6 +95,8 @@ public class SecurityConfig {
 
                         // Pizzeria Endpunkte
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/products/**").permitAll()
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/files/profile/**").permitAll()
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/files/product/**").permitAll()
                         .requestMatchers(org.springframework.http.HttpMethod.POST, "/orders").permitAll()
                         
                         // Admin Bereich
